@@ -1,0 +1,49 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Users {
+  id: Int!
+  name: String
+  email: String!
+  password: String!
+  phoneNumber: String!
+  role: UserRole
+  status: UserStatus
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+"""The basic user roles"""
+enum UserRole {
+  """Owner of the system"""
+  OWNER
+
+  """Default user"""
+  USER
+
+  """Super admin of the system"""
+  SUPER_ADMIN
+}
+
+"""The basic user status"""
+enum UserStatus {
+  """Active user"""
+  ACTIVE
+
+  """Inactive user"""
+  INACTIVE
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Query {
+  users: [Users!]!
+}
+
+type Mutation {
+  createUser(name: String!, email: String!): Users!
+}
