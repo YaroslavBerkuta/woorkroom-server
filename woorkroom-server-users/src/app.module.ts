@@ -4,7 +4,8 @@ import {
 } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { LIBS_MODULES, UsersModule } from './modules';
+import { UsersModule } from './modules';
+import { LIBS_MODULES } from './libs';
 
 @Module({
   imports: [
