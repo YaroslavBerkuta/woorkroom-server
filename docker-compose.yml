@@ -1,8 +1,7 @@
-version: '3.8'
-name: 'woorkroom'
+version: "3.8"
+name: "woorkroom"
 
 services:
-
   # user-service:
   #   build:
   #     context: ./woorkroom-server-users
@@ -37,9 +36,23 @@ services:
       POSTGRES_PASSWORD: rootPass
       POSTGRES_DB: db-user
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
       - user_pgdata:/var/lib/postgresql/data
 
+  db-session:
+    image: postgres:15
+    container_name: db-session
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: rootPass
+      POSTGRES_DB: db-session
+    ports:
+      - "5433:5432"
+    volumes:
+      - session_pgdata:/var/lib/postgresql/data
+
 volumes:
   user_pgdata:
+  session_pgdata:
