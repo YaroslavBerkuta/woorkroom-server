@@ -6,6 +6,7 @@ import {
   registerEnumType,
 } from '@nestjs/graphql';
 import { UserRole, UserStatus } from '@prisma/client';
+import { IUser } from '../types';
 
 registerEnumType(UserRole, {
   name: 'UserRole', // this one is mandatory
@@ -28,7 +29,7 @@ registerEnumType(UserStatus, {
 
 @ObjectType()
 @Directive('@key(fields: "id")')
-export class Users {
+export class Users implements IUser {
   @Field(() => Int)
   id: number;
 
@@ -51,8 +52,8 @@ export class Users {
   status: UserStatus;
 
   @Field(() => Date, { nullable: true })
-  createdAt?: Date;
+  createdAt: Date;
 
   @Field(() => Date, { nullable: true })
-  updatedAt?: Date;
+  updatedAt: Date;
 }

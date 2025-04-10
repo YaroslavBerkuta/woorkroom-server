@@ -14,6 +14,10 @@ import { IntrospectAndCompose } from '@apollo/gateway';
               name: 'users',
               url: 'http://user-service:3001/graphql',
             },
+             {
+              name: 'sessions',
+              url: 'http://session-service:3002/graphql',
+            },
           ],
         }),
       },
