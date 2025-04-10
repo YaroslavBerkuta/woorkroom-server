@@ -1,10 +1,19 @@
 import { PrismaService } from 'src/libs/database/prisma.service';
-import { ISession } from '../types';
+import { Inject } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
+import { RegisterDto } from '../dto';
 
 export class SessionService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject('USER_SERVICE') private userClient: ClientProxy,
+  ) {}
 
-  async createSession(): Promise<ISession> {
-    
+  async register(dto: RegisterDto): Promise<any> {
+    const user = await firstValueFrom(
+      this.userClient.send({ cmd: 'user.create' }, dto),
+    );
+    console.log('user', user);
   }
 }

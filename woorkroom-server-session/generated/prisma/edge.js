@@ -130,7 +130,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\Yaroslav\\Desktop\\woorkroom-server\\woorkroom-server-session\\generated\\prisma",
+      "value": "/Users/admin/Desktop/woorkroom-server/woorkroom-server-session/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -139,12 +139,12 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "windows",
+        "value": "darwin-arm64",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\Yaroslav\\Desktop\\woorkroom-server\\woorkroom-server-session\\prisma\\schema.prisma",
+    "sourceFilePath": "/Users/admin/Desktop/woorkroom-server/woorkroom-server-session/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -158,11 +158,12 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": true,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "postgresql://root:rootPass@localhost:5433/db-session?schema=public"
+        "value": null
       }
     }
   },

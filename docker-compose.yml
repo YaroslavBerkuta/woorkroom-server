@@ -13,6 +13,7 @@ services:
   #   env_file: ./woorkroom-server-users/.env
   #   depends_on:
   #     - db-user
+  #     - rabbitmq
   #   command: sh -c "node dist/main.js"
 
   # gateway:
@@ -53,6 +54,19 @@ services:
     volumes:
       - session_pgdata:/var/lib/postgresql/data
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # Web UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
 volumes:
   user_pgdata:
   session_pgdata:
+  rabbitmq_data:

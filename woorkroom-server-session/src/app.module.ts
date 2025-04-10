@@ -17,7 +17,7 @@ import { SessionsModule } from './modules';
       autoSchemaFile: {
         federation: 2,
       },
-    }),
+    })
   ],
 })
 export class AppModule {}
