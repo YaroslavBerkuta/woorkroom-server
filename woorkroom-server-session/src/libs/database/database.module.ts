@@ -1,4 +1,4 @@
-import { Global, Module } from '@nestjs/common';
+import { Global, Logger, Module, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 
 @Global()
@@ -6,4 +6,12 @@ import { PrismaService } from './prisma.service';
   providers: [PrismaService],
   exports: [PrismaService],
 })
-export class DatabaseModule {}
+export class DatabaseModule implements OnModuleInit {
+  private logger: Logger;
+  constructor() {
+    this.logger = new Logger(DatabaseModule.name);
+  }
+  onModuleInit() {
+    this.logger.debug('Database module initialized');
+  }
+}

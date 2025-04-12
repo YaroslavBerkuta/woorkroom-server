@@ -1,11 +1,15 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Sessions } from '../model';
 import { SessionService } from '../services';
-import { RegisterDto } from '../dto';
+import { RegisterDto, SendVerificationCode } from '../dto';
+import { Inject } from '@nestjs/common';
+import { SESSION_SERVICES } from '../types';
 
 @Resolver(() => Sessions)
 export class SessionsResolver {
-  constructor(private readonly sessionService: SessionService) {}
+  constructor(
+    @Inject(SESSION_SERVICES) private readonly sessionService: SessionService,
+  ) {}
 
   @Query(() => Sessions)
   async session(): Promise<boolean> {
@@ -14,7 +18,22 @@ export class SessionsResolver {
 
   @Mutation(() => Boolean)
   async register(@Args('dto') dto: RegisterDto): Promise<boolean> {
-    await this.sessionService.register(dto);
-    return true;
+    const res = await this.sessionService.register(dto);
+
+    if (!res) throw new Error('User not created!');
+
+    return !!res;
+  }
+
+  @Mutation(() => Boolean)
+  async sendVerificationCode(
+    @Args('dto') dto: SendVerificationCode,
+  ): Promise<boolean> {
+    try {
+      await this.sessionService.sendVerificationCode(dto.phoneNumber);
+      return true;
+    } catch (error) {
+      throw new Error('Failed to send verification code');
+    }
   }
 }

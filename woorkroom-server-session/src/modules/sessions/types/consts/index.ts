@@ -1,0 +1,2 @@
+export const SESSION_SERVICES = Symbol('SESSION_SERVICES');
+export const PASSWORD_HASH_SERVICE = Symbol('PASSWORD_HASH_SERVICE');

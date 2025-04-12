@@ -2,36 +2,41 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/libs/database/prisma.service';
 import { CreateUserDto } from '../dto';
 import { IUser } from '../types';
-import { cleanedDto } from 'src/helper';
+import { cleanedDto } from 'src/common';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createUser(dto: CreateUserDto): Promise<IUser> {
-    const existingUser = await this.getByEmail(dto.email);
-    if (existingUser) {
-      throw new ForbiddenException('User with this email already exists');
+    try {
+      const existingUser = await this.getByEmail(dto.email);
+      if (existingUser) {
+        throw new ForbiddenException('User with this email already exists');
+      }
+
+      const user = await this.prisma.user.create({
+        data: {
+          email: dto.email,
+          name: dto.name,
+          password: dto.password,
+          phoneNumber: dto.phoneNumber,
+          status: dto.status,
+          role: dto.role,
+        },
+      });
+
+      return user;
+    } catch (error) {
+      throw new RpcException(error.message);
     }
-
-    const user = await this.prisma.user.create({
-      data: {
-        email: dto.email,
-        name: dto.name,
-        password: dto.password,
-        phoneNumber: dto.phoneNumber,
-        status: dto.status,
-        role: dto.role,
-      },
-    });
-
-    return user;
   }
 
   async updateUser(id: number, dto: Partial<CreateUserDto>): Promise<IUser> {
     const existingUser = await this.getById(id);
     if (!existingUser) {
-      throw new ForbiddenException('User not found');
+      throw new RpcException('User not found');
     }
 
     const data = cleanedDto(dto);
@@ -39,7 +44,7 @@ export class UsersService {
     if (data.email) {
       const existingEmailUser = await this.getByEmail(data.email);
       if (existingEmailUser && existingEmailUser.id !== id) {
-        throw new ForbiddenException('User with this email already exists');
+        throw new RpcException('User with this email already exists');
       }
     }
 
@@ -66,7 +71,7 @@ export class UsersService {
   async deleteById(id: number): Promise<boolean> {
     const existingUser = await this.getById(id);
     if (!existingUser) {
-      throw new ForbiddenException('User not found');
+      throw new RpcException('User not found');
     }
 
     await this.prisma.user.delete({
@@ -79,7 +84,7 @@ export class UsersService {
   async deleteByEmail(email: string): Promise<boolean> {
     const existingUser = await this.getByEmail(email);
     if (!existingUser) {
-      throw new ForbiddenException('User not found');
+      throw new RpcException('User not found');
     }
 
     await this.prisma.user.delete({
