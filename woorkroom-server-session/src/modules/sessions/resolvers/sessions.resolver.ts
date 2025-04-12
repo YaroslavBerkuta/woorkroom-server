@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { Sessions } from './model';
-import { SessionService } from './services';
-import { RegisterDto } from './dto';
+import { Sessions } from '../model';
+import { SessionService } from '../services';
+import { RegisterDto } from '../dto';
 
 @Resolver(() => Sessions)
 export class SessionsResolver {

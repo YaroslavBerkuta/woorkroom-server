@@ -9,6 +9,6 @@ export class UsersController {
   @MessagePattern({ cmd: 'user.create' })
   async createUser(data: CreateUserDto) {
     const user = await this.userService.createUser(data);
-    return data;
+    return user;
   }
 }
