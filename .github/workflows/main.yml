@@ -41,17 +41,17 @@ jobs:
           report="### Deploy Report\n\n**Version**: ${{ steps.version.outputs.version }}\n\n**Tasks in this build**: ${{ env.task_keys }}"
 
           # Створення сторінки в Confluence через API
-          curl -u ${{ env.CONFLUENCE_USER }}:${{ env.CONFLUENCE_API_TOKEN }} \
-            -X POST \
-            -H 'Content-Type: application/json' \
-            -d '{
-                  "spaceId": "1802243",
-                  "status": "current",
-                  "title": "Build Report for Version ${{ steps.version.outputs.version }}",
-                  "parentId": "420642853",
-                  "body": {
-                    "value": "'"$report"'",
-                    "representation": "storage"
-                  }
-                }' \
-            "https://fanscrm.atlassian.net//wiki/api/v2/pages"
+          curl -X POST "https://fanscrm.atlassian.net/wiki/api/v2/pages" \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Basic eWFyb3NsYXZiZXJrdXRhQGdtYWlsLmNvbTpBVEFUVDN4RmZHRjBkZnBNQ2Rpd3Nsd0gzcnR6V3RoLS1talJPTzhFNkVmODlhTDVMWTgzdzFzVVNXLWgtMjVyZG91SUhPSzhQNW4yQVpqV09zYzZLclM1TXFPZnM5dTY2aTczeGh4WVF4M2VodlctWWN5a2tnRUJHSDZIalRTSHFvZUxkbmIwZ0poTWI3cl9IZEJDY24xS1BDbWZfV29FdVRfSUlBanFpTVgxMzZOM19XRTFlaVk9RDY3RTc4Q0M=" \
+              -d '{
+                    "spaceId": 1802243,
+                    "status": "current",
+                    "title": "Build Report for Version ${{ steps.version.outputs.version }}",
+                    "parentId": 420642853,
+                    "body": {
+                      "value": "'"$report"'",
+                      "representation": "storage"
+                    }
+                  }'
+
