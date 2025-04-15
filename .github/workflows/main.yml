@@ -43,7 +43,7 @@ jobs:
           curl --location 'https://fanscrm.atlassian.net//wiki/api/v2/pages' \
           --header 'Content-Type: application/json' \
           --header 'Accept: application/json' \
-          --header 'Authorization: Basic eWFyb3NsYXZiZXJrdXRhQGdtYWlsLmNvbTpBVEFUVDN4RmZHRjBkZnBNQ2Rpd3Nsd0gzcnR6V3RoLS1talJPTzhFNkVmODlhTDVMWTgzdzFzVVNXLWgtMjVyZG91SUhPSzhQNW4yQVpqV09zYzZLclM1TXFPZnM5dTY2aTczeGh4WVF4M2VodlctWWN5a2tnRUJHSDZIalRTSHFvZUxkbmIwZ0poTWI3cl9IZEJDY24xS1BDbWZfV29FdVRfSUlBanFpTVgxMzZOM19XRTFlaVk9RDY3RTc4Q0M=' \
+          --header 'Authorization: Basic eWFyb3NsYXZiZXJrdXRhQGdtYWlsLmNvbTpBVEFUVDN4RmZHRjAzMTJncWFfVThrUENDRjIwdG5yc3N2UHRWdGhSRlhqWDBsRjlSVXNndEdRMGxET1NFTkc3UVBZWC1MMHNkQXdBWmRTbVlrS2ZjU3lzamNwNUQxdVB5TkpqVWJKUmd4eXNua09rLWpaVmFEekZpNGlNZ1EyVnVES2JqU2ZFdXRjbWc0RnNJWUZVeWQyakxUY3d6WHpIU3NqUW0zQmFuNzdrMzVjTmQ3T2lsZDA9MzgzOTJGREM=' \
           --header 'Cookie: atlassian.xsrf.token=e21e1cec2bf977a6a34ba2ea92fff3c6a1edfb30_lin' \
           --data '{
               "spaceId": "1802243",
