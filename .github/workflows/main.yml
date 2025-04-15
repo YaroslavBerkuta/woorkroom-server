@@ -8,9 +8,6 @@ on:
 permissions: write-all
 
 env:
-  DOCKER_REGISTRY: registry.digitalocean.com/fans-crm-cr
-  SVC_NAME: server-prod
-  SVC_NAME_AUTH: auth-prod
   ENV_NAME: prod
 
 jobs:
