@@ -8,10 +8,8 @@ on:
 permissions: write-all
 
 env:
-  DOCKER_REGISTRY: registry.digitalocean.com/fans-crm-cr
-  SVC_NAME: server-prod
-  SVC_NAME_AUTH: auth-prod
-  ENV_NAME: prod
+  CONFLUENCE_USER: Berkuta Yaroslav
+  CONFLUENCE_API_TOKEN: ATATT3xFfGF0dfpMCdiwslwH3rtzWth--mjROO8E6Ef89aL5LY83w1sUSW-h-25rdouIHOK8P5n2AZjWOsc6KrS5MqOfs9u66i73xhxYQx3ehvW-YcykkgEBGH6HjTSHqoeLdnb0gJhMb7r_HdBCcn1KPCmf_WoEuT_IIAjqiMX136N3_WE1eiY=D67E78CC
 
 jobs:
   task-reports:
@@ -41,14 +39,14 @@ jobs:
           report="### Deploy Report\n\n**Version**: ${{ steps.version.outputs.version }}\n\n**Tasks in this build**: ${{ env.task_keys }}"
 
           # Створення сторінки в Confluence через API
-          curl -u ${{ secrets.CONFLUENCE_USER }}:${{ secrets.CONFLUENCE_API_TOKEN }} \
+          curl -u ${{ env.CONFLUENCE_USER }}:${{ env.CONFLUENCE_API_TOKEN }} \
             -X POST \
             -H 'Content-Type: application/json' \
             -d '{
                   "type": "page",
                   "title": "Build Report for Version ${{ steps.version.outputs.version }}",
                   "space": {
-                    "key": "YOUR_SPACE_KEY"
+                    "key": "F"
                   },
                   "body": {
                     "storage": {
