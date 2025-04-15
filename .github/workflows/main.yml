@@ -20,10 +20,12 @@ jobs:
       - name: Get commit messages
         id: commits
         run: |
-          git fetch --prune
-          branch_name="${GITHUB_REF#refs/heads/}"
-          commits=$(git log --pretty=format:"%s" origin/$branch_name..HEAD)
-          echo "commits=$commits" >> $GITHUB_ENV
+          git fetch --prune --unshallow
+          commits=$(git log --pretty=format:"%s" ${{ github.event.before }}..${{ github.sha }})
+          echo "commits<<EOF" >> $GITHUB_ENV
+          echo "$commits" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
 
       # Витягуємо ключі задач з повідомлень комітів
       - name: Extract task keys from commit messages
