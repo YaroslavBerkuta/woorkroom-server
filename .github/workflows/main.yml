@@ -22,7 +22,7 @@ jobs:
       - name: Get commit messages
         id: commits
         run: |
-          git fetch --prune --unshallow
+          git fetch --prune
           commits=$(git log --pretty=format:"%s" origin/${{ github.ref }}..HEAD)
           echo "commits=$commits" >> $GITHUB_ENV
 
