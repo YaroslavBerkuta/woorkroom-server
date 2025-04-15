@@ -7,7 +7,7 @@ on:
 permissions: write-all
 
 env:
-  CONFLUENCE_USER: Berkuta Yaroslav
+  CONFLUENCE_USER: yaroslavberkuta@gmail.com
   CONFLUENCE_API_TOKEN: ATATT3xFfGF0dfpMCdiwslwH3rtzWth--mjROO8E6Ef89aL5LY83w1sUSW-h-25rdouIHOK8P5n2AZjWOsc6KrS5MqOfs9u66i73xhxYQx3ehvW-YcykkgEBGH6HjTSHqoeLdnb0gJhMb7r_HdBCcn1KPCmf_WoEuT_IIAjqiMX136N3_WE1eiY=D67E78CC
 
 jobs:
@@ -44,16 +44,13 @@ jobs:
             -X POST \
             -H 'Content-Type: application/json' \
             -d '{
-                  "type": "page",
+                  "spaceId": "1802243",
+                  "status": "current",
                   "title": "Build Report for Version ${{ steps.version.outputs.version }}",
-                  "space": {
-                    "key": "~701215f3ef98192ef44d3904b68e6bf3ce9a5"
-                  },
+                  "parentId": "420642853",
                   "body": {
-                    "storage": {
-                      "value": "'"$report"'",
-                      "representation": "storage"
-                    }
+                    "value": "'"$report"'",
+                    "representation": "storage"
                   }
                 }' \
-            "https://fanscrm.atlassian.net/wiki/rest/api/content/"
+            "https://fanscrm.atlassian.net//wiki/api/v2/pages"
