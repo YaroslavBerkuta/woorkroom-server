@@ -48,7 +48,7 @@ jobs:
           --data '{
               "spaceId": "1802243",
               "status": "current",
-              "title": "Release 1.25.5",
+              "title": "Build Report for Version ${{ steps.version.outputs.version }}",
               "parentId": "420642853",
               "body": {
                   "representation": "storage",
