@@ -38,7 +38,7 @@ jobs:
       - name: Encode Confluence token
         run: |
           token=$(echo -n "${{ secrets.CONFLUENCE_USER }}:${{ secrets.CONFLUENCE_API_TOKEN }}" | base64 | tr -d '\n')
-          echo "CONFLUENCE_TOKEN=$token" >> $GITHUB_ENV
+          echo "token=$token" >> $GITHUB_ENV
 
 
       # Формуємо звіт і відправляємо в Confluence
