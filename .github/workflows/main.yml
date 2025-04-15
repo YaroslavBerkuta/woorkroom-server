@@ -40,18 +40,18 @@ jobs:
         run: |
           report="### Deploy Report\n\n**Version**: ${{ steps.version.outputs.version }}\n\n**Tasks in this build**: ${{ env.task_keys }}"
 
-          # Створення сторінки в Confluence через API
-          curl -X POST "https://fanscrm.atlassian.net/wiki/api/v2/pages" \
-              -H "Content-Type: application/json" \
-              -H "Authorization: Basic eWFyb3NsYXZiZXJrdXRhQGdtYWlsLmNvbTpBVEFUVDN4RmZHRjBkZnBNQ2Rpd3Nsd0gzcnR6V3RoLS1talJPTzhFNkVmODlhTDVMWTgzdzFzVVNXLWgtMjVyZG91SUhPSzhQNW4yQVpqV09zYzZLclM1TXFPZnM5dTY2aTczeGh4WVF4M2VodlctWWN5a2tnRUJHSDZIalRTSHFvZUxkbmIwZ0poTWI3cl9IZEJDY24xS1BDbWZfV29FdVRfSUlBanFpTVgxMzZOM19XRTFlaVk9RDY3RTc4Q0M=" \
-              -d '{
-                    "spaceId": 1802243,
-                    "status": "current",
-                    "title": "Build Report for Version ${{ steps.version.outputs.version }}",
-                    "parentId": 420642853,
-                    "body": {
-                      "value": "'"$report"'",
-                      "representation": "storage"
-                    }
-                  }'
-
+          curl --location 'https://fanscrm.atlassian.net//wiki/api/v2/pages' \
+          --header 'Content-Type: application/json' \
+          --header 'Accept: application/json' \
+          --header 'Authorization: Basic eWFyb3NsYXZiZXJrdXRhQGdtYWlsLmNvbTpBVEFUVDN4RmZHRjBkZnBNQ2Rpd3Nsd0gzcnR6V3RoLS1talJPTzhFNkVmODlhTDVMWTgzdzFzVVNXLWgtMjVyZG91SUhPSzhQNW4yQVpqV09zYzZLclM1TXFPZnM5dTY2aTczeGh4WVF4M2VodlctWWN5a2tnRUJHSDZIalRTSHFvZUxkbmIwZ0poTWI3cl9IZEJDY24xS1BDbWZfV29FdVRfSUlBanFpTVgxMzZOM19XRTFlaVk9RDY3RTc4Q0M=' \
+          --header 'Cookie: atlassian.xsrf.token=e21e1cec2bf977a6a34ba2ea92fff3c6a1edfb30_lin' \
+          --data '{
+              "spaceId": "1802243",
+              "status": "current",
+              "title": "Release 1.25.5",
+              "parentId": "420642853",
+              "body": {
+                  "representation": "storage",
+                  "value": "'"$report"'",
+              }
+          }'
