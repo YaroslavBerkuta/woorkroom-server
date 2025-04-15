@@ -22,8 +22,9 @@ jobs:
       - name: Get commit messages
         id: commits
         run: |
-          git fetch --prune --unshallow
-          commits=$(git log --pretty=format:"%s" origin/${{ github.ref }}..HEAD)
+          git fetch --prune
+          branch_name="${GITHUB_REF#refs/heads/}"
+          commits=$(git log --pretty=format:"%s" origin/$branch_name..HEAD)
           echo "commits=$commits" >> $GITHUB_ENV
 
       # Витягування ключів задач з повідомлень комітів
