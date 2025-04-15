@@ -35,11 +35,11 @@ jobs:
           echo "task_keys=$keys" >> $GITHUB_ENV
 
       # Готуємо base64 token для авторизації
-      - name: Encode Confluence credentials
-        id: encode_auth
+      - name: Encode Confluence token
         run: |
-          token=$(echo -n "${{ secrets.CONFLUENCE_USER }}:${{ secrets.CONFLUENCE_API_TOKEN }}" | base64)
-          echo "token=$token" >> $GITHUB_ENV
+          token=$(echo -n "${{ secrets.CONFLUENCE_USER }}:${{ secrets.CONFLUENCE_API_TOKEN }}" | base64 | tr -d '\n')
+          echo "CONFLUENCE_TOKEN=$token" >> $GITHUB_ENV
+
 
       # Формуємо звіт і відправляємо в Confluence
       - name: Create Confluence report
