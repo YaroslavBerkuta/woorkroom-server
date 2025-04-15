@@ -9,7 +9,7 @@ permissions: write-all
 
 env:
   CONFLUENCE_USER: yaroslavberkuta@gmail.com
-  CONFLUENCE_API_TOKEN: ATATT3xFfGF0dfpMCdiwslwH3rtzWth--mjROO8E6Ef89aL5LY83w1sUSW-h-25rdouIHOK8P5n2AZjWOsc6KrS5MqOfs9u66i73xhxYQx3ehvW-YcykkgEBGH6HjTSHqoeLdnb0gJhMb7r_HdBCcn1KPCmf_WoEuT_IIAjqiMX136N3_WE1eiY=D67E78CC
+  CONFLUENCE_API_TOKEN: ATATT3xFfGF0JzzBXevdQWKiN4aZZw9aClbybNu3gHujsV3pyEymTDj_h2ihHugt67DegWQj5nMbdR3ZRzh0PHRV5-0zHdW7jwu8YAqB0zYHEQahjrX9mg-vJXnIZE7LesILUV0I-ScIueOfudvr_iv3FYe_Uy3rBSAmBmKe56T-Sxar8GnPSAY=803C79B7
 
 jobs:
   task-reports:
@@ -22,11 +22,9 @@ jobs:
       - name: Get commit messages
         id: commits
         run: |
-          git fetch --prune
-          branch_name="${GITHUB_REF#refs/heads/}"
-          commits=$(git log --pretty=format:"%s" origin/$branch_name..HEAD)
+          git fetch --prune --unshallow
+          commits=$(git log --pretty=format:"%s" origin/${{ github.ref }}..HEAD)
           echo "commits=$commits" >> $GITHUB_ENV
-
 
       # Витягування ключів задач з повідомлень комітів
       - name: Extract task keys from commit messages
@@ -38,19 +36,19 @@ jobs:
       # Формуємо звіт для Confluence
       - name: Create Confluence report
         run: |
-          report="### Deploy Report\n\n**Version**: ${{ steps.version.outputs.version }}\n\n**Tasks in this build**: ${{ env.task_keys }}"
+          report="### Deploy Report\n\n**Version**: ${{ github.sha }}\n\n**Tasks in this build**: ${{ env.task_keys }}"
 
           curl --location 'https://fanscrm.atlassian.net/wiki/api/v2/pages' \
-               --header 'Content-Type: application/json' \
-               --header 'Accept: application/json' \
-               --header 'Authorization: Basic eWFyb3NsYXZiZXJrdXRhQGdtYWlsLmNvbTpBVEFUVDN4RmZHRjAzMTJncWFfVThrUENDRjIwdG5yc3N2UHRWdGhSRlhqWDBsRjlSVXNndEdRMGxET1NFTkc3UVBZWC1MMHNkQXdBWmRTbVlrS2ZjU3lzamNwNUQxdVB5TkpqVWJKUmd4eXNua09rLWpaVmFEekZpNGlNZ1EyVnVES2JqU2ZFdXRjbWc0RnNJWUZVeWQyakxUY3d6WHpIU3NqUW0zQmFuNzdrMzVjTmQ3T2lsZDA9MzgzOTJGREM=' \
-               --header 'Cookie: atlassian.xsrf.token=e21e1cec2bf977a6a34ba2ea92fff3c6a1edfb30_lin' \
-               --data '{
-                   "spaceId": "1802243",
-                   "status": "current",
-                   "title": "Build Report for Version '"${{ steps.version.outputs.version }}"'",
-                   "parentId": "420642853",
-                   "body": {
-                       "representation": "storage",
-                       "value": "'"$report"'"
-                   }
+            --header 'Content-Type: application/json' \
+            --header 'Accept: application/json' \
+            --header 'Authorization: Basic $(echo -n "${{ env.CONFLUENCE_USER }}:${{ env.CONFLUENCE_API_TOKEN }}" | base64)' \
+            --data '{
+              "spaceId": "1802243",
+              "status": "current",
+              "title": "Build Report for Version '${{ github.sha }}'",
+              "parentId": "420642853",
+              "body": {
+                "representation": "storage",
+                "value": "'"$report"'"
+              }
+            }'
