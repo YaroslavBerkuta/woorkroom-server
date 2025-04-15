@@ -47,7 +47,7 @@ jobs:
                   "type": "page",
                   "title": "Build Report for Version ${{ steps.version.outputs.version }}",
                   "space": {
-                    "key": "F"
+                    "key": "~701215f3ef98192ef44d3904b68e6bf3ce9a5"
                   },
                   "body": {
                     "storage": {
