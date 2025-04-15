@@ -1,4 +1,4 @@
-name: 'Build and Deploy to Prod'
+name: "Build and Deploy to Prod"
 
 on:
   push:
@@ -8,8 +8,10 @@ on:
 permissions: write-all
 
 env:
-  CONFLUENCE_USER: yaroslavberkuta@gmail.com
-  CONFLUENCE_API_TOKEN: ATATT3xFfGF0hve6d2NYCKvgm6-Tm4er6OSrwmj2Q6CVqCOVrttOsV05ibjtm1JWwEfcExZ3VmfgCDaKHL0PkwcNrP896jLZKYVybEnt42LMK_a6rcJkwbE7pzH7939KKycvj7Ry38Ln9-Ym2qOxSkIG_5TPhuE1EU29Hf_Osm3NaQrrACgDXC4=2E21F9F6
+  DOCKER_REGISTRY: registry.digitalocean.com/fans-crm-cr
+  SVC_NAME: server-prod
+  SVC_NAME_AUTH: auth-prod
+  ENV_NAME: prod
 
 jobs:
   task-reports:
@@ -27,22 +29,31 @@ jobs:
           commits=$(git log --pretty=format:"%s" origin/$branch_name..HEAD)
           echo "commits=$commits" >> $GITHUB_ENV
 
-      # Витягування ключів задач з повідомлень комітів
+      # Витягуємо ключі задач з повідомлень комітів
       - name: Extract task keys from commit messages
         id: extract_keys
         run: |
-          keys=$(echo "${{ env.commits }}" | grep -oE '\[([A-Za-z]+-[0-9]+)\]' | sort | uniq)
+          keys=$(echo "${{ env.commits }}" | grep -oE '\[([A-Za-z]+-[0-9]+)\]' | sort | uniq | tr '\n' ' ')
           echo "task_keys=$keys" >> $GITHUB_ENV
 
-      # Формуємо звіт для Confluence
+      # Готуємо base64 token для авторизації
+      - name: Encode Confluence credentials
+        id: encode_auth
+        run: |
+          token=$(echo -n "${{ secrets.CONFLUENCE_USER }}:${{ secrets.CONFLUENCE_API_TOKEN }}" | base64)
+          echo "token=$token" >> $GITHUB_ENV
+
+      # Формуємо звіт і відправляємо в Confluence
       - name: Create Confluence report
         run: |
-          report="### Deploy Report\n\n**Version**: ${{ github.sha }}\n\n**Tasks in this build**: ${{ env.task_keys }}"
+          report="<h3>Deploy Report</h3>
+          <p><strong>Version:</strong> ${{ github.sha }}</p>
+          <p><strong>Tasks in this build:</strong> ${{ env.task_keys }}</p>"
 
           curl --location 'https://fanscrm.atlassian.net/wiki/api/v2/pages' \
             --header 'Content-Type: application/json' \
             --header 'Accept: application/json' \
-            --header 'Authorization: Basic $(echo -n "${{ env.CONFLUENCE_USER }}:${{ env.CONFLUENCE_API_TOKEN }}" | base64)' \
+            --header "Authorization: Basic ${{ env.token }}" \
             --data '{
               "spaceId": "1802243",
               "status": "current",
@@ -50,6 +61,7 @@ jobs:
               "parentId": "420642853",
               "body": {
                 "representation": "storage",
-                "value": "'"$report"'"
+                "value": "'"${report//\"/\\\"}"'"
               }
             }'
+
