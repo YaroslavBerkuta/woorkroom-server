@@ -1,0 +1,60 @@
+name: 'Build and Deploy to Prod'
+
+on:
+  push:
+    branches:
+      - main
+
+permissions: write-all
+
+env:
+  DOCKER_REGISTRY: registry.digitalocean.com/fans-crm-cr
+  SVC_NAME: server-prod
+  SVC_NAME_AUTH: auth-prod
+  ENV_NAME: prod
+
+jobs:
+  task-reports:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Отримуємо всі коміти, які потрапили в поточну гілку
+      - name: Get commit messages
+        id: commits
+        run: |
+          git fetch --prune --unshallow
+          commits=$(git log --pretty=format:"%s" origin/${{ github.ref }}..HEAD)
+          echo "commits=$commits" >> $GITHUB_ENV
+
+      # Витягування ключів задач з повідомлень комітів
+      - name: Extract task keys from commit messages
+        id: extract_keys
+        run: |
+          keys=$(echo "${{ env.commits }}" | grep -oE '\[([A-Za-z]+-[0-9]+)\]' | sort | uniq)
+          echo "task_keys=$keys" >> $GITHUB_ENV
+
+      # Формуємо звіт для Confluence
+      - name: Create Confluence report
+        run: |
+          report="### Deploy Report\n\n**Version**: ${{ steps.version.outputs.version }}\n\n**Tasks in this build**: ${{ env.task_keys }}"
+
+          # Створення сторінки в Confluence через API
+          curl -u ${{ secrets.CONFLUENCE_USER }}:${{ secrets.CONFLUENCE_API_TOKEN }} \
+            -X POST \
+            -H 'Content-Type: application/json' \
+            -d '{
+                  "type": "page",
+                  "title": "Build Report for Version ${{ steps.version.outputs.version }}",
+                  "space": {
+                    "key": "YOUR_SPACE_KEY"
+                  },
+                  "body": {
+                    "storage": {
+                      "value": "'"$report"'",
+                      "representation": "storage"
+                    }
+                  }
+                }' \
+            "https://fanscrm.atlassian.net/wiki/rest/api/content/"
