@@ -6,7 +6,6 @@ on:
       - main
 
 permissions: write-all
-
 env:
   ENV_NAME: prod
 
