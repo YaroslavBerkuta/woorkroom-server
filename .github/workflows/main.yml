@@ -38,28 +38,27 @@ jobs:
       - name: Encode Confluence token
         run: |
           token=$(echo -n "${{ secrets.CONFLUENCE_USER }}:${{ secrets.CONFLUENCE_API_TOKEN }}" | base64 | tr -d '\n')
-          echo "token=$token" >> $GITHUB_ENV
+          echo "CONFLUENCE_TOKEN=$token" >> $GITHUB_ENV
+
 
 
       # Формуємо звіт і відправляємо в Confluence
       - name: Create Confluence report
         run: |
-          report="<h3>Deploy Report</h3>
-          <p><strong>Version:</strong> ${{ github.sha }}</p>
-          <p><strong>Tasks in this build:</strong> ${{ env.task_keys }}</p>"
+          report="<h3>Deploy Report</h3><p><strong>Version:</strong> ${{ github.sha }}</p><p><strong>Tasks in this build:</strong> ${{ env.task_keys }}</p>"
 
           curl --location 'https://fanscrm.atlassian.net/wiki/api/v2/pages' \
-            --header 'Content-Type: application/json' \
-            --header 'Accept: application/json' \
-            --header "Authorization: Basic ${{ env.token }}" \
-            --data '{
-              "spaceId": "1802243",
-              "status": "current",
-              "title": "Build Report for Version '${{ github.sha }}'",
-              "parentId": "420642853",
-              "body": {
-                "representation": "storage",
-                "value": "'"${report//\"/\\\"}"'"
-              }
-            }'
+          --header 'Content-Type: application/json' \
+          --header 'Accept: application/json' \
+          --header "Authorization: Basic ${{ env.CONFLUENCE_TOKEN }}" \
+          --data '{
+            "spaceId": "1802243",
+            "status": "current",
+            "title": "Build Report for Version '${{ github.sha }}'",
+            "parentId": "420642853",
+            "body": {
+              "representation": "storage",
+              "value": "'"${report//\"/\\\"}"'"
+            }
+          }'
 
