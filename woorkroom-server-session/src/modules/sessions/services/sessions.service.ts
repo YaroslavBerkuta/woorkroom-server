@@ -1,23 +1,21 @@
 import { PrismaService } from 'src/libs/database/prisma.service';
 import { Inject } from '@nestjs/common';
-import { ClientProxy, RpcException } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { RegisterDto } from '../dto';
-import { USER_SERVICE } from 'src/libs/rmq/types';
+import { MAIL_SERVICE, USER_SERVICE } from 'src/libs/rmq/types';
 import { REDIS_SERVICE } from 'src/libs/redis/types';
 import { RedisService } from 'src/libs/redis/redis.service';
 import { generateRandomNumericCode } from 'src/common';
-import { TWILLO_SERVICE } from 'src/libs/mail/types';
-import { TwilioService } from 'src/libs/mail/services';
-import { PASSWORD_HASH_SERVICE } from '../types';
+import { PASSWORD_HASH_SERVICE, QueueCommnadsEnum } from '../types';
 import { PasswordHashService } from './password-hash.service';
 
 export class SessionService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(USER_SERVICE) private readonly userClient: ClientProxy,
+    @Inject(MAIL_SERVICE) private readonly mailClient: ClientProxy,
     @Inject(REDIS_SERVICE) private readonly redisService: RedisService,
-    @Inject(TWILLO_SERVICE) private readonly twilioService: TwilioService,
     @Inject(PASSWORD_HASH_SERVICE)
     private readonly passwordHashService: PasswordHashService,
   ) {}
@@ -26,12 +24,6 @@ export class SessionService {
     try {
       const codeInRedis = await this.redisService.get(
         `verification_code:${dto.phoneNumber}`,
-      );
-
-      console.log(
-        codeInRedis,
-        dto.verificationCode,
-        dto.verificationCode !== codeInRedis,
       );
 
       if (dto.verificationCode !== codeInRedis) {
@@ -44,7 +36,7 @@ export class SessionService {
 
       const user = await firstValueFrom(
         this.userClient.send(
-          { cmd: 'user.create' },
+          { cmd: QueueCommnadsEnum.CREATE_USER },
           { ...dto, password: hashPassword },
         ),
       );
@@ -66,8 +58,9 @@ export class SessionService {
       '1m',
     );
 
-    console.log('code', code);
-
-    // await this.twilioService.sendVerificationCode(phone, code);
+    this.mailClient.emit(QueueCommnadsEnum.SEND_CONFIRM_CODE, {
+      to: phone,
+      code,
+    });
   }
 }

@@ -1,9 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { TWILLO_CLIENT } from '../types';
+import { IMailService } from 'src/types';
+import { TWILLO_CLIENT } from 'src/types/consts';
 import { Twilio } from 'twilio';
 
 @Injectable()
-export class TwilioService {
+export class TwilioService implements IMailService {
   constructor(@Inject(TWILLO_CLIENT) private readonly twilioClient: Twilio) {}
 
   async sendVerificationCode(to: string, code: string): Promise<void> {

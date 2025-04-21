@@ -6,5 +6,5 @@ export const subgraphs = [
   {
     name: 'sessions',
     url: 'http://localhost:3002/graphql',
-  },
+  }
 ];
