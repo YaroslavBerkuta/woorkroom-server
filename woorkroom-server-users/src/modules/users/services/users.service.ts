@@ -27,6 +27,8 @@ export class UsersService {
         },
       });
 
+      console.log('user', user)
+
       return user;
     } catch (error) {
       throw new RpcException(error.message);
