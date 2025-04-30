@@ -9,6 +9,7 @@ permissions: write-all
 
 env:
   ENV_NAME: prod
+  version: 0.0.1
 
 jobs:
   task-reports:
