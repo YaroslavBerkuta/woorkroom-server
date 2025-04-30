@@ -40,7 +40,6 @@ jobs:
 
       - name: Create Confluence report
         run: |
-          echo "'"${report//\"/\\\"}"'"
           report="<h3>Deploy Report</h3><p><strong>Version:</strong> ${{ env.version }}</p><p><strong>Tasks in this build:</strong> ${{ env.task_keys }}</p>"
 
           curl --location 'https://fanscrm.atlassian.net/wiki/api/v2/pages' \
