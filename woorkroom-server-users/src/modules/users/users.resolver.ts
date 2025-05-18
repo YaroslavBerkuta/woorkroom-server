@@ -8,7 +8,9 @@ export class UsersResolver {
 
   @Query(() => Users)
   async users(@Args('id') id: number): Promise<Users> {
-    return await this.usersService.getById(id);
+    const user = await this.usersService.getById(id);
+    if (!user) throw new Error('User not found!');
+    return user;
   }
 
   @ResolveReference()
@@ -16,6 +18,7 @@ export class UsersResolver {
     __typename: string;
     id: number;
   }): Promise<Users> {
-    return this.usersService.getById(reference.id);
+    console.log('resolveReference', reference);
+    return await this.usersService.getById(reference.id);
   }
 }

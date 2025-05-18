@@ -9,8 +9,8 @@ import { UserRole, UserStatus } from '@prisma/client';
 import { IUser } from '../types';
 
 registerEnumType(UserRole, {
-  name: 'UserRole', // this one is mandatory
-  description: 'The basic user roles', // this one is optional
+  name: 'UserRole',
+  description: 'The basic user roles',
   valuesMap: {
     OWNER: { description: 'Owner of the system' },
     USER: { description: 'Default user' },
@@ -19,8 +19,8 @@ registerEnumType(UserRole, {
 });
 
 registerEnumType(UserStatus, {
-  name: 'UserStatus', // this one is mandatory
-  description: 'The basic user status', // this one is optional
+  name: 'UserStatus',
+  description: 'The basic user status',
   valuesMap: {
     ACTIVE: { description: 'Active user' },
     INACTIVE: { description: 'Inactive user' },

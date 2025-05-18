@@ -1,5 +1,12 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { Sessions } from '../model';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
+import { Sessions, Users } from '../model';
 import { SessionService } from '../services';
 import { RegisterDto, SendVerificationCode } from '../dto';
 import { Inject } from '@nestjs/common';
@@ -12,8 +19,12 @@ export class SessionsResolver {
   ) {}
 
   @Query(() => Sessions)
-  async session(): Promise<boolean> {
-    return true;
+  async session(@Args('id') id: number): Promise<Sessions> {
+    const session = await this.sessionService.getById(id);
+
+    if (!session) throw new Error('Session not found!');
+
+    return session;
   }
 
   @Mutation(() => Boolean)
@@ -35,5 +46,10 @@ export class SessionsResolver {
     } catch (error) {
       throw new Error('Failed to send verification code');
     }
+  }
+
+  @ResolveField(() => Users)
+  user(@Parent() session: Sessions): Users {
+    return { id: session.userId };
   }
 }

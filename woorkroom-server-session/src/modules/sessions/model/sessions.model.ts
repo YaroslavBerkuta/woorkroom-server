@@ -1,5 +1,6 @@
 import { Directive, Field, Int, ObjectType } from '@nestjs/graphql';
 import { ISession } from '../types';
+import { Users } from './users.model';
 
 @ObjectType()
 @Directive('@key(fields: "id")')
@@ -27,4 +28,7 @@ export class Sessions implements ISession {
 
   @Field(() => Date)
   updatedAt: Date;
+
+  @Field(() => Users)
+  user?: Users;
 }
