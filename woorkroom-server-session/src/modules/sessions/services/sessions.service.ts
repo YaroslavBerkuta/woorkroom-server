@@ -7,7 +7,7 @@ import { MAIL_SERVICE, USER_SERVICE } from 'src/libs/rmq/types';
 import { REDIS_SERVICE } from 'src/libs/redis/types';
 import { RedisService } from 'src/libs/redis/redis.service';
 import { generateRandomNumericCode } from 'src/common';
-import { PASSWORD_HASH_SERVICE, QueueCommnadsEnum } from '../types';
+import { ISession, PASSWORD_HASH_SERVICE, QueueCommnadsEnum } from '../types';
 import { PasswordHashService } from './password-hash.service';
 
 export class SessionService {
@@ -19,6 +19,20 @@ export class SessionService {
     @Inject(PASSWORD_HASH_SERVICE)
     private readonly passwordHashService: PasswordHashService,
   ) {}
+
+  async getById(id: number): Promise<ISession> {
+    try {
+      const session = await this.prisma.session.findUnique({
+        where: { id },
+      });
+
+      if (!session) throw new Error('Session not found');
+
+      return session;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
 
   async register(dto: RegisterDto): Promise<any> {
     try {
