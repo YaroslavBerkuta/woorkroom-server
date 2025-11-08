@@ -21,6 +21,31 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-    "paths": {}
+    "paths": {
+      "woorkroom/database": [
+        "libs/database/src"
+      ],
+      "woorkroom/database/*": [
+        "libs/database/src/*"
+      ],
+      "woorkroom/logger": [
+        "libs/logger/src"
+      ],
+      "woorkroom/logger/*": [
+        "libs/logger/src/*"
+      ],
+      "woorkroom/rabbitmq": [
+        "libs/rabbitmq/src"
+      ],
+      "woorkroom/rabbitmq/*": [
+        "libs/rabbitmq/src/*"
+      ],
+      "woorkroom/redis": [
+        "libs/redis/src"
+      ],
+      "woorkroom/redis/*": [
+        "libs/redis/src/*"
+      ]
+    }
   }
 }
