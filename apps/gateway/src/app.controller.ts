@@ -1,12 +1,13 @@
 import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { DatabaseService } from 'woorkroom/database';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly databaseService: DatabaseService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get('ping')
+  async ping() {
+    const result = await this.databaseService.ping();
+    return { status: result ? 'ok' : 'error' };
   }
 }

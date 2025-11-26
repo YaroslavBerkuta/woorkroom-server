@@ -1,0 +1,114 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: woorkroom-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: woorkroom
+      POSTGRES_USER: woorkroom
+      POSTGRES_PASSWORD: woorkroom
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - woorkroom-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: woorkroom-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - woorkroom-net
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: woorkroom-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: woorkroom
+      RABBITMQ_DEFAULT_PASS: woorkroom
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - woorkroom-net
+
+  gateway:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.dev
+    container_name: woorkroom-gateway
+    env_file:
+      - .env
+    volumes:
+      - .:/var/www:cached
+    depends_on:
+      - rabbitmq
+      - postgres
+      - redis
+    ports:
+      - "3000:3000"
+
+    command: npx nest start gateway --watch
+    networks:
+      - woorkroom-net
+
+  authorization:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.dev
+    container_name: woorkroom-authorization
+    env_file:
+      - .env
+    volumes:
+      - .:/var/www:cached
+
+    depends_on:
+      - rabbitmq
+    command: npx nest start authorization --watch
+    networks:
+      - woorkroom-net
+
+  companys:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.dev
+    container_name: woorkroom-companys
+    env_file:
+      - .env
+    volumes:
+      - .:/var/www:cached
+
+    depends_on:
+      - rabbitmq
+    command: npx nest start companys --watch
+    networks:
+      - woorkroom-net
+
+  users:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.dev
+    container_name: woorkroom-users
+    env_file:
+      - .env
+    volumes:
+      - .:/var/www:cached
+
+    depends_on:
+      - rabbitmq
+    command: npx nest start users --watch
+    networks:
+      - woorkroom-net
+
+volumes:
+  postgres_data:
+
+networks:
+  woorkroom-net:
+    driver: bridge

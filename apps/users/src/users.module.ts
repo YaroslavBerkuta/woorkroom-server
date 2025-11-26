@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
+import { DatabaseModule } from 'woorkroom/database';
 
 @Module({
-  imports: [],
+  imports: [DatabaseModule],
   controllers: [UsersController],
   providers: [UsersService],
 })
