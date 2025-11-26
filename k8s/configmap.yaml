@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: woorkroom-config
+  namespace: woorkroom
+data:
+  NODE_ENV: production
+
+  USERS_SERVICE_HOST: users
+  USERS_SERVICE_PORT: "3000"
+
+  AUTHORIZATION_SERVICE_HOST: authorization
+  AUTHORIZATION_SERVICE_PORT: "3000"
+
+  COMPANYS_SERVICE_HOST: companys
+  COMPANYS_SERVICE_PORT: "3000"

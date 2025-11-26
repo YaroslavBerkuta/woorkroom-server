@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: companys
+  namespace: woorkroom
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: companys
+  template:
+    metadata:
+      labels:
+        app: companys
+    spec:
+      containers:
+        - name: companys
+          image: 786998285740.dkr.ecr.us-east-1.amazonaws.com/woorkroom-companys:latest
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: woorkroom-config
+            - secretRef:
+                name: woorkroom-secrets
