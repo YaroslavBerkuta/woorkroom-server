@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  db-users:
+    image: postgres:16-alpine
+    container_name: woorkroom-postgres-users
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: woorkroom-users
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_users:/var/lib/postgresql/data
+    networks:
+      - woorkroom-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: woorkroom-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - woorkroom-net
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: woorkroom-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: woorkroom
+      RABBITMQ_DEFAULT_PASS: woorkroom
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - woorkroom-net
+
+volumes:
+  postgres_data_users:
+
+networks:
+  woorkroom-net:
+    driver: bridge

@@ -22,6 +22,12 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
+      "woorkroom/config": [
+        "libs/config/src"
+      ],
+      "woorkroom/config/*": [
+        "libs/config/src/*"
+      ],
       "woorkroom/database": [
         "libs/database/src"
       ],

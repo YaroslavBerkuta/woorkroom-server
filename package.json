@@ -22,11 +22,20 @@
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/microservices": "^11.1.9",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/typeorm": "^11.0.0",
+    "@types/lodash": "^4.17.21",
+    "amqp-connection-manager": "^5.0.0",
+    "amqplib": "^0.10.9",
+    "bcryptjs": "^3.0.3",
+    "lodash": "^4.17.21",
+    "pg": "^8.16.3",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "typeorm": "^0.3.28"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -34,6 +43,7 @@
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
+    "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.10.7",
@@ -74,6 +84,7 @@
       "<rootDir>/libs/"
     ],
     "moduleNameMapper": {
+      "^woorkroom/config(|/.*)$": "<rootDir>/libs/config/src/$1",
       "^woorkroom/database(|/.*)$": "<rootDir>/libs/database/src/$1",
       "^woorkroom/logger(|/.*)$": "<rootDir>/libs/logger/src/$1",
       "^woorkroom/rabbitmq(|/.*)$": "<rootDir>/libs/rabbitmq/src/$1",
