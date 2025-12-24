@@ -5,6 +5,7 @@ import { Users } from '../entitys/users.entity';
 import { hash } from 'bcryptjs';
 import { CreateUserDto, UpdateUserDto } from 'shared';
 import { IUserServiceInterface } from '../types';
+import { omit } from 'lodash';
 
 @Injectable()
 export class UsersService implements IUserServiceInterface {
@@ -39,12 +40,15 @@ export class UsersService implements IUserServiceInterface {
     return this.usersRepository.delete({ id });
   }
 
-  public async updateById(id: string, dto: Partial<UpdateUserDto>) {
-    await this.usersRepository.update({ id }, dto);
+  public async updateById(id: string, dto: Omit<UpdateUserDto, 'id'>) {
+    await this.usersRepository.update({ id }, omit(dto, ['id']));
     return this.findOneById(id);
   }
 
   protected async hashPassword(password: string): Promise<string> {
-    return hash(password, this.SALT_ROUNDS);
+    console.log(password);
+    const newPass = await hash(password, this.SALT_ROUNDS);
+    console.log(newPass);
+    return newPass;
   }
 }

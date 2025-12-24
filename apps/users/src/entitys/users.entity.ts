@@ -1,4 +1,4 @@
-import { IUser } from 'shared';
+import { EntityAbstract, IUser } from 'shared';
 import {
   Column,
   Entity,
@@ -11,10 +11,7 @@ import { Profiles } from './profile.entity';
 @Entity({ name: 'users' })
 @Index(['email'])
 @Index(['phoneNumber'])
-export class Users implements IUser {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class Users extends EntityAbstract implements IUser {
   @Column({ unique: true, length: 255, nullable: false })
   email: string;
 

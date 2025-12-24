@@ -1,7 +1,7 @@
 import { UserRole, UserStatus } from '../enums';
+import { IBase } from './base.interface';
 
-export interface IProfile {
-  id: string;
+export interface IProfile extends IBase {
   userId: string;
   companyId: string;
   name?: string;

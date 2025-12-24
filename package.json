@@ -21,6 +21,7 @@
     "test:e2e": "jest --config ./apps/gateway/test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
@@ -30,12 +31,16 @@
     "@types/lodash": "^4.17.21",
     "amqp-connection-manager": "^5.0.0",
     "amqplib": "^0.10.9",
+    "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
     "lodash": "^4.17.21",
+    "nodemailer": "^7.0.12",
     "pg": "^8.16.3",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "typeorm": "^0.3.28"
+    "telegraf": "^4.16.3",
+    "typeorm": "^0.3.28",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -47,6 +52,7 @@
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.10.7",
+    "@types/nodemailer": "^7.0.4",
     "@types/supertest": "^6.0.2",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
@@ -88,7 +94,9 @@
       "^woorkroom/database(|/.*)$": "<rootDir>/libs/database/src/$1",
       "^woorkroom/logger(|/.*)$": "<rootDir>/libs/logger/src/$1",
       "^woorkroom/rabbitmq(|/.*)$": "<rootDir>/libs/rabbitmq/src/$1",
-      "^woorkroom/redis(|/.*)$": "<rootDir>/libs/redis/src/$1"
+      "^woorkroom/redis(|/.*)$": "<rootDir>/libs/redis/src/$1",
+      "^woorkroom/smtp(|/.*)$": "<rootDir>/libs/smtp/src/$1",
+      "^woorkroom/telegram(|/.*)$": "<rootDir>/libs/telegram/src/$1"
     }
   }
 }

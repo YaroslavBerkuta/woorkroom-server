@@ -51,6 +51,18 @@
       ],
       "woorkroom/redis/*": [
         "libs/redis/src/*"
+      ],
+      "woorkroom/smtp": [
+        "libs/smtp/src"
+      ],
+      "woorkroom/smtp/*": [
+        "libs/smtp/src/*"
+      ],
+      "woorkroom/telegram": [
+        "libs/telegram/src"
+      ],
+      "woorkroom/telegram/*": [
+        "libs/telegram/src/*"
       ]
     }
   }

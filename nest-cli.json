@@ -64,6 +64,15 @@
         "tsConfigPath": "libs/logger/tsconfig.lib.json"
       }
     },
+    "mails": {
+      "type": "application",
+      "root": "apps/mails",
+      "entryFile": "main",
+      "sourceRoot": "apps/mails/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/mails/tsconfig.app.json"
+      }
+    },
     "rabbitmq": {
       "type": "library",
       "root": "libs/rabbitmq",
@@ -80,6 +89,24 @@
       "sourceRoot": "libs/redis/src",
       "compilerOptions": {
         "tsConfigPath": "libs/redis/tsconfig.lib.json"
+      }
+    },
+    "smtp": {
+      "type": "library",
+      "root": "libs/smtp",
+      "entryFile": "index",
+      "sourceRoot": "libs/smtp/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/smtp/tsconfig.lib.json"
+      }
+    },
+    "telegram": {
+      "type": "library",
+      "root": "libs/telegram",
+      "entryFile": "index",
+      "sourceRoot": "libs/telegram/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/telegram/tsconfig.lib.json"
       }
     },
     "users": {

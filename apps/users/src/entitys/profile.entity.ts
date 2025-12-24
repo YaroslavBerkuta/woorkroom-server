@@ -1,4 +1,4 @@
-import { IProfile, UserRole, UserStatus } from 'shared';
+import { EntityAbstract, IProfile, UserRole, UserStatus } from 'shared';
 import {
   Column,
   Entity,
@@ -13,10 +13,7 @@ import { Users } from './users.entity';
 @Index(['userId'])
 @Index(['companyId'])
 @Unique(['userId', 'companyId'])
-export class Profiles implements IProfile {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class Profiles extends EntityAbstract implements IProfile {
   @Column({ type: 'uuid' })
   userId: string;
 

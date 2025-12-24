@@ -1,18 +1,19 @@
 version: "3.9"
 
 services:
-  db-users:
+  db:
     image: postgres:16-alpine
-    container_name: woorkroom-postgres-users
+    container_name: woorkroom-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: woorkroom-users
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
+      POSTGRES_DB: woorkroom
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data_users:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d
     networks:
       - woorkroom-net
 
@@ -22,6 +23,16 @@ services:
     restart: unless-stopped
     ports:
       - "6379:6379"
+    networks:
+      - woorkroom-net
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: woorkroom-mailpit
+    restart: unless-stopped
+    ports:
+      - "8025:8025"
+      - "1025:1025"
     networks:
       - woorkroom-net
 
@@ -39,7 +50,7 @@ services:
       - woorkroom-net
 
 volumes:
-  postgres_data_users:
+  postgres_data:
 
 networks:
   woorkroom-net:

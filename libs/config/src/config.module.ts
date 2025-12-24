@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from './config.service';
 import { ConfigModule } from '@nestjs/config';
-import { dataBaseConfig, rmqpConfig } from './configuration';
+import { dataBaseConfig, mailConfig, rmqpConfig } from './configuration';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.local', '.env'],
-      load: [dataBaseConfig, rmqpConfig],
+      load: [dataBaseConfig, rmqpConfig, mailConfig],
     }),
   ],
   providers: [ConfigService],

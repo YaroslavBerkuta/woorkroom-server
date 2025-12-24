@@ -1,5 +1,5 @@
-import { IUser, UserDto } from 'shared';
+import { IUser, CreateUserDto } from 'shared';
 
 export interface IRabbitmqUsersServiceInterface {
-  createUser(user: UserDto): Promise<IUser>;
+  createUser(user: CreateUserDto): Promise<IUser>;
 }
