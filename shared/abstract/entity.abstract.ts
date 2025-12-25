@@ -1,26 +1,22 @@
-import { Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { v4 } from 'uuid';
 
 export abstract class EntityAbstract {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({
-    type: 'timestamp with time zone',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @Column({
-    type: 'timestamp with time zone',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
-  })
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
   constructor() {
     this.id = v4();
-    this.createdAt = new Date();
-    this.updatedAt = new Date();
   }
 }

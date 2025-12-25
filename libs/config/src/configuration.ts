@@ -1,5 +1,3 @@
-import { url } from 'inspector';
-
 export const dataBaseConfig = () => ({
   postgres: {
     users: {
@@ -19,6 +17,10 @@ export const dataBaseConfig = () => ({
       database: process.env.DATABASE_COMPANY_DATABASE,
     },
   },
+  redis: {
+    host: process.env.REDIS_HOST,
+    port: Number(process.env.REDIS_PORT) || 6379,
+  },
 });
 
 export const rmqpConfig = () => ({
@@ -34,6 +36,7 @@ export const rmqpConfig = () => ({
       users: process.env.RABBITMQ_QUEUE_USERS,
       companys: process.env.RABBITMQ_QUEUE_COMPANYS,
       mails: process.env.RABBITMQ_QUEUE_MAILS,
+      authorization: process.env.RABBITMQ_QUEUE_AUTHORIZATION,
     },
   },
 });

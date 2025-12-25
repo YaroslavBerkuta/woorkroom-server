@@ -1,11 +1,5 @@
 import { EntityAbstract, IUser } from 'shared';
-import {
-  Column,
-  Entity,
-  Index,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, Index, OneToMany } from 'typeorm';
 import { Profiles } from './profile.entity';
 
 @Entity({ name: 'users' })
@@ -15,7 +9,7 @@ export class Users extends EntityAbstract implements IUser {
   @Column({ unique: true, length: 255, nullable: false })
   email: string;
 
-  @Column({ nullable: false, select: false })
+  @Column({ nullable: false })
   password: string;
 
   @Column({ nullable: false })

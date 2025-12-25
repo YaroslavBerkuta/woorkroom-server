@@ -1,5 +1,6 @@
 export enum EMessageRmqp {
   CREATE_USER = 'create_user',
+  FIND_USER_BY_ID = 'find_user_by_id',
   UPDATE_USER = 'update_user',
 
   CREATE_PROFILE = 'create_profile',

@@ -43,4 +43,17 @@ export class RabbitmqUsersService implements IRabbitmqUsersServiceInterface {
         ),
     );
   }
+
+  public async findOneById(id: string) {
+    return lastValueFrom(
+      this.userService.send<IUser>(EMessageRmqp.FIND_USER_BY_ID, id).pipe(
+        timeout(10_000),
+        catchError((err) =>
+          throwError(
+            () => new RpcException(err?.message || 'USER_SERVICE error'),
+          ),
+        ),
+      ),
+    );
+  }
 }

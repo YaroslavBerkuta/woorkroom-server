@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Users } from '../entitys/users.entity';
@@ -6,6 +10,7 @@ import { hash } from 'bcryptjs';
 import { CreateUserDto, UpdateUserDto } from 'shared';
 import { IUserServiceInterface } from '../types';
 import { omit } from 'lodash';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class UsersService implements IUserServiceInterface {
@@ -33,7 +38,12 @@ export class UsersService implements IUserServiceInterface {
   }
 
   public async findOneById(id: string) {
-    return this.usersRepository.findOneBy({ id });
+    try {
+      const user = await this.usersRepository.findOneBy({ id });
+      return user;
+    } catch (error) {
+      throw new RpcException('User not found');
+    }
   }
 
   public async deleteById(id: string) {
@@ -46,9 +56,7 @@ export class UsersService implements IUserServiceInterface {
   }
 
   protected async hashPassword(password: string): Promise<string> {
-    console.log(password);
     const newPass = await hash(password, this.SALT_ROUNDS);
-    console.log(newPass);
     return newPass;
   }
 }

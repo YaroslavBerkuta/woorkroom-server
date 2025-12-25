@@ -1,2 +1,2 @@
 export * from './telegram.module';
-export * from './bot.service';
+export * from './services';

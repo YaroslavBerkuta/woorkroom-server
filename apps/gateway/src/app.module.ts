@@ -1,10 +1,18 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { DatabaseModule } from 'woorkroom/database';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { UsersModule } from './users';
+import { AuthModule } from './auth';
 
 @Module({
-  imports: [DatabaseModule],
-  controllers: [AppController],
-  providers: [],
+  imports: [
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      playground: true,
+      autoSchemaFile: true,
+    }),
+    UsersModule,
+    AuthModule,
+  ],
 })
 export class AppModule {}

@@ -21,4 +21,9 @@ export class UsersController {
   public async updateUser(@Payload() data: UpdateUserDto) {
     return this.usersService.updateById(data.id, omit(data, ['id']));
   }
+
+  @MessagePattern(EMessageRmqp.FIND_USER_BY_ID)
+  public async findUserById(@Payload() id: string) {
+    return this.usersService.findOneById(id);
+  }
 }
