@@ -14,7 +14,6 @@ import {
 import * as redis from 'woorkroom/redis';
 import { ConfigService } from '@nestjs/config';
 import * as rabbitmq from 'woorkroom/rabbitmq';
-import { compare } from 'bcryptjs';
 import { v4 } from 'uuid';
 import { RpcException } from '@nestjs/microservices';
 
@@ -82,7 +81,10 @@ export class AuthorizationService
     if (!user) {
       throw new RpcException('User not found');
     }
-    const ok = await compare(dto.password, user.password);
+    const ok = await this.rabbitmqUsersService.verifyPassword(
+      user.password,
+      dto.password,
+    );
     if (!ok) {
       throw new RpcException('Invalid password');
     }

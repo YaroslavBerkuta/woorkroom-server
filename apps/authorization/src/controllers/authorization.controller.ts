@@ -19,7 +19,6 @@ export class AuthorizationController {
 
   @MessagePattern(EMessageRmqp.LOGIN)
   loginUser(@Payload() data: LoginDto) {
-    console.log(data);
     return this.authorizationService.loginUser(data);
   }
 

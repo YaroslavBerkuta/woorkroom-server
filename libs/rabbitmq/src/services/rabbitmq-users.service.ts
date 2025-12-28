@@ -63,4 +63,19 @@ export class RabbitmqUsersService implements types.IRabbitmqUsersService {
         ),
     );
   }
+
+  public async verifyPassword(hashValue: string, password: string) {
+    return lastValueFrom(
+      this.userService
+        .send<boolean>(EMessageRmqp.VERIFY_PASSWORD, { hashValue, password })
+        .pipe(
+          timeout(10_000),
+          catchError((err) =>
+            throwError(
+              () => new RpcException(err?.message || 'USER_SERVICE error'),
+            ),
+          ),
+        ),
+    );
+  }
 }

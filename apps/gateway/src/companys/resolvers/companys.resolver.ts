@@ -10,7 +10,6 @@ export class CompanysResolver {
   }
 
   public wrapData(data: ICompany): CompanyModel {
-    console.log(data);
     return {
       ...data,
       createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),

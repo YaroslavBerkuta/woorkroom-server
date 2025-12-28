@@ -36,4 +36,11 @@ export class UsersController {
   public async deleteUserById(@Payload() data: { id: string }) {
     return this.usersService.deleteById(data.id);
   }
+
+  @MessagePattern(EMessageRmqp.VERIFY_PASSWORD)
+  public async verifyPassword(
+    @Payload() data: { hashValue: string; password: string },
+  ) {
+    return this.usersService.verifyPassword(data.hashValue, data.password);
+  }
 }

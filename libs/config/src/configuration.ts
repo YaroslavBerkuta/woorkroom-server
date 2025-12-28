@@ -61,6 +61,10 @@ export const appConfig = () => ({
   app: {
     port: Number(process.env.PORT) || 3000,
   },
+  security: {
+    passwordSaltRounds: Number(process.env.SECURITY_PASSWORD_SALT_ROUNDS) || 10,
+    passwordPepper: process.env.SECURITY_PASSWORD_PEPPER,
+  },
   authorization: {
     sessionDays: Number(process.env.AUTHORIZATION_SESSION_DAYS) || 7,
   },

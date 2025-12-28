@@ -2,18 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Users } from '../entitys/users.entity';
-import { hash } from 'bcryptjs';
+import { compare, hash } from 'bcryptjs';
 import { CreateUserDto, UpdateUserDto } from 'shared';
 import { IUserServiceInterface } from '../types';
 import { omit } from 'lodash';
 import { RpcException } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UsersService implements IUserServiceInterface {
-  private readonly SALT_ROUNDS = 10;
   constructor(
     @InjectRepository(Users)
     private readonly usersRepository: Repository<Users>,
+    private readonly configService: ConfigService,
   ) {}
 
   public async create(dto: CreateUserDto) {
@@ -52,8 +53,26 @@ export class UsersService implements IUserServiceInterface {
     return this.findOneById(id);
   }
 
+  public verifyPassword(hashValue: string, password: string): Promise<boolean> {
+    const pepper = this.configService.get<string>('security.passwordPepper');
+
+    if (!pepper) {
+      throw new RpcException('Something went wrong');
+    }
+    return compare(password.normalize('NFKC') + pepper, hashValue);
+  }
+
   protected async hashPassword(password: string): Promise<string> {
-    const newPass = await hash(password, this.SALT_ROUNDS);
+    const saltRounds = this.configService.get<number>(
+      'security.passwordSaltRounds',
+    );
+    const pepper = this.configService.get<string>('security.passwordPepper');
+
+    if (!saltRounds || !pepper) {
+      throw new RpcException('Something went wrong');
+    }
+
+    const newPass = await hash(password.normalize('NFKC') + pepper, saltRounds);
     return newPass;
   }
 }

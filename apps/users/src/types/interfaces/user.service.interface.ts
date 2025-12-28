@@ -7,4 +7,5 @@ export interface IUserServiceInterface {
   findOneById(id: string): Promise<IUser | null>;
   deleteById(id: string): Promise<boolean>;
   updateById(id: string, dto: Partial<UpdateUserDto>): Promise<IUser | null>;
+  verifyPassword(password: string, hash: string): Promise<boolean>;
 }

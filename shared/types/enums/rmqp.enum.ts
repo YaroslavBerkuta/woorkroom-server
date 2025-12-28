@@ -22,4 +22,5 @@ export enum EMessageRmqp {
   GET_USER_SESSIONS = 'get_user_sessions',
 
   SEND_VERIFICATION_CODE = 'send_verification_code',
+  VERIFY_PASSWORD = 'verify_password',
 }
