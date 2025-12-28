@@ -8,5 +8,5 @@ export interface ICompanyServiceInterface {
     dto: Omit<UpdateCompanyDto, 'id'>,
   ): Promise<ICompany>;
   findCompanyById(id: string): Promise<ICompany | null>;
-  deleteCompanyById(id: string): Promise<DeleteResult>;
+  deleteCompanyById(id: string): Promise<boolean>;
 }

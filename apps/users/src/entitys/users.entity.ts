@@ -1,6 +1,5 @@
 import { EntityAbstract, IUser } from 'shared';
-import { Column, Entity, Index, OneToMany } from 'typeorm';
-import { Profiles } from './profile.entity';
+import { Column, Entity, Index } from 'typeorm';
 
 @Entity({ name: 'users' })
 @Index(['email'])
@@ -14,7 +13,4 @@ export class Users extends EntityAbstract implements IUser {
 
   @Column({ nullable: false })
   phoneNumber: string;
-
-  @OneToMany(() => Profiles, (profile) => profile.user, { onDelete: 'CASCADE' })
-  profiles: Profiles[];
 }

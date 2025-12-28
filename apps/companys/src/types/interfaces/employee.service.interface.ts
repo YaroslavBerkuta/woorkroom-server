@@ -1,11 +1,11 @@
-import { CreateEmployeeDto, IEmployee } from 'shared';
-import { DeleteResult } from 'typeorm';
+import { CreateEmployeeDto, ICompany, IEmployee } from 'shared';
 
-export interface IEmployeeServiceInterface {
+export interface IEmployeeService {
   createEmployee(dto: CreateEmployeeDto): Promise<IEmployee>;
   findExistCompanyEmployee(
     companyId: string,
-    profileId: string,
+    userId: string,
   ): Promise<IEmployee | null>;
-  deleteEmployee(id: string): Promise<DeleteResult>;
+  deleteEmployee(id: string): Promise<boolean>;
+  getMyCompanys(userId: string): Promise<ICompany[]>;
 }

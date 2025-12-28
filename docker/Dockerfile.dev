@@ -1,10 +1,16 @@
-FROM node:25-alpine
+FROM node:22-alpine
 
-RUN apk add --no-cache bash
+WORKDIR /app
 
-WORKDIR /var/www
+# для нативних модулів (bcrypt / sharp / etc.)
+RUN apk add --no-cache python3 make g++ libc6-compat
 
-COPY package*.json ./
-RUN npm install
+# ставимо deps з lock-файлом (в тебе він є)
+COPY package.json package-lock.json ./
+RUN npm ci
 
-CMD ["node"]
+# копіюємо все (потрібно для первинного запуску; далі буде volume)
+COPY . .
+
+# Nest CLI глобально НЕ треба — будемо запускати через npx
+CMD ["node", "-e", "console.log('Set command in docker-compose')"]

@@ -9,6 +9,7 @@ async function bootstrap() {
       timestamp: false,
     }),
   });
+
   await app.listen(3000);
 }
 void bootstrap();

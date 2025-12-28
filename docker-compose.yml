@@ -1,18 +1,17 @@
-version: "3.9"
-
 services:
-  db-users:
+  db:
     image: postgres:16-alpine
-    container_name: woorkroom-postgres-users
+    container_name: woorkroom-postgres
     restart: unless-stopped
     environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
       POSTGRES_DB: woorkroom
-      POSTGRES_USER: woorkroom
-      POSTGRES_PASSWORD: woorkroom
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data_users:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d
     networks:
       - woorkroom-net
 
@@ -22,6 +21,16 @@ services:
     restart: unless-stopped
     ports:
       - "6379:6379"
+    networks:
+      - woorkroom-net
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: woorkroom-mailpit
+    restart: unless-stopped
+    ports:
+      - "8025:8025"
+      - "1025:1025"
     networks:
       - woorkroom-net
 
@@ -38,77 +47,126 @@ services:
     networks:
       - woorkroom-net
 
-  gateway:
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile.dev
-    container_name: woorkroom-gateway
-    env_file:
-      - .env
-    volumes:
-      - .:/var/www:cached
-    depends_on:
-      - rabbitmq
-      - db-users
-      - redis
-    ports:
-      - "3000:3000"
-
-    command: npx nest start gateway --watch
-    networks:
-      - woorkroom-net
-
   authorization:
     build:
       context: .
-      dockerfile: ./docker/Dockerfile.dev
+      dockerfile: docker/Dockerfile.dev
     container_name: woorkroom-authorization
-    env_file:
-      - .env
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: docker
+      CHOKIDAR_USEPOLLING: "1"
+      CHOKIDAR_INTERVAL: "300"
+    command: ["npx", "nest", "start", "authorization", "--watch"]
     volumes:
-      - .:/var/www:cached
-
+      - ./:/app
+      - node_modules:/app/node_modules
     depends_on:
+      - db
+      - redis
       - rabbitmq
-    command: npx nest start authorization --watch
+      - mailpit
     networks:
       - woorkroom-net
 
   companys:
     build:
       context: .
-      dockerfile: ./docker/Dockerfile.dev
+      dockerfile: docker/Dockerfile.dev
     container_name: woorkroom-companys
-    env_file:
-      - .env
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: docker
+      CHOKIDAR_USEPOLLING: "1"
+      CHOKIDAR_INTERVAL: "300"
+    command: ["npx", "nest", "start", "companys", "--watch"]
     volumes:
-      - .:/var/www:cached
-
+      - ./:/app
+      - node_modules:/app/node_modules
     depends_on:
+      - db
+      - redis
       - rabbitmq
-    command: npx nest start companys --watch
+      - mailpit
+    networks:
+      - woorkroom-net
+
+  gateway:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    container_name: woorkroom-gateway
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: docker
+      CHOKIDAR_USEPOLLING: "1"
+      CHOKIDAR_INTERVAL: "300"
+    command: ["npx", "nest", "start", "gateway", "--watch"]
+    volumes:
+      - ./:/app
+      - node_modules:/app/node_modules
+    depends_on:
+      - db
+      - redis
+      - rabbitmq
+      - mailpit
+    networks:
+      - woorkroom-net
+
+  mails:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    container_name: woorkroom-mails
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: docker
+      CHOKIDAR_USEPOLLING: "1"
+      CHOKIDAR_INTERVAL: "300"
+    command: ["npx", "nest", "start", "mails", "--watch"]
+    volumes:
+      - ./:/app
+      - node_modules:/app/node_modules
+    depends_on:
+      - db
+      - redis
+      - rabbitmq
+      - mailpit
     networks:
       - woorkroom-net
 
   users:
     build:
       context: .
-      dockerfile: ./docker/Dockerfile.dev
+      dockerfile: docker/Dockerfile.dev
     container_name: woorkroom-users
-    env_file:
-      - .env
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: docker
+      CHOKIDAR_USEPOLLING: "1"
+      CHOKIDAR_INTERVAL: "300"
+    command: ["npx", "nest", "start", "users", "--watch"]
     volumes:
-      - .:/var/www:cached
-
+      - ./:/app
+      - node_modules:/app/node_modules
     depends_on:
+      - db
+      - redis
       - rabbitmq
-      - db-users
-    command: npx nest start users --watch
+      - mailpit
     networks:
       - woorkroom-net
 
 volumes:
-  postgres_data_users:
+  postgres_data:
+  node_modules:
 
 networks:
   woorkroom-net:

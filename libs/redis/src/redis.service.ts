@@ -65,4 +65,16 @@ export class RedisService
   async del(key: string): Promise<void> {
     await this.client.del(key);
   }
+
+  sadd(key: string, value: string) {
+    return this.client.sAdd(key, value);
+  }
+
+  smembers(key: string) {
+    return this.client.sMembers(key);
+  }
+
+  srem(key: string, value: string) {
+    return this.client.sRem(key, value);
+  }
 }

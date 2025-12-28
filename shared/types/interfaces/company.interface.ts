@@ -1,3 +1,4 @@
+import { UserRole, UserStatus } from '../enums';
 import { IBase } from './base.interface';
 
 export interface ICompany extends IBase {
@@ -12,5 +13,17 @@ export interface ICompany extends IBase {
 
 export interface IEmployee extends IBase {
   companyId: string;
-  profileId: string;
+  userId: string;
+  name?: string;
+  lastName?: string;
+  role: UserRole;
+  status: UserStatus;
+  avatar?: string;
+  position?: string;
+  location?: string;
+  birthday?: Date;
+}
+
+export interface IUpdateCompany extends Partial<ICompany> {
+  id: string;
 }

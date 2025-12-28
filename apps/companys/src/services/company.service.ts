@@ -46,7 +46,7 @@ export class CompanyService implements ICompanyServiceInterface {
     if (!existCompany) {
       throw new NotFoundException('Company not found');
     }
-
-    return this.companyRepository.delete(existCompany);
+    const result = await this.companyRepository.delete(id);
+    return !!result.affected;
   }
 }

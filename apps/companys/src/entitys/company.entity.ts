@@ -24,7 +24,4 @@ export class Companys extends EntityAbstract implements ICompany {
 
   @Column({ default: 1 })
   peopleCountEnd: number;
-
-  @OneToMany(() => Employee, (employee) => employee.company)
-  employees: Employee[];
 }

@@ -5,6 +5,6 @@ export interface IUserServiceInterface {
   create(dto: CreateUserDto): Promise<IUser>;
   findOneByEmail(email: string): Promise<IUser | null>;
   findOneById(id: string): Promise<IUser | null>;
-  deleteById(id: string): Promise<DeleteResult>;
+  deleteById(id: string): Promise<boolean>;
   updateById(id: string, dto: Partial<UpdateUserDto>): Promise<IUser | null>;
 }

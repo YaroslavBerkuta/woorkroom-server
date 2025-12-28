@@ -2,20 +2,16 @@ import { Module } from '@nestjs/common';
 import { DatabaseModule } from 'woorkroom/database';
 import { ConfigurationModule } from 'woorkroom/config';
 import { entities } from './entitys';
-import { ProfilesService, UsersService } from './services';
-import { ProfileController, UsersController } from './controllers';
+import { UsersService } from './services';
+import { UsersController } from './controllers';
 
 @Module({
   imports: [ConfigurationModule, DatabaseModule.forUsers(entities)],
-  controllers: [UsersController, ProfileController],
+  controllers: [UsersController],
   providers: [
     {
       provide: UsersService.name,
       useClass: UsersService,
-    },
-    {
-      provide: ProfilesService.name,
-      useClass: ProfilesService,
     },
   ],
 })

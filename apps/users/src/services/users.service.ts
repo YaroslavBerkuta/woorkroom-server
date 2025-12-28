@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Users } from '../entitys/users.entity';
@@ -24,7 +20,7 @@ export class UsersService implements IUserServiceInterface {
     const existUser = await this.findOneByEmail(dto.email);
 
     if (existUser) {
-      throw new ConflictException('User already exists');
+      throw new RpcException('User already exists');
     }
 
     return this.usersRepository.save({
@@ -47,7 +43,8 @@ export class UsersService implements IUserServiceInterface {
   }
 
   public async deleteById(id: string) {
-    return this.usersRepository.delete({ id });
+    const result = await this.usersRepository.delete({ id });
+    return !!result.affected;
   }
 
   public async updateById(id: string, dto: Omit<UpdateUserDto, 'id'>) {

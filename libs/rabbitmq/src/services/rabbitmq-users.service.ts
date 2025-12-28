@@ -1,17 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { catchError, lastValueFrom, throwError, timeout } from 'rxjs';
-import {
-  EMessageRmqp,
-  IUser,
-  CreateUserDto,
-  CreateProfileDto,
-  IProfile,
-} from 'shared';
-import { IRabbitmqUsersServiceInterface } from '../types';
+import { EMessageRmqp, IUser, CreateUserDto } from 'shared';
+import * as types from '../types';
 
 @Injectable()
-export class RabbitmqUsersService implements IRabbitmqUsersServiceInterface {
+export class RabbitmqUsersService implements types.IRabbitmqUsersService {
   constructor(
     @Inject('USER_SERVICE') private readonly userService: ClientProxy,
   ) {}
@@ -29,21 +23,6 @@ export class RabbitmqUsersService implements IRabbitmqUsersServiceInterface {
     );
   }
 
-  public async createProfile(profile: CreateProfileDto): Promise<IProfile> {
-    return lastValueFrom(
-      this.userService
-        .send<IProfile>(EMessageRmqp.CREATE_PROFILE, profile)
-        .pipe(
-          timeout(10_000),
-          catchError((err) =>
-            throwError(
-              () => new RpcException(err?.message || 'USER_SERVICE error'),
-            ),
-          ),
-        ),
-    );
-  }
-
   public async findOneById(id: string) {
     return lastValueFrom(
       this.userService.send<IUser>(EMessageRmqp.FIND_USER_BY_ID, id).pipe(
@@ -54,6 +33,34 @@ export class RabbitmqUsersService implements IRabbitmqUsersServiceInterface {
           ),
         ),
       ),
+    );
+  }
+
+  public async findOneByEmail(email: string) {
+    return lastValueFrom(
+      this.userService.send<IUser>(EMessageRmqp.FIND_USER_BY_EMAIL, email).pipe(
+        timeout(10_000),
+        catchError((err) =>
+          throwError(
+            () => new RpcException(err?.message || 'USER_SERVICE error'),
+          ),
+        ),
+      ),
+    );
+  }
+
+  public async deleteUserById(id: string): Promise<boolean> {
+    return lastValueFrom(
+      this.userService
+        .send<boolean>(EMessageRmqp.DELETE_USER_BY_ID, { id })
+        .pipe(
+          timeout(10_000),
+          catchError((err) =>
+            throwError(
+              () => new RpcException(err?.message || 'USER_SERVICE error'),
+            ),
+          ),
+        ),
     );
   }
 }

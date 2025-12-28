@@ -2,7 +2,12 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigurationModule } from 'woorkroom/config';
-import { RabbitmqCompanyService, RabbitmqUsersService } from './services';
+import {
+  RabbitmqAuthService,
+  RabbitmqCompanyService,
+  RabbitmqMailsService,
+  RabbitmqUsersService,
+} from './services';
 
 @Module({
   imports: [
@@ -44,6 +49,18 @@ import { RabbitmqCompanyService, RabbitmqUsersService } from './services';
           },
         }),
       },
+      {
+        inject: [ConfigService],
+        name: 'AUTH_SERVICE',
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: config.get<string[]>('rmqp.urls'),
+            queue: config.get<string>('rmqp.queue.authorization'),
+            queueOptions: { durable: true },
+          },
+        }),
+      },
     ]),
   ],
   providers: [
@@ -55,7 +72,20 @@ import { RabbitmqCompanyService, RabbitmqUsersService } from './services';
       provide: RabbitmqCompanyService.name,
       useClass: RabbitmqCompanyService,
     },
+    {
+      provide: RabbitmqAuthService.name,
+      useClass: RabbitmqAuthService,
+    },
+    {
+      provide: RabbitmqMailsService.name,
+      useClass: RabbitmqMailsService,
+    },
   ],
-  exports: [RabbitmqUsersService.name, RabbitmqCompanyService.name],
+  exports: [
+    RabbitmqUsersService.name,
+    RabbitmqCompanyService.name,
+    RabbitmqAuthService.name,
+    RabbitmqMailsService.name
+  ],
 })
-export class RabbitmqModule {}
+export class RabbitmqModule { }

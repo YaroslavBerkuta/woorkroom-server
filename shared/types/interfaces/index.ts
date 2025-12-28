@@ -1,3 +1,4 @@
 export * from './user.interface';
-export * from './profile.interface';
 export * from './company.interface';
+export * from './auth.interface';
+export * from './base.interface';

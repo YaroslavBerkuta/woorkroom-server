@@ -26,4 +26,14 @@ export class UsersController {
   public async findUserById(@Payload() id: string) {
     return this.usersService.findOneById(id);
   }
+
+  @MessagePattern(EMessageRmqp.FIND_USER_BY_EMAIL)
+  public async findUserByEmail(@Payload() data: { email: string }) {
+    return this.usersService.findOneByEmail(data.email);
+  }
+
+  @MessagePattern(EMessageRmqp.DELETE_USER_BY_ID)
+  public async deleteUserById(@Payload() data: { id: string }) {
+    return this.usersService.deleteById(data.id);
+  }
 }

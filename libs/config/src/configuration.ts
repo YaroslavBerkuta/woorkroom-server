@@ -56,3 +56,12 @@ export const mailConfig = () => ({
   },
   sms: {},
 });
+
+export const appConfig = () => ({
+  app: {
+    port: Number(process.env.PORT) || 3000,
+  },
+  authorization: {
+    sessionDays: Number(process.env.AUTHORIZATION_SESSION_DAYS) || 7,
+  },
+});
