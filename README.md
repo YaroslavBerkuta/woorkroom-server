@@ -1,98 +1,192 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Woorkroom Server
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend monorepo на **NestJS** з мікросервісною архітектурою (RMQ) та окремим **API Gateway**.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Архітектура
 
-## Description
+Репозиторій — NestJS monorepo (`nest-cli.json`), де:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **apps/** — застосунки/мікросервіси
+- **libs/** — спільні бібліотеки (конфіг, RMQ, Redis, SMTP, тощо)
 
-## Project setup
+### Сервіси (apps)
 
-```bash
-$ npm install
-```
+- **gateway** — API Gateway (GraphQL). Єдиний сервіс з пробросом порту назовні.
+- **authorization** — авторизація/сесії (Redis).
+- **users** — робота з користувачами (Postgres).
+- **companys** — робота з компаніями (Postgres).
+- **mails** — надсилання email (SMTP / Mailpit для dev).
 
-## Compile and run the project
+### Інфраструктура (docker-compose)
 
-```bash
-# development
-$ npm run start
+- **Postgres** (порт `5432`)
+- **Redis** (порт `6379`)
+- **RabbitMQ** (порт `5672`, UI `15672`)
+- **Mailpit** (SMTP `1025`, UI `8025`)
 
-# watch mode
-$ npm run start:dev
+## Вимоги
 
-# production mode
-$ npm run start:prod
-```
+- Node.js (для локального запуску без Docker)
+- Docker + Docker Compose (рекомендовано для dev)
+- GNU Make (або запускай `docker compose ...` напряму)
 
-## Run tests
+## Швидкий старт (Docker, рекомендовано)
+
+1. Створи `.env` (або `.env.local`).
+
+Важливо:
+
+- Конфіг читається з `.env.local`, а якщо його нема — з `.env`.
+- У `docker-compose.yml` для контейнерів підключений `env_file: .env`, тому для Docker **потрібен саме `.env`**.
+
+2. Запусти інфраструктуру і сервіси:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+make up
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+3. Перевір, що все піднялось:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+make ps
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+4. Логи:
 
-## Resources
+```bash
+make logs
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+### Гарячий перезапуск під час розробки
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Перезапустити всі сервіси:
 
-## Support
+```bash
+make dev
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Перезапустити один сервіс:
 
-## Stay in touch
+```bash
+make dev-gateway
+make dev-authorization
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Порти / URLs
 
-## License
+- **Gateway**: `http://localhost:3000`
+- **RabbitMQ Management UI**: `http://localhost:15672` (login/password: `woorkroom` / `woorkroom`)
+- **Mailpit UI**: `http://localhost:8025`
+- **Postgres**: `localhost:5432` (user/password/db: `root` / `root` / `woorkroom`)
+- **Redis**: `localhost:6379`
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Змінні середовища (ENV)
+
+Нижче — мінімальний список змінних, які очікує конфіг (`libs/config/src/configuration.ts`).
+
+```dotenv
+# App
+PORT=3000
+
+# Security
+SECURITY_PASSWORD_SALT_ROUNDS=10
+SECURITY_PASSWORD_PEPPER=change_me
+
+# Authorization
+AUTHORIZATION_SESSION_DAYS=7
+
+# Redis
+REDIS_HOST=redis
+REDIS_PORT=6379
+
+# RabbitMQ
+RABBITMQ_HOST=rabbitmq
+RABBITMQ_PORT=5672
+RABBITMQ_USER=woorkroom
+RABBITMQ_PASSWORD=woorkroom
+
+RABBITMQ_QUEUE_USERS=users
+RABBITMQ_QUEUE_COMPANYS=companys
+RABBITMQ_QUEUE_MAILS=mails
+RABBITMQ_QUEUE_AUTHORIZATION=authorization
+
+# Postgres (Users service)
+DATABASE_USER_HOST=db
+DATABASE_USER_PORT=5432
+DATABASE_USER_USER=root
+DATABASE_USER_PASSWORD=root
+DATABASE_USER_DATABASE=woorkroom
+
+# Postgres (Companys service)
+DATABASE_COMPANY_HOST=db
+DATABASE_COMPANY_PORT=5432
+DATABASE_COMPANY_USER=root
+DATABASE_COMPANY_PASSWORD=root
+DATABASE_COMPANY_DATABASE=woorkroom
+
+# SMTP (dev можна підключити до Mailpit)
+SMTP_HOST=mailpit
+SMTP_PORT=1025
+SMTP_SECURE=false
+SMTP_USER=
+SMTP_PASS=
+SMTP_FROM_EMAIL=no-reply@woorkroom.local
+SMTP_FROM_NAME=Woorkroom
+
+# Telegram
+TELEGRAM_BOT_TOKEN=
+```
+
+Примітки:
+
+- Для локального запуску без Docker, значення `*_HOST` зазвичай мають бути `localhost`.
+- Для Docker, `*_HOST` мають відповідати іменам сервісів в `docker-compose.yml` (`db`, `redis`, `rabbitmq`, `mailpit`).
+
+## Локальний запуск без Docker (опційно)
+
+Якщо ти хочеш запускати сервіси на хості:
+
+1. Підніми інфраструктуру:
+
+```bash
+docker compose -f docker-compose.local.yml up -d
+```
+
+2. Встанови залежності:
+
+```bash
+npm install
+```
+
+3. Запускай потрібний app:
+
+```bash
+npx nest start gateway --watch
+```
+
+Аналогічно:
+
+```bash
+npx nest start users --watch
+npx nest start authorization --watch
+```
+
+## Корисні команди
+
+```bash
+make build
+make restart
+make down
+make reset
+```
+
+Також є скрипт збірки всіх apps/libs:
+
+```bash
+npm run build:all
+```
+
+## Troubleshooting
+
+- Якщо не підхоплюються env змінні в Docker: переконайся, що створено саме файл `.env` (docker-compose підключає `env_file: .env`).
+- Якщо watch в Docker “не бачить” змін: в compose вже увімкнені `CHOKIDAR_USEPOLLING` / `CHOKIDAR_INTERVAL`.
