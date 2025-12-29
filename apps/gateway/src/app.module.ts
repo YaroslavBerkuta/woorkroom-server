@@ -6,6 +6,7 @@ import { AuthModule } from './auth';
 import { CompanysModule } from './companys';
 import { CompanyUserModule } from './companyUser';
 import { ConfigurationModule } from 'woorkroom/config';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { ConfigurationModule } from 'woorkroom/config';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       playground: true,
-      autoSchemaFile: true,
+      introspection: true,
+      autoSchemaFile: join(process.cwd(), 'schema.gql'),
     }),
     UsersModule,
     AuthModule,
