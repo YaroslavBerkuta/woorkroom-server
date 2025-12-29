@@ -1,0 +1,111 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type UserModel {
+  id: ID!
+  email: String!
+  password: String!
+  phoneNumber: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  sessions: [SessionModel!]!
+  myCompanys: [CompanyModel!]!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type SessionModel {
+  sessionId: ID!
+  expiresIn: Int!
+  userId: ID!
+  createdAt: String!
+}
+
+type CompanyModel {
+  id: ID!
+  name: String!
+  service: String
+  describes: String
+  logo: String
+  direction: String
+  peopleCountStart: Float!
+  peopleCountEnd: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type EmployeeModel {
+  id: ID!
+  companyId: ID!
+  userId: ID!
+  name: String
+  lastName: String
+  role: UserRole!
+  status: UserStatus!
+  avatar: String
+  position: String
+  location: String
+  birthday: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+  USER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  DELETED
+}
+
+type Query {
+  user(id: String!): UserModel
+  company: CompanyModel!
+  employee: EmployeeModel!
+}
+
+type Mutation {
+  login(input: LoginInput!): SessionModel!
+  logout(input: LogoutInput!): Boolean!
+  register(input: RegisterInput!): Boolean!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input LogoutInput {
+  sessionId: ID!
+  userId: ID!
+}
+
+input RegisterInput {
+  user: CreateUserInput!
+  code: String!
+  company: CreateCompanyInput!
+}
+
+input CreateUserInput {
+  email: String!
+  password: String!
+  phoneNumber: String!
+}
+
+input CreateCompanyInput {
+  name: String!
+  service: String
+  describes: String
+  logo: String
+  direction: String
+  peopleCountStart: Float!
+  peopleCountEnd: Float!
+}

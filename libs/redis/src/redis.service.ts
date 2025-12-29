@@ -34,6 +34,8 @@ export class RedisService
       url = `redis://${host}:${port}`;
     }
 
+    this.logger.log(`Redis url: ${url}`);
+
     this.client = createClient({ url });
     this.client.on('connect', () => this.logger.log('Redis connected'));
 
