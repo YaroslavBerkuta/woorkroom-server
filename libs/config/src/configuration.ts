@@ -20,6 +20,9 @@ export const dataBaseConfig = () => ({
   redis: {
     host: process.env.REDIS_HOST,
     port: Number(process.env.REDIS_PORT) || 6379,
+    password: process.env.REDIS_PASSWORD,
+    username: process.env.REDIS_USER,
+    url: process.env.REDIS_URL,
   },
 });
 

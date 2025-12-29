@@ -24,12 +24,16 @@ export class RedisService
   async onModuleInit() {
     const host = this.config.get<string>('redis.host');
     const port = this.config.get<number>('redis.port');
+    let url = this.config.get<string>('redis.url');
 
     if (!host || !port) {
       throw new Error('Missing redis.host or redis.port');
     }
 
-    const url = `redis://${host}:${port}`;
+    if (!url) {
+      url = `redis://${host}:${port}`;
+    }
+
     this.client = createClient({ url });
     this.client.on('connect', () => this.logger.log('Redis connected'));
 
