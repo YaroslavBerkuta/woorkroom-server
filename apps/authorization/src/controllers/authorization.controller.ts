@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Logger } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
 import { AuthorizationService } from '../services';
 import * as types from '../types';
@@ -7,6 +7,7 @@ import { EMessageRmqp, LoginDto, RegisterDto } from 'shared';
 
 @Controller()
 export class AuthorizationController {
+  private readonly logger = new Logger(AuthorizationController.name);
   constructor(
     @Inject(AuthorizationService.name)
     private readonly authorizationService: types.IAuthorizationService,
@@ -14,11 +15,13 @@ export class AuthorizationController {
 
   @MessagePattern(EMessageRmqp.REGISTER)
   registerUser(@Payload() data: RegisterDto) {
+    this.logger.log(`Register user: ${JSON.stringify(data)}`);
     return this.authorizationService.registerUser(data);
   }
 
   @MessagePattern(EMessageRmqp.LOGIN)
   loginUser(@Payload() data: LoginDto) {
+    this.logger.log(`Login user: ${JSON.stringify(data)}`);
     return this.authorizationService.loginUser(data);
   }
 
