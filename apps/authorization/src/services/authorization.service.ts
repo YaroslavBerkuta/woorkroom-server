@@ -81,10 +81,14 @@ export class AuthorizationService
     if (!user) {
       throw new RpcException('User not found');
     }
+    this.logger.log('User found');
     const ok = await this.rabbitmqUsersService.verifyPassword(
       user.password,
       dto.password,
     );
+
+    this.logger.log('Password verified');
+
     if (!ok) {
       throw new RpcException('Invalid password');
     }
@@ -96,6 +100,8 @@ export class AuthorizationService
       expiresIn: this.SESSION_TTL_SECONDS,
       createdAt: new Date().toISOString(),
     };
+
+    this.logger.log('Session created');
 
     await this.redisService.ttl(
       `session:${sid}`,
