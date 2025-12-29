@@ -16,17 +16,12 @@ const apps = Object.entries(projects)
   .filter(([, p]) => p.type === 'application')
   .map(([name]) => name);
 
-const libs = Object.entries(projects)
-  .filter(([, p]) => p.type === 'library')
-  .map(([name]) => name);
-
-if (!apps.length && !libs.length) {
-  console.log('⚠️ No apps or libs found');
+if (!apps.length) {
+  console.log('⚠️ No apps found');
   process.exit(0);
 }
 
 console.log(`🚀 Applications: ${apps.join(', ')}`);
-console.log(`📦 Libraries: ${libs.join(', ')}`);
 console.log('-------------------------');
 
 function run(cmd) {
@@ -38,15 +33,8 @@ function run(cmd) {
  * 1. Білдимо всі апки
  *  (libs підтягнуться автоматично)
  */
-apps.forEach(app => {
+apps.forEach((app) => {
   run(`npx nest build ${app}`);
-});
-
-/**
- * 2. Додатково явно збираємо libs (опціонально, але безпечно)
- */
-libs.forEach(lib => {
-  run(`npx nest build ${lib}`);
 });
 
 console.log('\n✅ ALL PROJECTS BUILT SUCCESSFULLY');
