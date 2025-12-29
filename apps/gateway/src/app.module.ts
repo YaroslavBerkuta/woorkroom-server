@@ -5,9 +5,11 @@ import { UsersModule } from './users';
 import { AuthModule } from './auth';
 import { CompanysModule } from './companys';
 import { CompanyUserModule } from './companyUser';
+import { ConfigurationModule } from 'woorkroom/config';
 
 @Module({
   imports: [
+    ConfigurationModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       playground: true,
