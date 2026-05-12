@@ -25,4 +25,9 @@ export class EmployeeController {
   async getMyCompanys(dto: { userId: string }) {
     return this.employeeService.getMyCompanys(dto.userId);
   }
+
+  @MessagePattern(EMessageRmqp.GET_MY_COMPANY_PROFILE)
+  async getMyCompanyProfile(dto: { companyId: string; userId: string }) {
+    return this.employeeService.getMyCompanyProfile(dto.companyId, dto.userId);
+  }
 }

@@ -24,7 +24,7 @@ export class EmployeeModel implements IEmployee {
   @Field(() => String, { nullable: true })
   location?: string;
   @Field(() => GraphQLISODateTime, { nullable: true })
-  birthday?: Date;
+  birthday?: Date | null;
   @Field(() => GraphQLISODateTime)
   createdAt: Date;
   @Field(() => GraphQLISODateTime)

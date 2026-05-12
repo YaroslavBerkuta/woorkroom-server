@@ -46,17 +46,18 @@ export class EmployeeService implements IEmployeeService {
       where: { userId },
     });
 
-    const companys = await Promise.allSettled(
+    const companys = await Promise.all(
       myCompanys.map((company) =>
         this.companysService.findCompanyById(company.companyId),
       ),
     );
 
-    const resCompanys = companys
-      .filter((company) => company.status === 'fulfilled')
-      .map((company) => company.value)
-      .filter((company) => company !== null);
+    const resCompanys = companys.filter((company) => company !== null);
 
     return resCompanys;
+  }
+
+  async getMyCompanyProfile(companyId: string, userId: string) {
+    return this.employeeRepository.findOne({ where: { companyId, userId } });
   }
 }

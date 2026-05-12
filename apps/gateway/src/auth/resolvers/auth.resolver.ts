@@ -1,8 +1,10 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { LoginInput, LogoutInput, RegisterInput } from '../inputs';
-import { Inject } from '@nestjs/common';
+import { Inject, UseGuards } from '@nestjs/common';
 import { SessionModel } from '../models';
 import * as rabbitmq from 'woorkroom/rabbitmq';
+import { extractSessionId, GqlSessionAuthGuard } from '../../guards';
+import { CurrentUserId } from '../../decorators';
 
 @Resolver()
 export class AuthResolver {
@@ -12,13 +14,39 @@ export class AuthResolver {
   ) {}
 
   @Mutation(() => SessionModel)
-  async login(@Args('input') input: LoginInput) {
-    return this.authService.loginUser(input);
+  async login(@Args('input') input: LoginInput, @Context() ctx: any) {
+    const session = await this.authService.loginUser(input);
+
+    const cookieName = 'sid';
+
+    ctx.res.cookie(cookieName, session.sessionId, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: session.expiresIn * 1000,
+      path: '/',
+    });
+
+    return session;
   }
 
+  @UseGuards(GqlSessionAuthGuard)
   @Mutation(() => Boolean)
-  async logout(@Args('input') input: LogoutInput) {
-    return this.authService.logoutUser(input);
+  async logout(@CurrentUserId() userId: string, @Context() ctx: any) {
+    const sid = extractSessionId(ctx.req);
+    if (sid)
+      await this.authService.logoutUser({
+        sessionId: sid,
+        userId,
+      });
+
+    if (ctx?.req?.session) {
+      delete ctx.req.session;
+    }
+
+    ctx.res.clearCookie('sid', { path: '/' });
+
+    return true;
   }
 
   @Mutation(() => Boolean)

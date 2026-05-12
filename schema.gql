@@ -10,7 +10,8 @@ type UserModel {
   createdAt: DateTime!
   updatedAt: DateTime!
   sessions: [SessionModel!]!
-  myCompanys: [CompanyModel!]!
+  company: CompanyModel
+  profile: EmployeeModel
 }
 
 """
@@ -67,25 +68,21 @@ enum UserStatus {
 }
 
 type Query {
-  user(id: String!): UserModel
+  me: UserModel
   company: CompanyModel!
-  employee: EmployeeModel!
+  myCompanys: [CompanyModel!]!
 }
 
 type Mutation {
   login(input: LoginInput!): SessionModel!
-  logout(input: LogoutInput!): Boolean!
+  logout: Boolean!
   register(input: RegisterInput!): Boolean!
+  selectMyCompany(companyId: String!): Boolean!
 }
 
 input LoginInput {
   email: String!
   password: String!
-}
-
-input LogoutInput {
-  sessionId: ID!
-  userId: ID!
 }
 
 input RegisterInput {

@@ -61,7 +61,7 @@ services:
     command: ["npx", "nest", "start", "authorization", "--watch"]
     volumes:
       - ./:/app
-      - node_modules:/app/node_modules
+      - woorkroom-node_modules:/app/node_modules
     depends_on:
       - db
       - redis
@@ -84,7 +84,7 @@ services:
     command: ["npx", "nest", "start", "companys", "--watch"]
     volumes:
       - ./:/app
-      - node_modules:/app/node_modules
+      - woorkroom-node_modules:/app/node_modules
     depends_on:
       - db
       - redis
@@ -109,7 +109,7 @@ services:
     command: ["npx", "nest", "start", "gateway", "--watch"]
     volumes:
       - ./:/app
-      - node_modules:/app/node_modules
+      - woorkroom-node_modules:/app/node_modules
     depends_on:
       - db
       - redis
@@ -132,7 +132,7 @@ services:
     command: ["npx", "nest", "start", "mails", "--watch"]
     volumes:
       - ./:/app
-      - node_modules:/app/node_modules
+      - woorkroom-node_modules:/app/node_modules
     depends_on:
       - db
       - redis
@@ -155,7 +155,7 @@ services:
     command: ["npx", "nest", "start", "users", "--watch"]
     volumes:
       - ./:/app
-      - node_modules:/app/node_modules
+      - woorkroom-node_modules:/app/node_modules
     depends_on:
       - db
       - redis
@@ -166,7 +166,7 @@ services:
 
 volumes:
   postgres_data:
-  node_modules:
+  woorkroom-node_modules:
 
 networks:
   woorkroom-net:

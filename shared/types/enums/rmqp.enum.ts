@@ -8,6 +8,7 @@ export enum EMessageRmqp {
   CREATE_EMPLOYEE = 'create_employee',
   UPDATE_EMPLOYEE = 'update_employee',
   DELETE_EMPLOYEE = 'delete_employee',
+  GET_MY_COMPANY_PROFILE = 'get_my_company_profile',
 
   CREATE_COMPANY = 'create_company',
   UPDATE_COMPANY = 'update_company',

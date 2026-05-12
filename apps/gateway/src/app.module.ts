@@ -16,6 +16,8 @@ import { join } from 'path';
       playground: true,
       introspection: true,
       autoSchemaFile: join(process.cwd(), 'schema.gql'),
+      fieldResolverEnhancers: ['guards'],
+      context: ({ req, res }) => ({ req, res }),
     }),
     UsersModule,
     AuthModule,

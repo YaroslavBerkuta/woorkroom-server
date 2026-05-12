@@ -10,6 +10,9 @@ up:
 build:
 	$(COMPOSE) build
 
+rebuild:
+	$(COMPOSE) up -d --build
+
 down:
 	$(COMPOSE) down
 

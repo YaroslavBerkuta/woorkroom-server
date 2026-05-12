@@ -1,0 +1,10 @@
+node_modules
+dist
+.git
+Dockerfile
+docker-compose*.yml
+npm-debug.log
+.yarn
+.pnpm-store
+.idea
+.vscode

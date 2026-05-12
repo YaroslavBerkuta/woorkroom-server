@@ -1,4 +1,5 @@
 import { UserRole, UserStatus } from 'shared/types';
+import { IsDefined, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateCompanyDto {
   name: string;
@@ -35,4 +36,11 @@ export class CreateEmployeeDto {
   position?: string;
   location?: string;
   birthday?: Date;
+}
+
+export class FindCompanyByIdDto {
+  @IsDefined()
+  @IsString()
+  @IsNotEmpty()
+  id: string;
 }

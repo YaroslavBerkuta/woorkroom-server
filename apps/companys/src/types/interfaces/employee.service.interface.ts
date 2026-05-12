@@ -8,4 +8,8 @@ export interface IEmployeeService {
   ): Promise<IEmployee | null>;
   deleteEmployee(id: string): Promise<boolean>;
   getMyCompanys(userId: string): Promise<ICompany[]>;
+  getMyCompanyProfile(
+    companyId: string,
+    userId: string,
+  ): Promise<IEmployee | null>;
 }

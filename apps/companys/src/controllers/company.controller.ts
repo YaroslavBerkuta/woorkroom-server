@@ -1,8 +1,13 @@
-import { Controller } from '@nestjs/common';
+import { Controller, ValidationPipe } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
 import type { ICompanyServiceInterface } from '../types';
 import { CompanyService } from '../services';
-import { CreateCompanyDto, EMessageRmqp, UpdateCompanyDto } from 'shared';
+import {
+  CreateCompanyDto,
+  EMessageRmqp,
+  FindCompanyByIdDto,
+  UpdateCompanyDto,
+} from 'shared';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { omit } from 'lodash';
 
@@ -24,12 +29,30 @@ export class CompanysController {
   }
 
   @MessagePattern(EMessageRmqp.DELETE_COMPANY)
-  public async deleteCompany(@Payload() data: { id: string }) {
+  public async deleteCompany(
+    @Payload(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+        forbidNonWhitelisted: true,
+      }),
+    )
+    data: FindCompanyByIdDto,
+  ) {
     return this.companysService.deleteCompanyById(data.id);
   }
 
   @MessagePattern(EMessageRmqp.FIND_COMPANY_BY_ID)
-  public async findCompanyById(@Payload() data: { id: string }) {
+  public async findCompanyById(
+    @Payload(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+        forbidNonWhitelisted: true,
+      }),
+    )
+    data: FindCompanyByIdDto,
+  ) {
     return this.companysService.findCompanyById(data.id);
   }
 }

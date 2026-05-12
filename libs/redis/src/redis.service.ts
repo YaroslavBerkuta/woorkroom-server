@@ -72,8 +72,14 @@ export class RedisService
     await this.client.del(key);
   }
 
-  sadd(key: string, value: string) {
-    return this.client.sAdd(key, value);
+  async sadd(key: string, value: string, ttlSeconds?: number) {
+    const result = await this.client.sAdd(key, value);
+
+    if (typeof ttlSeconds === 'number') {
+      await this.client.expire(key, ttlSeconds);
+    }
+
+    return result;
   }
 
   smembers(key: string) {

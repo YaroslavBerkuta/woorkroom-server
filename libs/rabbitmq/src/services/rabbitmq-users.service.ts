@@ -38,14 +38,16 @@ export class RabbitmqUsersService implements types.IRabbitmqUsersService {
 
   public async findOneByEmail(email: string) {
     return lastValueFrom(
-      this.userService.send<IUser>(EMessageRmqp.FIND_USER_BY_EMAIL, email).pipe(
-        timeout(10_000),
-        catchError((err) =>
-          throwError(
-            () => new RpcException(err?.message || 'USER_SERVICE error'),
+      this.userService
+        .send<IUser>(EMessageRmqp.FIND_USER_BY_EMAIL, { email })
+        .pipe(
+          timeout(10_000),
+          catchError((err) =>
+            throwError(
+              () => new RpcException(err?.message || 'USER_SERVICE error'),
+            ),
           ),
         ),
-      ),
     );
   }
 

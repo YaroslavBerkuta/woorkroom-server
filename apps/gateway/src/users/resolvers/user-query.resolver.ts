@@ -1,9 +1,11 @@
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { UserModel } from '../models/user.model';
 import * as rabbitmq from 'woorkroom/rabbitmq';
-import { Inject, NotFoundException } from '@nestjs/common';
+import { Inject, NotFoundException, UseGuards } from '@nestjs/common';
 import { IUser } from 'shared';
 import { SessionModel } from '../../auth';
+import { CurrentUserId } from '../../decorators';
+import { GqlSessionAuthGuard } from '../../guards';
 
 @Resolver(() => UserModel)
 export class UserQueryResolver {
@@ -14,9 +16,10 @@ export class UserQueryResolver {
     private readonly rabbitmqAuthService: rabbitmq.IRabbitmqAuthService,
   ) {}
 
+  @UseGuards(GqlSessionAuthGuard)
   @Query(() => UserModel, { nullable: true })
-  async user(@Args('id') id: string) {
-    const user = await this.rabbitmqUsersService.findOneById(id);
+  async me(@CurrentUserId() userId: string) {
+    const user = await this.rabbitmqUsersService.findOneById(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }

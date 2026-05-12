@@ -21,7 +21,7 @@ export interface IEmployee extends IBase {
   avatar?: string;
   position?: string;
   location?: string;
-  birthday?: Date;
+  birthday?: Date | null;
 }
 
 export interface IUpdateCompany extends Partial<ICompany> {

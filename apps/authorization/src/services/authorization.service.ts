@@ -1,7 +1,6 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { IAuthorizationService } from '../types';
 import {
-  CreateUserDto,
   ICompany,
   IEmployee,
   ISession,
@@ -78,6 +77,7 @@ export class AuthorizationService
 
   async loginUser(dto: LoginDto): Promise<ISession> {
     const user = await this.rabbitmqUsersService.findOneByEmail(dto.email);
+
     if (!user) {
       throw new RpcException('User not found');
     }

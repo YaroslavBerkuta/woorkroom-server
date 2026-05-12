@@ -89,4 +89,42 @@ export class RabbitmqCompanyService implements IRabbitmqCompanyService {
         ),
     );
   }
+
+  public async getCompanyById(companyId: string): Promise<ICompany | null> {
+    return lastValueFrom(
+      this.companyService
+        .send<ICompany | null>(EMessageRmqp.FIND_COMPANY_BY_ID, {
+          id: companyId,
+        })
+        .pipe(
+          timeout(10_000),
+          catchError((err) =>
+            throwError(
+              () => new RpcException(err?.message || 'COMPANY_SERVICE error'),
+            ),
+          ),
+        ),
+    );
+  }
+
+  public async getMyCompanyProfile(
+    companyId: string,
+    userId: string,
+  ): Promise<IEmployee | null> {
+    return lastValueFrom(
+      this.companyService
+        .send<IEmployee | null>(EMessageRmqp.GET_MY_COMPANY_PROFILE, {
+          companyId,
+          userId,
+        })
+        .pipe(
+          timeout(10_000),
+          catchError((err) =>
+            throwError(
+              () => new RpcException(err?.message || 'COMPANY_SERVICE error'),
+            ),
+          ),
+        ),
+    );
+  }
 }
