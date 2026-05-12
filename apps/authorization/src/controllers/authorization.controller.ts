@@ -48,4 +48,12 @@ export class AuthorizationController {
     );
     return { sessions };
   }
+
+  @GrpcMethod('AuthService', 'SelectCompany')
+  selectCompany(data: { sessionId: string; companyId: string }) {
+    return this.authorizationService.selectCompany(
+      data.sessionId,
+      data.companyId,
+    );
+  }
 }

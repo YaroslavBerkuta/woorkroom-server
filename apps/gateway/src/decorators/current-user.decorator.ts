@@ -16,3 +16,11 @@ export const CurrentCompanyId = createParamDecorator(
     return req.session?.companyId;
   },
 );
+
+export const CurrentSessionId = createParamDecorator(
+  (_: unknown, ctx: ExecutionContext) => {
+    const gqlCtx = GqlExecutionContext.create(ctx);
+    const req = gqlCtx.getContext().req;
+    return req.session?.sessionId;
+  },
+);

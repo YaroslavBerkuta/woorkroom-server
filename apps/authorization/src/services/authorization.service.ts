@@ -148,5 +148,23 @@ export class AuthorizationService
       );
   }
 
+  async selectCompany(sessionId: string, companyId: string): Promise<ISession> {
+    const session = await this.redisService.get<ISession>(`session:${sessionId}`);
+
+    if (!session) {
+      throw new RpcException('Session not found');
+    }
+
+    const updatedSession: ISession = { ...session, companyId };
+
+    await this.redisService.ttl(
+      `session:${sessionId}`,
+      updatedSession,
+      this.SESSION_TTL_SECONDS,
+    );
+
+    return updatedSession;
+  }
+
   async sendVerificationCode(phone: string) {}
 }

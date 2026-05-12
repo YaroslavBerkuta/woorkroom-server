@@ -5,6 +5,7 @@ export interface ISession {
   expiresIn: number;
   userId: string;
   createdAt: string;
+  companyId?: string;
 }
 
 export interface ILogin {

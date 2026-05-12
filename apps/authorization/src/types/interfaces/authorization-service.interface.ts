@@ -6,4 +6,5 @@ export interface IAuthorizationService {
   logoutUser(sessionId: string, userId: string): Promise<boolean>;
   getSession(sessionId: string): Promise<ISession | null>;
   getUserSessions(userId: string): Promise<ISession[]>;
+  selectCompany(sessionId: string, companyId: string): Promise<ISession>;
 }

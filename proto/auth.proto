@@ -8,6 +8,7 @@ service AuthService {
   rpc Logout (LogoutRequest) returns (BoolResponse);
   rpc GetSession (GetSessionRequest) returns (SessionResponse);
   rpc GetUserSessions (UserIdRequest) returns (SessionListResponse);
+  rpc SelectCompany (SelectCompanyRequest) returns (SessionResponse);
 }
 
 message UserData {
@@ -50,11 +51,17 @@ message UserIdRequest {
   string userId = 1;
 }
 
+message SelectCompanyRequest {
+  string sessionId = 1;
+  string companyId = 2;
+}
+
 message SessionResponse {
   string sessionId = 1;
   int64 expiresIn = 2;
   string userId = 3;
   string createdAt = 4;
+  string companyId = 5;
 }
 
 message SessionListResponse {

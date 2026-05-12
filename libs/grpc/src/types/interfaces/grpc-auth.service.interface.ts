@@ -6,4 +6,5 @@ export interface IGrpcAuthService {
   logoutUser(data: LogoutDto): Promise<boolean>;
   getSession(data: { sessionId: string }): Promise<ISession>;
   getUserSessions(data: { userId: string }): Promise<ISession[]>;
+  selectCompany(data: { sessionId: string; companyId: string }): Promise<ISession>;
 }

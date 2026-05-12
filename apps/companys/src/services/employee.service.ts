@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Employee } from '../entitys';
 import { CreateEmployeeDto } from 'shared';
 import { CompanyService } from './company.service';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class EmployeeService implements IEmployeeService {
@@ -22,7 +23,7 @@ export class EmployeeService implements IEmployeeService {
     );
 
     if (existEmployee) {
-      throw new Error('Employee already exists');
+      throw new RpcException('Employee already exists');
     }
 
     return this.employeeRepository.save(dto);
@@ -35,7 +36,7 @@ export class EmployeeService implements IEmployeeService {
   async deleteEmployee(id: string) {
     const employee = await this.employeeRepository.findOne({ where: { id } });
     if (!employee) {
-      throw new Error('Employee not found');
+      throw new RpcException('Employee not found');
     }
     const result = await this.employeeRepository.delete(id);
     return !!result.affected;

@@ -4,13 +4,15 @@ import { ICompany } from 'shared';
 import { Inject, NotFoundException, UseGuards } from '@nestjs/common';
 import { AccessCompanyGuard, GqlSessionAuthGuard } from '../../guards';
 import * as grpc from 'woorkroom/grpc';
-import { CurrentCompanyId, CurrentUserId } from '../../decorators';
+import { CurrentCompanyId, CurrentSessionId, CurrentUserId } from '../../decorators';
 
 @Resolver(() => CompanyModel)
 export class CompanysResolver {
   constructor(
     @Inject(grpc.GrpcCompanysService.name)
     private readonly grpcCompanysService: grpc.IGrpcCompanyService,
+    @Inject(grpc.GrpcAuthService.name)
+    private readonly grpcAuthService: grpc.IGrpcAuthService,
   ) {}
 
   @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
@@ -22,12 +24,16 @@ export class CompanysResolver {
 
   @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
   @Mutation(() => Boolean)
-  async selectMyCompany(@Args('companyId') companyId: string) {
+  async selectMyCompany(
+    @Args('companyId') companyId: string,
+    @CurrentSessionId() sessionId: string,
+  ) {
     const company = await this.grpcCompanysService.getCompanyById(companyId);
     if (!company) {
       throw new NotFoundException('Company not found');
     }
 
+    await this.grpcAuthService.selectCompany({ sessionId, companyId });
     return true;
   }
 

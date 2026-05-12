@@ -10,6 +10,7 @@ interface AuthGrpcClient {
   logout(data: any): Observable<any>;
   getSession(data: any): Observable<any>;
   getUserSessions(data: any): Observable<any>;
+  selectCompany(data: any): Observable<any>;
 }
 
 @Injectable()
@@ -45,5 +46,9 @@ export class GrpcAuthService implements IGrpcAuthService, OnModuleInit {
   async getUserSessions(data: { userId: string }): Promise<ISession[]> {
     const res = await lastValueFrom(this.client.getUserSessions(data));
     return res.sessions ?? [];
+  }
+
+  async selectCompany(data: { sessionId: string; companyId: string }): Promise<ISession> {
+    return lastValueFrom(this.client.selectCompany(data));
   }
 }

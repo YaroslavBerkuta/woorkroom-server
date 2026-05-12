@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AuthorizationModule } from './authorization.module';
-import { ConsoleLogger } from '@nestjs/common';
+import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { join } from 'path';
@@ -11,6 +11,8 @@ async function bootstrap() {
       prefix: 'Authorization',
     }),
   });
+
+  app.useGlobalPipes(new ValidationPipe());
 
   const config = app.get(ConfigService);
 

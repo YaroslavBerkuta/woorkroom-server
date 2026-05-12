@@ -14,7 +14,7 @@ export class CompanyService implements ICompanyServiceInterface {
   ) {}
 
   async createCompany(dto: CreateCompanyDto) {
-    const company = this.companyRepository.save(omit(dto, 'employees'));
+    const company = await this.companyRepository.save(omit(dto, 'employees'));
     return company;
   }
 
@@ -25,7 +25,7 @@ export class CompanyService implements ICompanyServiceInterface {
       throw new NotFoundException('Company not found');
     }
 
-    this.companyRepository.update(id, omit(dto, 'id'));
+    await this.companyRepository.update(id, omit(dto, 'id'));
 
     const updatedCompany = await this.findCompanyById(id);
 
