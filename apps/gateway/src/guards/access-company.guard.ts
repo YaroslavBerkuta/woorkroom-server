@@ -6,13 +6,13 @@ import {
 } from '@nestjs/common';
 import { CanActivate } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import * as rabbitmq from 'woorkroom/rabbitmq';
+import * as grpc from 'woorkroom/grpc';
 
 @Injectable()
 export class AccessCompanyGuard implements CanActivate {
   constructor(
-    @Inject(rabbitmq.RabbitmqCompanyService.name)
-    private readonly companyService: rabbitmq.IRabbitmqCompanyService,
+    @Inject(grpc.GrpcCompanysService.name)
+    private readonly companyService: grpc.IGrpcCompanyService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

@@ -60,6 +60,23 @@ export const mailConfig = () => ({
   sms: {},
 });
 
+export const grpcConfig = () => ({
+  grpc: {
+    users: {
+      port: Number(process.env.GRPC_USERS_PORT) || 5001,
+      url: process.env.GRPC_USERS_URL || 'localhost:5001',
+    },
+    authorization: {
+      port: Number(process.env.GRPC_AUTH_PORT) || 5002,
+      url: process.env.GRPC_AUTH_URL || 'localhost:5002',
+    },
+    companys: {
+      port: Number(process.env.GRPC_COMPANYS_PORT) || 5003,
+      url: process.env.GRPC_COMPANYS_URL || 'localhost:5003',
+    },
+  },
+});
+
 export const appConfig = () => ({
   app: {
     port: Number(process.env.PORT) || 3000,

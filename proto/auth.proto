@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package auth;
+
+service AuthService {
+  rpc Register (RegisterRequest) returns (BoolResponse);
+  rpc Login (LoginRequest) returns (SessionResponse);
+  rpc Logout (LogoutRequest) returns (BoolResponse);
+  rpc GetSession (GetSessionRequest) returns (SessionResponse);
+  rpc GetUserSessions (UserIdRequest) returns (SessionListResponse);
+}
+
+message UserData {
+  string email = 1;
+  string password = 2;
+  string phoneNumber = 3;
+}
+
+message CompanyData {
+  string name = 1;
+  string service = 2;
+  string describes = 3;
+  string logo = 4;
+  string direction = 5;
+  int32 peopleCountStart = 6;
+  int32 peopleCountEnd = 7;
+}
+
+message RegisterRequest {
+  UserData user = 1;
+  string code = 2;
+  CompanyData company = 3;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LogoutRequest {
+  string sessionId = 1;
+  string userId = 2;
+}
+
+message GetSessionRequest {
+  string sessionId = 1;
+}
+
+message UserIdRequest {
+  string userId = 1;
+}
+
+message SessionResponse {
+  string sessionId = 1;
+  int64 expiresIn = 2;
+  string userId = 3;
+  string createdAt = 4;
+}
+
+message SessionListResponse {
+  repeated SessionResponse sessions = 1;
+}
+
+message BoolResponse {
+  bool value = 1;
+}

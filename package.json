@@ -23,6 +23,8 @@
   "dependencies": {
     "@apollo/server": "^5.2.0",
     "@as-integrations/express5": "^1.1.2",
+    "@grpc/grpc-js": "^1.14.3",
+    "@grpc/proto-loader": "^0.8.1",
     "@nestjs-labs/nestjs-ioredis": "^11.0.4",
     "@nestjs/apollo": "^13.2.3",
     "@nestjs/axios": "^4.0.1",
@@ -108,7 +110,8 @@
       "^woorkroom/rabbitmq(|/.*)$": "<rootDir>/libs/rabbitmq/src/$1",
       "^woorkroom/redis(|/.*)$": "<rootDir>/libs/redis/src/$1",
       "^woorkroom/smtp(|/.*)$": "<rootDir>/libs/smtp/src/$1",
-      "^woorkroom/telegram(|/.*)$": "<rootDir>/libs/telegram/src/$1"
+      "^woorkroom/telegram(|/.*)$": "<rootDir>/libs/telegram/src/$1",
+      "^woorkroom/grpc(|/.*)$": "<rootDir>/libs/grpc/src/$1"
     }
   }
 }

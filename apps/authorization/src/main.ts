@@ -3,6 +3,7 @@ import { AuthorizationModule } from './authorization.module';
 import { ConsoleLogger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AuthorizationModule, {
@@ -14,11 +15,12 @@ async function bootstrap() {
   const config = app.get(ConfigService);
 
   app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.RMQ,
+    transport: Transport.GRPC,
     options: {
-      urls: config.get<string[]>('rmqp.urls'),
-      queue: config.get<string>('rmqp.queue.authorization'),
-      queueOptions: { durable: true },
+      package: 'auth',
+      protoPath: join(process.cwd(), 'proto', 'auth.proto'),
+      url: `0.0.0.0:${config.get<number>('grpc.authorization.port')}`,
+      loader: { longs: Number, defaults: true, arrays: true, objects: true, oneofs: true },
     },
   });
 

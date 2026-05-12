@@ -1,8 +1,8 @@
 import { Controller, Inject } from '@nestjs/common';
 import * as types from '../types';
 import { EmployeeService } from '../services';
-import { MessagePattern } from '@nestjs/microservices';
-import { CreateEmployeeDto, EMessageRmqp } from 'shared';
+import { GrpcMethod } from '@nestjs/microservices';
+import { CreateEmployeeDto } from 'shared';
 
 @Controller()
 export class EmployeeController {
@@ -11,23 +11,25 @@ export class EmployeeController {
     private readonly employeeService: types.IEmployeeService,
   ) {}
 
-  @MessagePattern(EMessageRmqp.CREATE_EMPLOYEE)
-  async createEmployee(dto: CreateEmployeeDto) {
+  @GrpcMethod('CompanysService', 'CreateEmployee')
+  createEmployee(dto: CreateEmployeeDto) {
     return this.employeeService.createEmployee(dto);
   }
 
-  @MessagePattern(EMessageRmqp.DELETE_EMPLOYEE)
+  @GrpcMethod('CompanysService', 'DeleteEmployee')
   async deleteEmployee(dto: { id: string }) {
-    return this.employeeService.deleteEmployee(dto.id);
+    const value = await this.employeeService.deleteEmployee(dto.id);
+    return { value };
   }
 
-  @MessagePattern(EMessageRmqp.GET_MY_COMPANYS)
+  @GrpcMethod('CompanysService', 'GetMyCompanys')
   async getMyCompanys(dto: { userId: string }) {
-    return this.employeeService.getMyCompanys(dto.userId);
+    const companies = await this.employeeService.getMyCompanys(dto.userId);
+    return { companies };
   }
 
-  @MessagePattern(EMessageRmqp.GET_MY_COMPANY_PROFILE)
-  async getMyCompanyProfile(dto: { companyId: string; userId: string }) {
+  @GrpcMethod('CompanysService', 'GetMyCompanyProfile')
+  getMyCompanyProfile(dto: { companyId: string; userId: string }) {
     return this.employeeService.getMyCompanyProfile(dto.companyId, dto.userId);
   }
 }

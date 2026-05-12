@@ -12,7 +12,7 @@ import {
 } from 'shared';
 import * as redis from 'woorkroom/redis';
 import { ConfigService } from '@nestjs/config';
-import * as rabbitmq from 'woorkroom/rabbitmq';
+import * as grpc from 'woorkroom/grpc';
 import { v4 } from 'uuid';
 import { RpcException } from '@nestjs/microservices';
 
@@ -22,15 +22,17 @@ export class AuthorizationService
 {
   private SESSION_TTL_SECONDS: number;
   private readonly logger = new Logger(AuthorizationService.name);
+
   constructor(
     @Inject(redis.RedisService.name)
     private readonly redisService: redis.IRedisService,
-    @Inject(rabbitmq.RabbitmqUsersService.name)
-    private readonly rabbitmqUsersService: rabbitmq.IRabbitmqUsersService,
-    @Inject(rabbitmq.RabbitmqCompanyService.name)
-    private readonly rabbitmqCompaniesService: rabbitmq.IRabbitmqCompanyService,
+    @Inject(grpc.GrpcUsersService.name)
+    private readonly grpcUsersService: grpc.IGrpcUsersService,
+    @Inject(grpc.GrpcCompanysService.name)
+    private readonly grpcCompaniesService: grpc.IGrpcCompanyService,
     private readonly configService: ConfigService,
   ) {}
+
   onModuleInit() {
     const days = this.configService.get<number>('authorization.sessionDays');
     if (!days) {
@@ -44,11 +46,11 @@ export class AuthorizationService
     let company: ICompany | null = null;
     let employee: IEmployee | null = null;
     try {
-      user = await this.rabbitmqUsersService.createUser(dto.user);
+      user = await this.grpcUsersService.createUser(dto.user);
       this.logger.log('User created');
-      company = await this.rabbitmqCompaniesService.createCompany(dto.company);
+      company = await this.grpcCompaniesService.createCompany(dto.company);
       this.logger.log('Company created');
-      employee = await this.rabbitmqCompaniesService.createEmployee({
+      employee = await this.grpcCompaniesService.createEmployee({
         companyId: company.id,
         userId: user.id,
         role: UserRole.OWNER,
@@ -59,15 +61,15 @@ export class AuthorizationService
       return true;
     } catch (e) {
       if (employee) {
-        await this.rabbitmqCompaniesService.deleteEmployee(employee.id);
+        await this.grpcCompaniesService.deleteEmployee(employee.id);
         this.logger.warn('Employee deleted');
       }
       if (company) {
-        await this.rabbitmqCompaniesService.deleteCompany(company.id);
+        await this.grpcCompaniesService.deleteCompany(company.id);
         this.logger.warn('Company deleted');
       }
       if (user) {
-        await this.rabbitmqUsersService.deleteUserById(user.id);
+        await this.grpcUsersService.deleteUserById(user.id);
         this.logger.warn('User deleted');
       }
       this.logger.error(e);
@@ -76,13 +78,13 @@ export class AuthorizationService
   }
 
   async loginUser(dto: LoginDto): Promise<ISession> {
-    const user = await this.rabbitmqUsersService.findOneByEmail(dto.email);
+    const user = await this.grpcUsersService.findOneByEmail(dto.email);
 
     if (!user) {
       throw new RpcException('User not found');
     }
     this.logger.log('User found');
-    const ok = await this.rabbitmqUsersService.verifyPassword(
+    const ok = await this.grpcUsersService.verifyPassword(
       user.password,
       dto.password,
     );
@@ -123,10 +125,7 @@ export class AuthorizationService
   }
 
   public async getSession(sessionId: string) {
-    const session = await this.redisService.get<ISession>(
-      `session:${sessionId}`,
-    );
-    return session;
+    return this.redisService.get<ISession>(`session:${sessionId}`);
   }
 
   async getUserSessions(userId: string): Promise<ISession[]> {

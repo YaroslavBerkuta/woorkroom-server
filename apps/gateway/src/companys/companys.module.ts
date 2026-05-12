@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { RabbitmqModule } from 'woorkroom/rabbitmq';
+import { GrpcModule } from 'woorkroom/grpc';
 import { CompanysResolver } from './resolvers';
 
 @Module({
-  imports: [RabbitmqModule],
+  imports: [GrpcModule],
   providers: [CompanysResolver],
   exports: [CompanysResolver],
 })

@@ -47,26 +47,26 @@ services:
     networks:
       - woorkroom-net
 
-  authorization:
+  users:
     build:
       context: .
       dockerfile: docker/Dockerfile.dev
-    container_name: woorkroom-authorization
+    container_name: woorkroom-users
     restart: unless-stopped
     env_file: .env
     environment:
       NODE_ENV: docker
       CHOKIDAR_USEPOLLING: "1"
       CHOKIDAR_INTERVAL: "300"
-    command: ["npx", "nest", "start", "authorization", "--watch"]
+      GRPC_USERS_PORT: "5001"
+    ports:
+      - "5001:5001"
+    command: ["npx", "nest", "start", "users", "--watch"]
     volumes:
       - ./:/app
       - woorkroom-node_modules:/app/node_modules
     depends_on:
       - db
-      - redis
-      - rabbitmq
-      - mailpit
     networks:
       - woorkroom-net
 
@@ -81,15 +81,43 @@ services:
       NODE_ENV: docker
       CHOKIDAR_USEPOLLING: "1"
       CHOKIDAR_INTERVAL: "300"
+      GRPC_COMPANYS_PORT: "5003"
+    ports:
+      - "5003:5003"
     command: ["npx", "nest", "start", "companys", "--watch"]
     volumes:
       - ./:/app
       - woorkroom-node_modules:/app/node_modules
     depends_on:
       - db
+    networks:
+      - woorkroom-net
+
+  authorization:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    container_name: woorkroom-authorization
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: docker
+      CHOKIDAR_USEPOLLING: "1"
+      CHOKIDAR_INTERVAL: "300"
+      GRPC_AUTH_PORT: "5002"
+      GRPC_USERS_URL: "users:5001"
+      GRPC_COMPANYS_URL: "companys:5003"
+    ports:
+      - "5002:5002"
+    command: ["npx", "nest", "start", "authorization", "--watch"]
+    volumes:
+      - ./:/app
+      - woorkroom-node_modules:/app/node_modules
+    depends_on:
+      - db
       - redis
-      - rabbitmq
-      - mailpit
+      - users
+      - companys
     networks:
       - woorkroom-net
 
@@ -106,15 +134,17 @@ services:
       NODE_ENV: docker
       CHOKIDAR_USEPOLLING: "1"
       CHOKIDAR_INTERVAL: "300"
+      GRPC_USERS_URL: "users:5001"
+      GRPC_AUTH_URL: "authorization:5002"
+      GRPC_COMPANYS_URL: "companys:5003"
     command: ["npx", "nest", "start", "gateway", "--watch"]
     volumes:
       - ./:/app
       - woorkroom-node_modules:/app/node_modules
     depends_on:
-      - db
-      - redis
-      - rabbitmq
-      - mailpit
+      - users
+      - authorization
+      - companys
     networks:
       - woorkroom-net
 
@@ -134,31 +164,6 @@ services:
       - ./:/app
       - woorkroom-node_modules:/app/node_modules
     depends_on:
-      - db
-      - redis
-      - rabbitmq
-      - mailpit
-    networks:
-      - woorkroom-net
-
-  users:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.dev
-    container_name: woorkroom-users
-    restart: unless-stopped
-    env_file: .env
-    environment:
-      NODE_ENV: docker
-      CHOKIDAR_USEPOLLING: "1"
-      CHOKIDAR_INTERVAL: "300"
-    command: ["npx", "nest", "start", "users", "--watch"]
-    volumes:
-      - ./:/app
-      - woorkroom-node_modules:/app/node_modules
-    depends_on:
-      - db
-      - redis
       - rabbitmq
       - mailpit
     networks:

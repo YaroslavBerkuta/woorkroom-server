@@ -63,6 +63,12 @@
       ],
       "woorkroom/telegram/*": [
         "libs/telegram/src/*"
+      ],
+      "woorkroom/grpc": [
+        "libs/grpc/src"
+      ],
+      "woorkroom/grpc/*": [
+        "libs/grpc/src/*"
       ]
     }
   }

@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package users;
+
+service UsersService {
+  rpc CreateUser (CreateUserRequest) returns (UserResponse);
+  rpc FindUserById (IdRequest) returns (UserResponse);
+  rpc FindUserByEmail (FindByEmailRequest) returns (UserResponse);
+  rpc DeleteUserById (IdRequest) returns (BoolResponse);
+  rpc VerifyPassword (VerifyPasswordRequest) returns (BoolResponse);
+}
+
+message CreateUserRequest {
+  string email = 1;
+  string password = 2;
+  string phoneNumber = 3;
+}
+
+message IdRequest {
+  string id = 1;
+}
+
+message FindByEmailRequest {
+  string email = 1;
+}
+
+message VerifyPasswordRequest {
+  string hashValue = 1;
+  string password = 2;
+}
+
+message UserResponse {
+  string id = 1;
+  string email = 2;
+  string password = 3;
+  string phoneNumber = 4;
+  string createdAt = 5;
+  string updatedAt = 6;
+}
+
+message BoolResponse {
+  bool value = 1;
+}

@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+package companys;
+
+service CompanysService {
+  rpc CreateCompany (CreateCompanyRequest) returns (CompanyResponse);
+  rpc UpdateCompany (UpdateCompanyRequest) returns (CompanyResponse);
+  rpc DeleteCompany (IdRequest) returns (BoolResponse);
+  rpc FindCompanyById (IdRequest) returns (CompanyResponse);
+  rpc CreateEmployee (CreateEmployeeRequest) returns (EmployeeResponse);
+  rpc DeleteEmployee (IdRequest) returns (BoolResponse);
+  rpc GetMyCompanys (UserIdRequest) returns (CompanyListResponse);
+  rpc GetMyCompanyProfile (CompanyUserRequest) returns (EmployeeResponse);
+}
+
+message IdRequest {
+  string id = 1;
+}
+
+message UserIdRequest {
+  string userId = 1;
+}
+
+message CompanyUserRequest {
+  string companyId = 1;
+  string userId = 2;
+}
+
+message CreateCompanyRequest {
+  string name = 1;
+  string service = 2;
+  string describes = 3;
+  string logo = 4;
+  string direction = 5;
+  int32 peopleCountStart = 6;
+  int32 peopleCountEnd = 7;
+  repeated string employees = 8;
+}
+
+message UpdateCompanyRequest {
+  string id = 1;
+  string name = 2;
+  string service = 3;
+  string describes = 4;
+  string logo = 5;
+  string direction = 6;
+  int32 peopleCountStart = 7;
+  int32 peopleCountEnd = 8;
+}
+
+message CreateEmployeeRequest {
+  string companyId = 1;
+  string userId = 2;
+  string name = 3;
+  string lastName = 4;
+  string role = 5;
+  string status = 6;
+  string avatar = 7;
+  string position = 8;
+  string location = 9;
+  string birthday = 10;
+}
+
+message CompanyResponse {
+  string id = 1;
+  string name = 2;
+  string service = 3;
+  string describes = 4;
+  string logo = 5;
+  string direction = 6;
+  int32 peopleCountStart = 7;
+  int32 peopleCountEnd = 8;
+  string createdAt = 9;
+  string updatedAt = 10;
+}
+
+message CompanyListResponse {
+  repeated CompanyResponse companies = 1;
+}
+
+message EmployeeResponse {
+  string id = 1;
+  string companyId = 2;
+  string userId = 3;
+  string name = 4;
+  string lastName = 5;
+  string role = 6;
+  string status = 7;
+  string avatar = 8;
+  string position = 9;
+  string location = 10;
+  string birthday = 11;
+  string createdAt = 12;
+  string updatedAt = 13;
+}
+
+message BoolResponse {
+  bool value = 1;
+}

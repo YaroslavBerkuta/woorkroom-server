@@ -3,7 +3,7 @@ import { CompanyModel, EmployeeModel } from '../../companys';
 import { UserModel } from '../../users';
 import { Inject, UseGuards } from '@nestjs/common';
 import { CompanysResolver } from '../../companys/resolvers';
-import * as rabbitmq from 'woorkroom/rabbitmq';
+import * as grpc from 'woorkroom/grpc';
 import { AccessCompanyGuard, GqlSessionAuthGuard } from '../../guards';
 import { CurrentCompanyId, CurrentUserId } from '../../decorators';
 import { IEmployee } from 'shared';
@@ -11,16 +11,15 @@ import { IEmployee } from 'shared';
 @Resolver(() => UserModel)
 export class UserCompanyResolver {
   constructor(
-    @Inject(rabbitmq.RabbitmqCompanyService.name)
-    private readonly rabbitmqCompanysService: rabbitmq.IRabbitmqCompanyService,
+    @Inject(grpc.GrpcCompanysService.name)
+    private readonly grpcCompanysService: grpc.IGrpcCompanyService,
     private readonly companysResolver: CompanysResolver,
   ) {}
 
   @UseGuards(GqlSessionAuthGuard)
   @ResolveField(() => CompanyModel, { nullable: true })
   async company(@CurrentCompanyId() companyId: string) {
-    const company =
-      await this.rabbitmqCompanysService.getCompanyById(companyId);
+    const company = await this.grpcCompanysService.getCompanyById(companyId);
 
     if (!company) return null;
 
@@ -33,7 +32,7 @@ export class UserCompanyResolver {
     @CurrentCompanyId() companyId: string,
     @CurrentUserId() userId: string,
   ): Promise<EmployeeModel | null> {
-    const profile = await this.rabbitmqCompanysService.getMyCompanyProfile(
+    const profile = await this.grpcCompanysService.getMyCompanyProfile(
       companyId,
       userId,
     );

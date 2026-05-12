@@ -1,6 +1,6 @@
 import { Controller, Inject } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
-import { EMessageRmqp, CreateUserDto, UpdateUserDto } from 'shared';
+import { GrpcMethod } from '@nestjs/microservices';
+import { CreateUserDto, UpdateUserDto } from 'shared';
 import { UsersService } from '../services';
 import { omit } from 'lodash';
 import type { IUserServiceInterface } from '../types';
@@ -12,35 +12,33 @@ export class UsersController {
     private readonly usersService: IUserServiceInterface,
   ) {}
 
-  @MessagePattern(EMessageRmqp.CREATE_USER)
-  public async createUser(@Payload() data: CreateUserDto) {
+  @GrpcMethod('UsersService', 'CreateUser')
+  createUser(data: CreateUserDto) {
     return this.usersService.create(data);
   }
 
-  @MessagePattern(EMessageRmqp.UPDATE_USER)
-  public async updateUser(@Payload() data: UpdateUserDto) {
-    return this.usersService.updateById(data.id, omit(data, ['id']));
+  @GrpcMethod('UsersService', 'FindUserById')
+  findUserById(data: { id: string }) {
+    return this.usersService.findOneById(data.id);
   }
 
-  @MessagePattern(EMessageRmqp.FIND_USER_BY_ID)
-  public async findUserById(@Payload() id: string) {
-    return this.usersService.findOneById(id);
-  }
-
-  @MessagePattern(EMessageRmqp.FIND_USER_BY_EMAIL)
-  public async findUserByEmail(@Payload() data: { email: string }) {
+  @GrpcMethod('UsersService', 'FindUserByEmail')
+  findUserByEmail(data: { email: string }) {
     return this.usersService.findOneByEmail(data.email);
   }
 
-  @MessagePattern(EMessageRmqp.DELETE_USER_BY_ID)
-  public async deleteUserById(@Payload() data: { id: string }) {
-    return this.usersService.deleteById(data.id);
+  @GrpcMethod('UsersService', 'DeleteUserById')
+  async deleteUserById(data: { id: string }) {
+    const value = await this.usersService.deleteById(data.id);
+    return { value };
   }
 
-  @MessagePattern(EMessageRmqp.VERIFY_PASSWORD)
-  public async verifyPassword(
-    @Payload() data: { hashValue: string; password: string },
-  ) {
-    return this.usersService.verifyPassword(data.hashValue, data.password);
+  @GrpcMethod('UsersService', 'VerifyPassword')
+  async verifyPassword(data: { hashValue: string; password: string }) {
+    const value = await this.usersService.verifyPassword(
+      data.hashValue,
+      data.password,
+    );
+    return { value };
   }
 }

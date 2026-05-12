@@ -6,14 +6,14 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import * as rabbitmq from 'woorkroom/rabbitmq';
+import * as grpc from 'woorkroom/grpc';
 import { Request } from 'express';
 
 @Injectable()
 export class GqlSessionAuthGuard implements CanActivate {
   constructor(
-    @Inject(rabbitmq.RabbitmqAuthService.name)
-    private readonly authService: rabbitmq.IRabbitmqAuthService,
+    @Inject(grpc.GrpcAuthService.name)
+    private readonly authService: grpc.IGrpcAuthService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

@@ -1,14 +1,8 @@
-import { Controller, ValidationPipe } from '@nestjs/common';
-import { Inject } from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
 import type { ICompanyServiceInterface } from '../types';
 import { CompanyService } from '../services';
-import {
-  CreateCompanyDto,
-  EMessageRmqp,
-  FindCompanyByIdDto,
-  UpdateCompanyDto,
-} from 'shared';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { CreateCompanyDto, UpdateCompanyDto } from 'shared';
+import { GrpcMethod } from '@nestjs/microservices';
 import { omit } from 'lodash';
 
 @Controller()
@@ -18,41 +12,24 @@ export class CompanysController {
     private readonly companysService: ICompanyServiceInterface,
   ) {}
 
-  @MessagePattern(EMessageRmqp.CREATE_COMPANY)
-  public async createCompany(@Payload() data: CreateCompanyDto) {
+  @GrpcMethod('CompanysService', 'CreateCompany')
+  createCompany(data: CreateCompanyDto) {
     return this.companysService.createCompany(data);
   }
 
-  @MessagePattern(EMessageRmqp.UPDATE_COMPANY)
-  public async updateCompany(@Payload() data: UpdateCompanyDto) {
+  @GrpcMethod('CompanysService', 'UpdateCompany')
+  updateCompany(data: UpdateCompanyDto) {
     return this.companysService.updateCompany(data.id, omit(data, ['id']));
   }
 
-  @MessagePattern(EMessageRmqp.DELETE_COMPANY)
-  public async deleteCompany(
-    @Payload(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    )
-    data: FindCompanyByIdDto,
-  ) {
-    return this.companysService.deleteCompanyById(data.id);
+  @GrpcMethod('CompanysService', 'DeleteCompany')
+  async deleteCompany(data: { id: string }) {
+    const value = await this.companysService.deleteCompanyById(data.id);
+    return { value };
   }
 
-  @MessagePattern(EMessageRmqp.FIND_COMPANY_BY_ID)
-  public async findCompanyById(
-    @Payload(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    )
-    data: FindCompanyByIdDto,
-  ) {
+  @GrpcMethod('CompanysService', 'FindCompanyById')
+  findCompanyById(data: { id: string }) {
     return this.companysService.findCompanyById(data.id);
   }
 }

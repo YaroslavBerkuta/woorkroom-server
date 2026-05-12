@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import {
   appConfig,
   dataBaseConfig,
+  grpcConfig,
   mailConfig,
   rmqpConfig,
 } from './configuration';
@@ -13,7 +14,7 @@ import {
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.local', '.env'],
-      load: [dataBaseConfig, rmqpConfig, mailConfig, appConfig],
+      load: [dataBaseConfig, rmqpConfig, mailConfig, appConfig, grpcConfig],
     }),
   ],
   providers: [ConfigService],

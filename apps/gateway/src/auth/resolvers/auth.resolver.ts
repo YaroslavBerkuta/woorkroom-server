@@ -2,15 +2,15 @@ import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { LoginInput, LogoutInput, RegisterInput } from '../inputs';
 import { Inject, UseGuards } from '@nestjs/common';
 import { SessionModel } from '../models';
-import * as rabbitmq from 'woorkroom/rabbitmq';
+import * as grpc from 'woorkroom/grpc';
 import { extractSessionId, GqlSessionAuthGuard } from '../../guards';
 import { CurrentUserId } from '../../decorators';
 
 @Resolver()
 export class AuthResolver {
   constructor(
-    @Inject(rabbitmq.RabbitmqAuthService.name)
-    private readonly authService: rabbitmq.IRabbitmqAuthService,
+    @Inject(grpc.GrpcAuthService.name)
+    private readonly authService: grpc.IGrpcAuthService,
   ) {}
 
   @Mutation(() => SessionModel)
