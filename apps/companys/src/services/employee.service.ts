@@ -70,13 +70,19 @@ export class EmployeeService implements IEmployeeService {
       throw new RpcException('Employee not found');
     }
 
+    let birthday = employee.birthday;
+    if (dto.birthday) {
+      const parsed = new Date(dto.birthday);
+      birthday = isNaN(parsed.getTime()) ? employee.birthday : parsed;
+    }
+
     Object.assign(employee, {
-      name: dto.name ?? employee.name,
-      lastName: dto.lastName ?? employee.lastName,
-      avatar: dto.avatar ?? employee.avatar,
-      position: dto.position ?? employee.position,
-      location: dto.location ?? employee.location,
-      birthday: dto.birthday || employee.birthday,
+      name: dto.name || employee.name,
+      lastName: dto.lastName || employee.lastName,
+      avatar: dto.avatar || employee.avatar,
+      position: dto.position || employee.position,
+      location: dto.location || employee.location,
+      birthday,
     });
 
     return this.employeeRepository.save(employee);
