@@ -20,6 +20,8 @@ export class GqlSessionAuthGuard implements CanActivate {
     const ctx = GqlExecutionContext.create(context);
     const { req } = ctx.getContext();
 
+    if (req.session) return true;
+
     const sid = extractSessionId(req);
     if (!sid) throw new UnauthorizedException('No session');
 
