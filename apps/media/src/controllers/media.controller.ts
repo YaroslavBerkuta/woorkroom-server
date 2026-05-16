@@ -12,6 +12,9 @@ import { GrpcMethod } from '@nestjs/microservices';
 import { memoryStorage } from 'multer';
 import { MediaService } from '../services';
 
+const IMAGE_ONLY_FOLDERS = ['avatars', 'logos'];
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
+
 @Controller('media')
 export class MediaController {
   constructor(
@@ -20,7 +23,19 @@ export class MediaController {
   ) {}
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+      limits: { fileSize: MAX_FILE_SIZE },
+      fileFilter: (_req, file, cb) => {
+        const folder = (_req.body as Record<string, string>)?.folder ?? 'uploads';
+        if (IMAGE_ONLY_FOLDERS.includes(folder) && !file.mimetype.startsWith('image/')) {
+          return cb(new BadRequestException('Only image files are allowed for this folder'), false);
+        }
+        cb(null, true);
+      },
+    }),
+  )
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
     @Body('folder') folder?: string,
