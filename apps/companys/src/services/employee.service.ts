@@ -91,4 +91,8 @@ export class EmployeeService implements IEmployeeService {
   async getMyCompanyProfile(companyId: string, userId: string) {
     return this.employeeRepository.findOne({ where: { companyId, userId } });
   }
+
+  async getCompanyMembers(companyId: string) {
+    return this.employeeRepository.find({ where: { companyId } });
+  }
 }

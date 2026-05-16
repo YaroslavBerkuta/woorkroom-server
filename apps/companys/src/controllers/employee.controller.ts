@@ -37,4 +37,10 @@ export class EmployeeController {
   getMyCompanyProfile(dto: { companyId: string; userId: string }) {
     return this.employeeService.getMyCompanyProfile(dto.companyId, dto.userId);
   }
+
+  @GrpcMethod('CompanysService', 'GetCompanyMembers')
+  async getCompanyMembers(dto: { id: string }) {
+    const employees = await this.employeeService.getCompanyMembers(dto.id);
+    return { employees };
+  }
 }

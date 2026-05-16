@@ -12,6 +12,7 @@ service CompanysService {
   rpc DeleteEmployee (IdRequest) returns (BoolResponse);
   rpc GetMyCompanys (UserIdRequest) returns (CompanyListResponse);
   rpc GetMyCompanyProfile (CompanyUserRequest) returns (EmployeeResponse);
+  rpc GetCompanyMembers (IdRequest) returns (EmployeeListResponse);
 }
 
 message IdRequest {
@@ -103,6 +104,10 @@ message EmployeeResponse {
   string birthday = 11;
   string createdAt = 12;
   string updatedAt = 13;
+}
+
+message EmployeeListResponse {
+  repeated EmployeeResponse employees = 1;
 }
 
 message BoolResponse {

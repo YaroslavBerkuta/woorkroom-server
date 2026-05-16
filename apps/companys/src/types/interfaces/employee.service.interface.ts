@@ -13,4 +13,5 @@ export interface IEmployeeService {
     companyId: string,
     userId: string,
   ): Promise<IEmployee | null>;
+  getCompanyMembers(companyId: string): Promise<IEmployee[]>;
 }

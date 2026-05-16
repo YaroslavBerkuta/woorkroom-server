@@ -9,4 +9,5 @@ export interface IGrpcCompanyService {
   getMyCompanys(userId: string): Promise<ICompany[]>;
   getCompanyById(companyId: string): Promise<ICompany | null>;
   getMyCompanyProfile(companyId: string, userId: string): Promise<IEmployee | null>;
+  getCompanyMembers(companyId: string): Promise<IEmployee[]>;
 }

@@ -20,6 +20,7 @@ interface CompanysGrpcClient {
   deleteEmployee(data: any): Observable<any>;
   getMyCompanys(data: any): Observable<any>;
   getMyCompanyProfile(data: any): Observable<any>;
+  getCompanyMembers(data: any): Observable<any>;
 }
 
 @Injectable()
@@ -85,5 +86,12 @@ export class GrpcCompanysService implements IGrpcCompanyService, OnModuleInit {
     } catch {
       return null;
     }
+  }
+
+  async getCompanyMembers(companyId: string): Promise<IEmployee[]> {
+    const res = await lastValueFrom(
+      this.client.getCompanyMembers({ id: companyId }),
+    );
+    return res.employees ?? [];
   }
 }
