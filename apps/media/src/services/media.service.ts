@@ -69,22 +69,38 @@ export class MediaService implements OnModuleInit {
   ): Promise<IMediaFile> {
     const fileId = v4();
     const isImage = file.mimetype.startsWith('image/');
+    const ext = extname(file.originalname).toLowerCase() || '.bin';
 
-    let buffer = file.buffer;
-    let mimetype = file.mimetype;
-    let ext = extname(file.originalname).toLowerCase();
+    const objectName = `${folder}/${fileId}${ext}`;
+    let webpUrl: string | undefined;
     let thumbnailUrl: string | undefined;
 
+    await this.client.putObject(
+      this.bucket,
+      objectName,
+      file.buffer,
+      file.buffer.length,
+      { 'Content-Type': file.mimetype },
+    );
+
     if (isImage) {
-      buffer = await sharp(file.buffer).webp({ quality: 85 }).toBuffer();
-      mimetype = 'image/webp';
-      ext = '.webp';
+      const webpBuffer = await sharp(file.buffer)
+        .webp({ quality: 85 })
+        .toBuffer();
+      const webpName = `${folder}/${fileId}.webp`;
+      await this.client.putObject(
+        this.bucket,
+        webpName,
+        webpBuffer,
+        webpBuffer.length,
+        { 'Content-Type': 'image/webp' },
+      );
+      webpUrl = `${this.publicUrl}/${this.bucket}/${webpName}`;
 
       const thumbBuffer = await sharp(file.buffer)
         .resize(200, 200, { fit: 'cover' })
         .webp({ quality: 80 })
         .toBuffer();
-
       const thumbName = `${folder}/thumbs/${fileId}.webp`;
       await this.client.putObject(
         this.bucket,
@@ -96,23 +112,15 @@ export class MediaService implements OnModuleInit {
       thumbnailUrl = `${this.publicUrl}/${this.bucket}/${thumbName}`;
     }
 
-    const objectName = `${folder}/${fileId}${ext}`;
-    await this.client.putObject(
-      this.bucket,
-      objectName,
-      buffer,
-      buffer.length,
-      { 'Content-Type': mimetype },
-    );
-
     this.logger.log(`Uploaded ${objectName}`);
 
     return {
       fileId: objectName,
       url: `${this.publicUrl}/${this.bucket}/${objectName}`,
+      webpUrl,
       thumbnailUrl,
-      mimetype,
-      size: buffer.length,
+      mimetype: file.mimetype,
+      size: file.buffer.length,
     };
   }
 
