@@ -61,7 +61,7 @@ export class AuthorizationService
       `verify:code:${normalizedPhone}`,
     );
 
-    if (!savedCode || savedCode !== dto.code) {
+    if (!savedCode || String(savedCode) !== dto.code) {
       throw new RpcException('Invalid or expired verification code');
     }
 
