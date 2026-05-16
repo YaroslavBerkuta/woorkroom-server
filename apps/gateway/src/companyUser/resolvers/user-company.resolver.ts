@@ -19,6 +19,8 @@ export class UserCompanyResolver {
   @UseGuards(GqlSessionAuthGuard)
   @ResolveField(() => CompanyModel, { nullable: true })
   async company(@CurrentCompanyId() companyId: string) {
+    if (!companyId) return null;
+
     const company = await this.grpcCompanysService.getCompanyById(companyId);
 
     if (!company) return null;
@@ -32,6 +34,8 @@ export class UserCompanyResolver {
     @CurrentCompanyId() companyId: string,
     @CurrentUserId() userId: string,
   ): Promise<EmployeeModel | null> {
+    if (!companyId) return null;
+
     const profile = await this.grpcCompanysService.getMyCompanyProfile(
       companyId,
       userId,

@@ -26,7 +26,10 @@ export class EmployeeService implements IEmployeeService {
       throw new RpcException('Employee already exists');
     }
 
-    return this.employeeRepository.save(dto);
+    return this.employeeRepository.save({
+      ...dto,
+      birthday: dto.birthday || undefined,
+    });
   }
 
   async findExistCompanyEmployee(companyId: string, userId: string) {
