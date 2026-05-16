@@ -8,6 +8,7 @@ service ProjectsService {
   rpc GetCompanyProjects (IdRequest) returns (ProjectListResponse);
   rpc GetProjectMembers (IdRequest) returns (ProjectMemberListResponse);
   rpc UpdateProjectStatus (UpdateProjectStatusRequest) returns (ProjectResponse);
+  rpc UpdateProject (UpdateProjectRequest) returns (ProjectResponse);
   rpc AddProjectFile (AddProjectFileRequest) returns (ProjectFileResponse);
   rpc RemoveProjectFile (IdRequest) returns (BoolResponse);
   rpc GetProjectFiles (IdRequest) returns (ProjectFileListResponse);
@@ -41,6 +42,16 @@ message CreateProjectRequest {
 message UpdateProjectStatusRequest {
   string id = 1;
   string status = 2;
+}
+
+message UpdateProjectRequest {
+  string id = 1;
+  string name = 2;
+  string starts = 3;
+  string deadline = 4;
+  string priority = 5;
+  string description = 6;
+  string image = 7;
 }
 
 message ProjectResponse {

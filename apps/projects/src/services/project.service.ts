@@ -5,7 +5,7 @@ import { Project } from '../entitys/project.entity';
 import { ProjectMember } from '../entitys/project-member.entity';
 import { ProjectFile } from '../entitys/project-file.entity';
 import { ProjectLink } from '../entitys/project-link.entity';
-import { AddProjectFileDto, AddProjectLinkDto, CreateProjectDto, UpdateProjectStatusDto } from 'shared';
+import { AddProjectFileDto, AddProjectLinkDto, CreateProjectDto, UpdateProjectDto, UpdateProjectStatusDto } from 'shared';
 import { ProjectMemberRole } from 'shared';
 import { RpcException } from '@nestjs/microservices';
 
@@ -32,13 +32,13 @@ export class ProjectService {
       .replace(/^-|-$/g, '');
   }
 
-  private async resolveSlug(companyId: string, name: string): Promise<string> {
+  private async resolveSlug(companyId: string, name: string, excludeId?: string): Promise<string> {
     const base = this.toSlug(name);
     const existing = await this.projectRepo.find({
       where: { companyId },
-      select: ['slug'],
+      select: ['id', 'slug'],
     });
-    const slugSet = new Set(existing.map((p) => p.slug));
+    const slugSet = new Set(existing.filter((p) => p.id !== excludeId).map((p) => p.slug));
 
     if (!slugSet.has(base)) return base;
 
@@ -115,6 +115,23 @@ export class ProjectService {
     const project = await this.projectRepo.findOne({ where: { id: projectId } });
     if (!project) throw new RpcException('Project not found');
     return this.memberRepo.find({ where: { projectId } });
+  }
+
+  async updateProject(dto: UpdateProjectDto): Promise<Project> {
+    const project = await this.projectRepo.findOne({ where: { id: dto.id } });
+    if (!project) throw new RpcException('Project not found');
+
+    if (dto.name && dto.name !== project.name) {
+      project.name = dto.name;
+      project.slug = await this.resolveSlug(project.companyId, dto.name, project.id);
+    }
+    if (dto.starts !== undefined) project.starts = dto.starts || undefined;
+    if (dto.deadline !== undefined) project.deadline = dto.deadline || undefined;
+    if (dto.priority !== undefined) project.priority = dto.priority || undefined;
+    if (dto.description !== undefined) project.description = dto.description || undefined;
+    if (dto.image !== undefined) project.image = dto.image || undefined;
+
+    return this.projectRepo.save(project);
   }
 
   async updateProjectStatus(dto: UpdateProjectStatusDto): Promise<Project> {

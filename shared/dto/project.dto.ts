@@ -18,6 +18,16 @@ export class UpdateProjectStatusDto {
   status: ProjectStatus;
 }
 
+export class UpdateProjectDto {
+  id: string;
+  name?: string;
+  starts?: string;
+  deadline?: string;
+  priority?: ProjectPriority;
+  description?: string;
+  image?: string;
+}
+
 export class AddProjectMemberDto {
   projectId: string;
   employeeId: string;

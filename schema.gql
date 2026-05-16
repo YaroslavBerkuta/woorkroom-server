@@ -145,6 +145,7 @@ type Mutation {
   selectMyCompany(companyId: ID!): Boolean!
   updateMyProfile(input: UpdateProfileInput!): EmployeeModel!
   createProject(input: CreateProjectInput!): ProjectModel!
+  updateProject(projectId: String!, input: UpdateProjectInput!): ProjectModel!
   updateProjectStatus(projectId: String!, status: ProjectStatus!): ProjectModel!
   addProjectFile(projectId: String!, url: String!, name: String!, mimeType: String, size: Float): ProjectFileModel!
   removeProjectFile(fileId: String!): Boolean!
@@ -197,4 +198,13 @@ input CreateProjectInput {
   image: String
   reporterId: String
   assigneeIds: [String!]
+}
+
+input UpdateProjectInput {
+  name: String
+  starts: String
+  deadline: String
+  priority: ProjectPriority
+  description: String
+  image: String
 }

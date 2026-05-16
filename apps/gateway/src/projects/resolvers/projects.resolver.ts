@@ -11,7 +11,28 @@ import * as grpc from 'woorkroom/grpc';
 import { AccessCompanyGuard, GqlSessionAuthGuard } from '../../guards';
 import { CurrentCompanyId, CurrentUserId } from '../../decorators';
 import { ProjectFileModel, ProjectLinkModel, ProjectMemberModel, ProjectModel } from '../models';
-import { IProject, IProjectFile, IProjectLink, IProjectMember, ProjectPriority, ProjectStatus } from 'shared';
+import { IProject, IProjectFile, IProjectLink, IProjectMember, ProjectPriority, ProjectStatus, UpdateProjectDto } from 'shared';
+
+@InputType()
+export class UpdateProjectInput implements Omit<UpdateProjectDto, 'id'> {
+  @Field(() => String, { nullable: true })
+  name?: string;
+
+  @Field(() => String, { nullable: true })
+  starts?: string;
+
+  @Field(() => String, { nullable: true })
+  deadline?: string;
+
+  @Field(() => ProjectPriority, { nullable: true })
+  priority?: ProjectPriority;
+
+  @Field(() => String, { nullable: true })
+  description?: string;
+
+  @Field(() => String, { nullable: true })
+  image?: string;
+}
 
 @InputType()
 export class CreateProjectInput {
@@ -87,6 +108,16 @@ export class ProjectsResolver {
       profile.id,
     );
     return projects.map((p) => this.wrapProject(p));
+  }
+
+  @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
+  @Mutation(() => ProjectModel)
+  async updateProject(
+    @Args('projectId', { type: () => String }) projectId: string,
+    @Args('input') input: UpdateProjectInput,
+  ): Promise<ProjectModel> {
+    const project = await this.grpcProjectsService.updateProject({ id: projectId, ...input });
+    return this.wrapProject(project);
   }
 
   @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)

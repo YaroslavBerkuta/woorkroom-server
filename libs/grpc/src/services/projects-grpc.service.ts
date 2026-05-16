@@ -1,7 +1,7 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { Observable, lastValueFrom } from 'rxjs';
-import { AddProjectFileDto, AddProjectLinkDto, CreateProjectDto, IProject, IProjectFile, IProjectLink, IProjectMember, ProjectStatus } from 'shared';
+import { AddProjectFileDto, AddProjectLinkDto, CreateProjectDto, IProject, IProjectFile, IProjectLink, IProjectMember, ProjectStatus, UpdateProjectDto } from 'shared';
 import { IGrpcProjectsService } from '../types';
 
 interface ProjectListResponse { projects: IProject[]; }
@@ -15,6 +15,7 @@ interface ProjectsGrpcClient {
   getMyProjects(data: unknown): Observable<ProjectListResponse>;
   getCompanyProjects(data: unknown): Observable<ProjectListResponse>;
   getProjectMembers(data: unknown): Observable<ProjectMemberListResponse>;
+  updateProject(data: unknown): Observable<IProject>;
   updateProjectStatus(data: unknown): Observable<IProject>;
   addProjectFile(data: unknown): Observable<IProjectFile>;
   removeProjectFile(data: unknown): Observable<BoolResponse>;
@@ -60,6 +61,10 @@ export class GrpcProjectsService implements IGrpcProjectsService, OnModuleInit {
       this.client.getProjectMembers({ id: projectId }),
     );
     return res.members ?? [];
+  }
+
+  async updateProject(dto: UpdateProjectDto): Promise<IProject> {
+    return lastValueFrom(this.client.updateProject(dto));
   }
 
   async updateProjectStatus(id: string, status: ProjectStatus): Promise<IProject> {
