@@ -16,7 +16,6 @@ import * as grpc from 'woorkroom/grpc';
 import * as rmq from 'woorkroom/rabbitmq';
 import { v4 } from 'uuid';
 import { RpcException } from '@nestjs/microservices';
-import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class AuthorizationService
@@ -50,7 +49,7 @@ export class AuthorizationService
     const normalizedPhone = phone.replace(/\D/g, '');
 
     await this.redisService.ttl(`verify:code:${normalizedPhone}`, code, 60 * 5);
-    await lastValueFrom(this.rabbitmqMailsService.sendVerificationCode(normalizedPhone, code) as any);
+    (this.rabbitmqMailsService.sendVerificationCode(normalizedPhone, code) as any).subscribe();
 
     this.logger.log(`Verification code sent to phone ${normalizedPhone}`);
     return true;
