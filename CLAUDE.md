@@ -1,33 +1,35 @@
 # Woorkroom Server — Claude Instructions
 
-## API Tasks from Client Agent
+## GitHub Issues — Agent Communication
 
-GitHub Issues is the communication channel between the client agent and the server agent.
+Two labels are used for cross-agent tasks:
 
-### How to pick up tasks
+| Label | Direction | Description |
+|-------|-----------|-------------|
+| `api-request` | frontend → server | Frontend agent needs a new API endpoint/mutation |
+| `frontend` | server → frontend | Server agent has implemented something the frontend needs to integrate |
 
-When the user asks to check for new API tasks, or before starting a new feature:
+### Picking up tasks (api-request — for this agent)
 
 ```
 gh issue list --label api-request --state open
 ```
 
-Each issue contains:
-- **What** endpoint/mutation/query is needed
-- **Expected input/output** types
-- **Context** why it's needed
+1. Comment on it: "Starting implementation"
+2. Implement the change
+3. Close: `gh issue close <number> --comment "Done in commit <sha>"`
 
-### Workflow
+### Creating tasks for frontend agent
 
-1. Pick an open issue with label `api-request`
-2. Comment on it: "Starting implementation"
-3. Implement the change
-4. Close the issue with: `gh issue close <number> --comment "Done in commit <sha>"`
+```
+gh issue create --label frontend --title "..." --body-file task.md
+```
 
-### Creating the label (first time only)
+### Creating labels (first time only)
 
 ```
 gh label create api-request --color 0075ca --description "API task from client agent"
+gh label create frontend --color e99695 --description "Task for frontend/UI agent"
 ```
 
 ## Architecture
