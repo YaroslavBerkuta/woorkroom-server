@@ -122,6 +122,15 @@ export class ProjectsResolver {
   }
 
   @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
+  @Query(() => [ProjectModel])
+  async companyProjects(
+    @CurrentCompanyId() companyId: string,
+  ): Promise<ProjectModel[]> {
+    const projects = await this.grpcProjectsService.getCompanyProjects(companyId);
+    return projects.map((p) => this.wrapProject(p));
+  }
+
+  @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
   @Mutation(() => ProjectModel)
   async updateProject(
     @Args('projectId', { type: () => String }) projectId: string,

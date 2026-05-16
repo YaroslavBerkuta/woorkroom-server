@@ -135,6 +135,7 @@ type Query {
   companyMembers: [EmployeeModel!]!
   getProject(projectId: String!): ProjectModel!
   myProjects: [ProjectModel!]!
+  companyProjects: [ProjectModel!]!
   projectMembers(projectId: String!): [ProjectMemberModel!]!
   projectFiles(projectId: String!): [ProjectFileModel!]!
   projectLinks(projectId: String!): [ProjectLinkModel!]!
