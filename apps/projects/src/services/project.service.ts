@@ -16,10 +16,38 @@ export class ProjectService {
     private readonly memberRepo: Repository<ProjectMember>,
   ) {}
 
+  private toSlug(name: string): string {
+    return name
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_]+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
+  private async resolveSlug(companyId: string, name: string): Promise<string> {
+    const base = this.toSlug(name);
+    const existing = await this.projectRepo.find({
+      where: { companyId },
+      select: ['slug'],
+    });
+    const slugSet = new Set(existing.map((p) => p.slug));
+
+    if (!slugSet.has(base)) return base;
+
+    let counter = 2;
+    while (slugSet.has(`${base}-${counter}`)) counter++;
+    return `${base}-${counter}`;
+  }
+
   async createProject(dto: CreateProjectDto): Promise<Project> {
+    const slug = await this.resolveSlug(dto.companyId, dto.name);
+
     const project = await this.projectRepo.save({
       companyId: dto.companyId,
       name: dto.name,
+      slug,
       starts: dto.starts || undefined,
       deadline: dto.deadline || undefined,
       priority: dto.priority || undefined,

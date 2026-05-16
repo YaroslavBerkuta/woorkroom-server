@@ -4,6 +4,7 @@ import { IBase } from './base.interface';
 export interface IProject extends IBase {
   companyId: string;
   name: string;
+  slug: string;
   starts?: string;
   deadline?: string;
   priority?: ProjectPriority;
