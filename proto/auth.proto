@@ -3,12 +3,17 @@ syntax = "proto3";
 package auth;
 
 service AuthService {
+  rpc SendVerificationCode (SendVerificationCodeRequest) returns (BoolResponse);
   rpc Register (RegisterRequest) returns (BoolResponse);
   rpc Login (LoginRequest) returns (SessionResponse);
   rpc Logout (LogoutRequest) returns (BoolResponse);
   rpc GetSession (GetSessionRequest) returns (SessionResponse);
   rpc GetUserSessions (UserIdRequest) returns (SessionListResponse);
   rpc SelectCompany (SelectCompanyRequest) returns (SessionResponse);
+}
+
+message SendVerificationCodeRequest {
+  string phone = 1;
 }
 
 message UserData {

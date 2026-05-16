@@ -1,6 +1,7 @@
 import { ISession, LoginDto, LogoutDto, RegisterDto } from 'shared';
 
 export interface IGrpcAuthService {
+  sendVerificationCode(data: { phone: string }): Promise<boolean>;
   registerUser(data: RegisterDto): Promise<boolean>;
   loginUser(data: LoginDto): Promise<ISession>;
   logoutUser(data: LogoutDto): Promise<boolean>;

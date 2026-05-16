@@ -13,6 +13,7 @@ import {
 import * as redis from 'woorkroom/redis';
 import { ConfigService } from '@nestjs/config';
 import * as grpc from 'woorkroom/grpc';
+import * as rmq from 'woorkroom/rabbitmq';
 import { v4 } from 'uuid';
 import { RpcException } from '@nestjs/microservices';
 
@@ -30,6 +31,8 @@ export class AuthorizationService
     private readonly grpcUsersService: grpc.IGrpcUsersService,
     @Inject(grpc.GrpcCompanysService.name)
     private readonly grpcCompaniesService: grpc.IGrpcCompanyService,
+    @Inject(rmq.RabbitmqMailsService.name)
+    private readonly rabbitmqMailsService: rmq.IRabbitmqMailsService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -41,7 +44,27 @@ export class AuthorizationService
     this.SESSION_TTL_SECONDS = 60 * 60 * 24 * days;
   }
 
+  async sendVerificationCode(phone: string): Promise<boolean> {
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const normalizedPhone = phone.replace(/\D/g, '');
+
+    await this.redisService.ttl(`verify:code:${normalizedPhone}`, code, 60 * 5);
+    await this.rabbitmqMailsService.sendVerificationCode(normalizedPhone, code);
+
+    this.logger.log(`Verification code sent to phone ${normalizedPhone}`);
+    return true;
+  }
+
   async registerUser(dto: RegisterDto): Promise<boolean> {
+    const normalizedPhone = dto.user.phoneNumber.replace(/\D/g, '');
+    const savedCode = await this.redisService.get<string>(`verify:code:${normalizedPhone}`);
+
+    if (!savedCode || savedCode !== dto.code) {
+      throw new RpcException('Invalid or expired verification code');
+    }
+
+    await this.redisService.del(`verify:code:${normalizedPhone}`);
+
     let user: IUser | null = null;
     let company: ICompany | null = null;
     let employee: IEmployee | null = null;
@@ -166,5 +189,4 @@ export class AuthorizationService
     return updatedSession;
   }
 
-  async sendVerificationCode(phone: string) {}
 }

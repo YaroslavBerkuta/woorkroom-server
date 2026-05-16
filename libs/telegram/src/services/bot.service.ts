@@ -36,6 +36,10 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
     this.shareContactCommand.handler();
   }
 
+  async sendMessage(chatId: number, text: string): Promise<void> {
+    await this.bot.telegram.sendMessage(chatId, text);
+  }
+
   private async startBot() {
     try {
       await this.bot.launch();

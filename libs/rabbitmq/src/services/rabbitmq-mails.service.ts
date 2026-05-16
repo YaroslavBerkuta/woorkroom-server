@@ -8,7 +8,7 @@ export class RabbitmqMailsService {
     @Inject('MAILS_SERVICE') private readonly mailsService: ClientProxy,
   ) {}
 
-  sendVerificationCode(phone: string) {
-    return this.mailsService.send(EMessageRmqp.SEND_VERIFICATION_CODE, phone);
+  sendVerificationCode(phone: string, code: string) {
+    return this.mailsService.send(EMessageRmqp.SEND_VERIFICATION_CODE, { phone, code });
   }
 }

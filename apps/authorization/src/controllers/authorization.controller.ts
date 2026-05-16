@@ -14,6 +14,13 @@ export class AuthorizationController {
     private readonly authorizationService: types.IAuthorizationService,
   ) {}
 
+  @GrpcMethod('AuthService', 'SendVerificationCode')
+  async sendVerificationCode(data: { phone: string }) {
+    this.logger.log(`SendVerificationCode: ${data.phone}`);
+    const value = await this.authorizationService.sendVerificationCode(data.phone);
+    return { value };
+  }
+
   @GrpcMethod('AuthService', 'Register')
   async registerUser(data: RegisterDto) {
     this.logger.log(`Register user: ${JSON.stringify(data)}`);

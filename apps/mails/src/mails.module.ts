@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigurationModule } from 'woorkroom/config';
-import { SmtpModule } from 'woorkroom/smtp';
 import { TelegramModule } from 'woorkroom/telegram';
+import { RedisModule } from 'woorkroom/redis';
 import { MainService } from './services';
 import { MailsController } from './controllers';
 
 @Module({
-  imports: [ConfigurationModule, SmtpModule, TelegramModule],
+  imports: [ConfigurationModule, TelegramModule, RedisModule],
   controllers: [MailsController],
   providers: [
     {

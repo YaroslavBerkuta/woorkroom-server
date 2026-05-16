@@ -5,6 +5,7 @@ import { ISession, LoginDto, LogoutDto, RegisterDto } from 'shared';
 import { IGrpcAuthService } from '../types';
 
 interface AuthGrpcClient {
+  sendVerificationCode(data: any): Observable<any>;
   register(data: any): Observable<any>;
   login(data: any): Observable<any>;
   logout(data: any): Observable<any>;
@@ -23,6 +24,11 @@ export class GrpcAuthService implements IGrpcAuthService, OnModuleInit {
 
   onModuleInit() {
     this.client = this.grpcClient.getService<AuthGrpcClient>('AuthService');
+  }
+
+  async sendVerificationCode(data: { phone: string }): Promise<boolean> {
+    const res = await lastValueFrom(this.client.sendVerificationCode(data));
+    return res.value;
   }
 
   async registerUser(data: RegisterDto): Promise<boolean> {

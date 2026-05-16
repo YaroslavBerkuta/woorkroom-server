@@ -10,7 +10,7 @@ export class MailsController {
   ) {}
 
   @MessagePattern(EMessageRmqp.SEND_VERIFICATION_CODE)
-  sendVerificationCode(@Payload() data: { phone: string }) {
-    return this.mailsService.sendVerificationCode(data.phone);
+  sendVerificationCode(@Payload() data: { phone: string; code: string }) {
+    return this.mailsService.sendVerificationCode(data.phone, data.code);
   }
 }

@@ -22,7 +22,7 @@ export class CompanysResolver {
     return company ? this.wrapData(company) : null;
   }
 
-  @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
+  @UseGuards(GqlSessionAuthGuard)
   @Mutation(() => Boolean)
   async selectMyCompany(
     @Args('companyId') companyId: string,

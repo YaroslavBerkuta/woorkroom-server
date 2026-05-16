@@ -3,8 +3,10 @@ import { TelegramService } from './services';
 import { ConfigService } from '@nestjs/config';
 import { Context, Telegraf } from 'telegraf';
 import { commands } from './commands';
+import { RedisModule } from 'woorkroom/redis';
 
 @Module({
+  imports: [RedisModule],
   providers: [
     ...commands,
     TelegramService,

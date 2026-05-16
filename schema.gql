@@ -76,6 +76,7 @@ type Query {
 type Mutation {
   login(input: LoginInput!): SessionModel!
   logout: Boolean!
+  requestCode(phone: String!): Boolean!
   register(input: RegisterInput!): Boolean!
   selectMyCompany(companyId: String!): Boolean!
 }

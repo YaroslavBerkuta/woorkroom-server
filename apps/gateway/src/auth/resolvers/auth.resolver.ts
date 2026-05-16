@@ -50,6 +50,11 @@ export class AuthResolver {
   }
 
   @Mutation(() => Boolean)
+  async requestCode(@Args('phone') phone: string) {
+    return this.authService.sendVerificationCode({ phone });
+  }
+
+  @Mutation(() => Boolean)
   async register(@Args('input') input: RegisterInput) {
     return this.authService.registerUser(input);
   }
