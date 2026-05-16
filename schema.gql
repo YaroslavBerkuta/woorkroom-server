@@ -77,7 +77,7 @@ type Mutation {
   logout: Boolean!
   requestCode(phone: String!): Boolean!
   register(input: RegisterInput!): Boolean!
-  selectMyCompany(companyId: String!): Boolean!
+  selectMyCompany(companyId: ID!): Boolean!
 }
 
 input LoginInput {

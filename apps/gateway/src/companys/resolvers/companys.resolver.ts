@@ -1,10 +1,14 @@
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CompanyModel } from '../models';
 import { ICompany } from 'shared';
 import { Inject, NotFoundException, UseGuards } from '@nestjs/common';
 import { AccessCompanyGuard, GqlSessionAuthGuard } from '../../guards';
 import * as grpc from 'woorkroom/grpc';
-import { CurrentCompanyId, CurrentSessionId, CurrentUserId } from '../../decorators';
+import {
+  CurrentCompanyId,
+  CurrentSessionId,
+  CurrentUserId,
+} from '../../decorators';
 
 @Resolver(() => CompanyModel)
 export class CompanysResolver {
@@ -25,7 +29,7 @@ export class CompanysResolver {
   @UseGuards(GqlSessionAuthGuard)
   @Mutation(() => Boolean)
   async selectMyCompany(
-    @Args('companyId') companyId: string,
+    @Args('companyId', { type: () => ID }) companyId: string,
     @CurrentSessionId() sessionId: string,
   ) {
     const company = await this.grpcCompanysService.getCompanyById(companyId);
