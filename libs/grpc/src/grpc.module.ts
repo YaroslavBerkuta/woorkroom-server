@@ -6,6 +6,7 @@ import { join } from 'path';
 import { GrpcUsersService } from './services/users-grpc.service';
 import { GrpcAuthService } from './services/auth-grpc.service';
 import { GrpcCompanysService } from './services/companys-grpc.service';
+import { GrpcMediaService } from './services/media-grpc.service';
 
 const grpcLoaderOptions = {
   longs: Number,
@@ -58,17 +59,32 @@ const grpcLoaderOptions = {
           },
         }),
       },
+      {
+        name: 'MEDIA_GRPC_CLIENT',
+        inject: [ConfigService],
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.GRPC,
+          options: {
+            package: 'media',
+            protoPath: join(process.cwd(), 'proto', 'media.proto'),
+            url: config.get<string>('grpc.media.url'),
+            loader: grpcLoaderOptions,
+          },
+        }),
+      },
     ]),
   ],
   providers: [
     { provide: GrpcUsersService.name, useClass: GrpcUsersService },
     { provide: GrpcAuthService.name, useClass: GrpcAuthService },
     { provide: GrpcCompanysService.name, useClass: GrpcCompanysService },
+    { provide: GrpcMediaService.name, useClass: GrpcMediaService },
   ],
   exports: [
     GrpcUsersService.name,
     GrpcAuthService.name,
     GrpcCompanysService.name,
+    GrpcMediaService.name,
   ],
 })
 export class GrpcModule {}

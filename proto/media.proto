@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package media;
+
+service MediaService {
+  rpc GetFileUrl (FileIdRequest) returns (FileUrlResponse);
+  rpc DeleteFile (FileIdRequest) returns (BoolResponse);
+}
+
+message FileIdRequest {
+  string fileId = 1;
+}
+
+message FileUrlResponse {
+  string url = 1;
+}
+
+message BoolResponse {
+  bool value = 1;
+}

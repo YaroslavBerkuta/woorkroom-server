@@ -4,7 +4,7 @@ import { UserModel } from '../../users';
 import { Inject, UseGuards } from '@nestjs/common';
 import { CompanysResolver } from '../../companys/resolvers';
 import * as grpc from 'woorkroom/grpc';
-import { AccessCompanyGuard, GqlSessionAuthGuard } from '../../guards';
+import { GqlSessionAuthGuard } from '../../guards';
 import { CurrentCompanyId, CurrentUserId } from '../../decorators';
 import { IEmployee } from 'shared';
 

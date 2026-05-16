@@ -1,6 +1,6 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
-import { Observable, lastValueFrom } from 'rxjs';
+import { lastValueFrom, Observable } from 'rxjs';
 import { ISession, LoginDto, LogoutDto, RegisterDto } from 'shared';
 import { IGrpcAuthService } from '../types';
 
@@ -54,7 +54,10 @@ export class GrpcAuthService implements IGrpcAuthService, OnModuleInit {
     return res.sessions ?? [];
   }
 
-  async selectCompany(data: { sessionId: string; companyId: string }): Promise<ISession> {
+  async selectCompany(data: {
+    sessionId: string;
+    companyId: string;
+  }): Promise<ISession> {
     return lastValueFrom(this.client.selectCompany(data));
   }
 }

@@ -6,6 +6,7 @@ import {
   dataBaseConfig,
   grpcConfig,
   mailConfig,
+  minioConfig,
   rmqpConfig,
 } from './configuration';
 
@@ -14,7 +15,7 @@ import {
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.local', '.env'],
-      load: [dataBaseConfig, rmqpConfig, mailConfig, appConfig, grpcConfig],
+      load: [dataBaseConfig, rmqpConfig, mailConfig, appConfig, grpcConfig, minioConfig],
     }),
   ],
   providers: [ConfigService],

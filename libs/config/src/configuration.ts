@@ -74,6 +74,25 @@ export const grpcConfig = () => ({
       port: Number(process.env.GRPC_COMPANYS_PORT) || 5003,
       url: process.env.GRPC_COMPANYS_URL || 'localhost:5003',
     },
+    media: {
+      port: Number(process.env.GRPC_MEDIA_PORT) || 5004,
+      url: process.env.GRPC_MEDIA_URL || 'localhost:5004',
+    },
+  },
+});
+
+export const minioConfig = () => ({
+  minio: {
+    endpoint: process.env.MINIO_ENDPOINT || 'localhost',
+    port: Number(process.env.MINIO_PORT) || 9000,
+    useSSL: process.env.MINIO_USE_SSL === 'true',
+    accessKey: process.env.MINIO_ACCESS_KEY || 'woorkroom',
+    secretKey: process.env.MINIO_SECRET_KEY || 'woorkroom',
+    bucket: process.env.MINIO_BUCKET || 'woorkroom-media',
+    publicUrl: process.env.MINIO_PUBLIC_URL || 'http://localhost:9000',
+  },
+  media: {
+    httpPort: Number(process.env.MEDIA_HTTP_PORT) || 3001,
   },
 });
 
