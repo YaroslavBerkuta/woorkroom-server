@@ -11,5 +11,11 @@ export enum ProjectMemberRole {
   ASSIGNEE = 'ASSIGNEE',
 }
 
+export enum ProjectStatus {
+  ACTIVE = 'ACTIVE',
+  CLOSED = 'CLOSED',
+}
+
 registerEnumType(ProjectPriority, { name: 'ProjectPriority' });
 registerEnumType(ProjectMemberRole, { name: 'ProjectMemberRole' });
+registerEnumType(ProjectStatus, { name: 'ProjectStatus' });
