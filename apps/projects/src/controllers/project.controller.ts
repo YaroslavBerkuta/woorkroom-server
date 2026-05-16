@@ -33,6 +33,11 @@ export class ProjectController {
     return { members };
   }
 
+  @GrpcMethod('ProjectsService', 'GetProject')
+  getProject(dto: { id: string }) {
+    return this.projectService.getProject(dto.id);
+  }
+
   @GrpcMethod('ProjectsService', 'UpdateProject')
   updateProject(dto: UpdateProjectDto) {
     return this.projectService.updateProject(dto);

@@ -12,6 +12,7 @@ interface BoolResponse { value: boolean; }
 
 interface ProjectsGrpcClient {
   createProject(data: unknown): Observable<IProject>;
+  getProject(data: unknown): Observable<IProject>;
   getMyProjects(data: unknown): Observable<ProjectListResponse>;
   getCompanyProjects(data: unknown): Observable<ProjectListResponse>;
   getProjectMembers(data: unknown): Observable<ProjectMemberListResponse>;
@@ -40,6 +41,10 @@ export class GrpcProjectsService implements IGrpcProjectsService, OnModuleInit {
 
   async createProject(dto: CreateProjectDto): Promise<IProject> {
     return lastValueFrom(this.client.createProject(dto));
+  }
+
+  async getProject(id: string): Promise<IProject> {
+    return lastValueFrom(this.client.getProject({ id }));
   }
 
   async getMyProjects(companyId: string, employeeId: string): Promise<IProject[]> {

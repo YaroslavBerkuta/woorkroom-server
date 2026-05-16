@@ -117,6 +117,12 @@ export class ProjectService {
     return this.memberRepo.find({ where: { projectId } });
   }
 
+  async getProject(id: string): Promise<Project> {
+    const project = await this.projectRepo.findOne({ where: { id } });
+    if (!project) throw new RpcException('Project not found');
+    return project;
+  }
+
   async updateProject(dto: UpdateProjectDto): Promise<Project> {
     const project = await this.projectRepo.findOne({ where: { id: dto.id } });
     if (!project) throw new RpcException('Project not found');

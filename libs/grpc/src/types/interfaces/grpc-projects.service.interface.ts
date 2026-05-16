@@ -2,6 +2,7 @@ import { AddProjectFileDto, AddProjectLinkDto, CreateProjectDto, IProject, IProj
 
 export interface IGrpcProjectsService {
   createProject(dto: CreateProjectDto): Promise<IProject>;
+  getProject(id: string): Promise<IProject>;
   getMyProjects(companyId: string, employeeId: string): Promise<IProject[]>;
   getCompanyProjects(companyId: string): Promise<IProject[]>;
   getProjectMembers(projectId: string): Promise<IProjectMember[]>;

@@ -1,5 +1,7 @@
 import { Field, GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
 import { IProject, ProjectPriority, ProjectStatus } from 'shared';
+import { ProjectFileModel } from './project-file.model';
+import { ProjectLinkModel } from './project-link.model';
 
 @ObjectType()
 export class ProjectModel implements Omit<IProject, 'createdAt' | 'updatedAt'> {
@@ -32,6 +34,12 @@ export class ProjectModel implements Omit<IProject, 'createdAt' | 'updatedAt'> {
 
   @Field(() => String, { nullable: true })
   image?: string;
+
+  @Field(() => [ProjectFileModel], { nullable: true })
+  files?: ProjectFileModel[];
+
+  @Field(() => [ProjectLinkModel], { nullable: true })
+  links?: ProjectLinkModel[];
 
   @Field(() => GraphQLISODateTime)
   createdAt: Date;

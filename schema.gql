@@ -66,6 +66,26 @@ enum UserStatus {
   DELETED
 }
 
+type ProjectFileModel {
+  id: ID!
+  projectId: ID!
+  url: String!
+  name: String!
+  mimeType: String
+  size: Int
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ProjectLinkModel {
+  id: ID!
+  projectId: ID!
+  url: String!
+  title: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
 type ProjectModel {
   id: ID!
   companyId: ID!
@@ -77,6 +97,8 @@ type ProjectModel {
   priority: ProjectPriority
   description: String
   image: String
+  files: [ProjectFileModel!]!
+  links: [ProjectLinkModel!]!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -106,31 +128,12 @@ enum ProjectMemberRole {
   ASSIGNEE
 }
 
-type ProjectFileModel {
-  id: ID!
-  projectId: ID!
-  url: String!
-  name: String!
-  mimeType: String
-  size: Int
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}
-
-type ProjectLinkModel {
-  id: ID!
-  projectId: ID!
-  url: String!
-  title: String
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}
-
 type Query {
   me: UserModel
   company: CompanyModel!
   myCompanys: [CompanyModel!]!
   companyMembers: [EmployeeModel!]!
+  getProject(projectId: String!): ProjectModel!
   myProjects: [ProjectModel!]!
   projectMembers(projectId: String!): [ProjectMemberModel!]!
   projectFiles(projectId: String!): [ProjectFileModel!]!

@@ -3,7 +3,9 @@ import {
   Field,
   InputType,
   Mutation,
+  Parent,
   Query,
+  ResolveField,
   Resolver,
 } from '@nestjs/graphql';
 import { Inject, UseGuards } from '@nestjs/common';
@@ -92,6 +94,15 @@ export class ProjectsResolver {
   }
 
   @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
+  @Query(() => ProjectModel)
+  async getProject(
+    @Args('projectId', { type: () => String }) projectId: string,
+  ): Promise<ProjectModel> {
+    const project = await this.grpcProjectsService.getProject(projectId);
+    return this.wrapProject(project);
+  }
+
+  @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
   @Query(() => [ProjectModel])
   async myProjects(
     @CurrentCompanyId() companyId: string,
@@ -138,6 +149,18 @@ export class ProjectsResolver {
     const members =
       await this.grpcProjectsService.getProjectMembers(projectId);
     return members.map((m) => this.wrapMember(m));
+  }
+
+  @ResolveField('files', () => [ProjectFileModel])
+  async resolveFiles(@Parent() project: ProjectModel): Promise<ProjectFileModel[]> {
+    const files = await this.grpcProjectsService.getProjectFiles(project.id);
+    return files.map((f) => this.wrapFile(f));
+  }
+
+  @ResolveField('links', () => [ProjectLinkModel])
+  async resolveLinks(@Parent() project: ProjectModel): Promise<ProjectLinkModel[]> {
+    const links = await this.grpcProjectsService.getProjectLinks(project.id);
+    return links.map((l) => this.wrapLink(l));
   }
 
   private wrapProject(data: IProject): ProjectModel {
