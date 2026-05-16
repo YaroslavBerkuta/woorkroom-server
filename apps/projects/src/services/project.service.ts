@@ -6,7 +6,7 @@ import { ProjectMember } from '../entitys/project-member.entity';
 import { ProjectFile } from '../entitys/project-file.entity';
 import { ProjectLink } from '../entitys/project-link.entity';
 import { AddProjectFileDto, AddProjectLinkDto, CreateProjectDto, UpdateProjectDto, UpdateProjectStatusDto } from 'shared';
-import { ProjectMemberRole } from 'shared';
+import { ProjectMemberRole, ProjectPriority } from 'shared';
 import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
@@ -56,7 +56,7 @@ export class ProjectService {
       slug,
       starts: dto.starts || undefined,
       deadline: dto.deadline || undefined,
-      priority: dto.priority || undefined,
+      priority: dto.priority ?? ProjectPriority.LOW,
       description: dto.description || undefined,
       image: dto.image || undefined,
     });

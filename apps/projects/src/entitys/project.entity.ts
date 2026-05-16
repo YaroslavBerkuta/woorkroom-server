@@ -26,9 +26,9 @@ export class Project extends EntityAbstract implements IProject {
   @Column({
     type: 'enum',
     enum: ProjectPriority,
-    nullable: true,
+    default: ProjectPriority.LOW,
   })
-  priority?: ProjectPriority;
+  priority: ProjectPriority;
 
   @Column({ nullable: true, type: 'text' })
   description?: string;
