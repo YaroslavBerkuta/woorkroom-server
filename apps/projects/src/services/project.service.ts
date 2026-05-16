@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Project } from '../entitys/project.entity';
 import { ProjectMember } from '../entitys/project-member.entity';
-import { CreateProjectDto } from 'shared';
+import { CreateProjectDto, UpdateProjectStatusDto } from 'shared';
 import { ProjectMemberRole } from 'shared';
 import { RpcException } from '@nestjs/microservices';
 
@@ -109,5 +109,12 @@ export class ProjectService {
     const project = await this.projectRepo.findOne({ where: { id: projectId } });
     if (!project) throw new RpcException('Project not found');
     return this.memberRepo.find({ where: { projectId } });
+  }
+
+  async updateProjectStatus(dto: UpdateProjectStatusDto): Promise<Project> {
+    const project = await this.projectRepo.findOne({ where: { id: dto.id } });
+    if (!project) throw new RpcException('Project not found');
+    project.status = dto.status;
+    return this.projectRepo.save(project);
   }
 }

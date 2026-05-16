@@ -1,4 +1,4 @@
-import { ProjectMemberRole, ProjectPriority } from 'shared/types';
+import { ProjectMemberRole, ProjectPriority, ProjectStatus } from 'shared/types';
 
 export class CreateProjectDto {
   companyId: string;
@@ -11,6 +11,11 @@ export class CreateProjectDto {
   image?: string;
   reporterId?: string;
   assigneeIds?: string[];
+}
+
+export class UpdateProjectStatusDto {
+  id: string;
+  status: ProjectStatus;
 }
 
 export class AddProjectMemberDto {

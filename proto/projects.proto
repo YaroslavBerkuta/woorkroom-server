@@ -7,6 +7,7 @@ service ProjectsService {
   rpc GetMyProjects (GetMyProjectsRequest) returns (ProjectListResponse);
   rpc GetCompanyProjects (IdRequest) returns (ProjectListResponse);
   rpc GetProjectMembers (IdRequest) returns (ProjectMemberListResponse);
+  rpc UpdateProjectStatus (UpdateProjectStatusRequest) returns (ProjectResponse);
 }
 
 message IdRequest {
@@ -31,17 +32,24 @@ message CreateProjectRequest {
   repeated string assigneeIds = 10;
 }
 
+message UpdateProjectStatusRequest {
+  string id = 1;
+  string status = 2;
+}
+
 message ProjectResponse {
   string id = 1;
   string companyId = 2;
   string name = 3;
-  string starts = 4;
-  string deadline = 5;
-  string priority = 6;
-  string description = 7;
-  string image = 8;
-  string createdAt = 9;
-  string updatedAt = 10;
+  string slug = 4;
+  string status = 5;
+  string starts = 6;
+  string deadline = 7;
+  string priority = 8;
+  string description = 9;
+  string image = 10;
+  string createdAt = 11;
+  string updatedAt = 12;
 }
 
 message ProjectMemberResponse {

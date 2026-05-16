@@ -11,7 +11,7 @@ import * as grpc from 'woorkroom/grpc';
 import { AccessCompanyGuard, GqlSessionAuthGuard } from '../../guards';
 import { CurrentCompanyId, CurrentUserId } from '../../decorators';
 import { ProjectMemberModel, ProjectModel } from '../models';
-import { IProject, IProjectMember, ProjectPriority } from 'shared';
+import { IProject, IProjectMember, ProjectPriority, ProjectStatus } from 'shared';
 
 @InputType()
 export class CreateProjectInput {
@@ -87,6 +87,16 @@ export class ProjectsResolver {
       profile.id,
     );
     return projects.map((p) => this.wrapProject(p));
+  }
+
+  @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
+  @Mutation(() => ProjectModel)
+  async updateProjectStatus(
+    @Args('projectId', { type: () => String }) projectId: string,
+    @Args('status', { type: () => ProjectStatus }) status: ProjectStatus,
+  ): Promise<ProjectModel> {
+    const project = await this.grpcProjectsService.updateProjectStatus(projectId, status);
+    return this.wrapProject(project);
   }
 
   @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)

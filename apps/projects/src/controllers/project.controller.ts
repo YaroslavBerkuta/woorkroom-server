@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { ProjectService } from '../services';
-import { CreateProjectDto } from 'shared';
+import { CreateProjectDto, UpdateProjectStatusDto } from 'shared';
 
 @Controller()
 export class ProjectController {
@@ -31,5 +31,10 @@ export class ProjectController {
   async getProjectMembers(dto: { id: string }) {
     const members = await this.projectService.getProjectMembers(dto.id);
     return { members };
+  }
+
+  @GrpcMethod('ProjectsService', 'UpdateProjectStatus')
+  updateProjectStatus(dto: UpdateProjectStatusDto) {
+    return this.projectService.updateProjectStatus(dto);
   }
 }
