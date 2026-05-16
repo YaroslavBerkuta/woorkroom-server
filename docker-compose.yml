@@ -4,9 +4,9 @@ services:
     container_name: woorkroom-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: woorkroom
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
@@ -39,8 +39,8 @@ services:
     container_name: woorkroom-rabbitmq
     restart: unless-stopped
     environment:
-      RABBITMQ_DEFAULT_USER: woorkroom
-      RABBITMQ_DEFAULT_PASS: woorkroom
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -55,12 +55,12 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      NODE_ENV: docker
-      CHOKIDAR_USEPOLLING: "1"
-      CHOKIDAR_INTERVAL: "300"
-      GRPC_USERS_PORT: "5001"
+      NODE_ENV: ${NODE_ENV}
+      CHOKIDAR_USEPOLLING: ${CHOKIDAR_USEPOLLING}
+      CHOKIDAR_INTERVAL: ${CHOKIDAR_INTERVAL}
+      GRPC_USERS_PORT: ${GRPC_USERS_PORT}
     ports:
-      - "5001:5001"
+      - "${GRPC_USERS_PORT}:${GRPC_USERS_PORT}"
     command: ["npx", "nest", "start", "users", "--watch"]
     volumes:
       - ./:/app
@@ -78,12 +78,12 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      NODE_ENV: docker
-      CHOKIDAR_USEPOLLING: "1"
-      CHOKIDAR_INTERVAL: "300"
-      GRPC_COMPANYS_PORT: "5003"
+      NODE_ENV: ${NODE_ENV}
+      CHOKIDAR_USEPOLLING: ${CHOKIDAR_USEPOLLING}
+      CHOKIDAR_INTERVAL: ${CHOKIDAR_INTERVAL}
+      GRPC_COMPANYS_PORT: ${GRPC_COMPANYS_PORT}
     ports:
-      - "5003:5003"
+      - "${GRPC_COMPANYS_PORT}:${GRPC_COMPANYS_PORT}"
     command: ["npx", "nest", "start", "companys", "--watch"]
     volumes:
       - ./:/app
@@ -101,14 +101,14 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      NODE_ENV: docker
-      CHOKIDAR_USEPOLLING: "1"
-      CHOKIDAR_INTERVAL: "300"
-      GRPC_AUTH_PORT: "5002"
-      GRPC_USERS_URL: "users:5001"
-      GRPC_COMPANYS_URL: "companys:5003"
+      NODE_ENV: ${NODE_ENV}
+      CHOKIDAR_USEPOLLING: ${CHOKIDAR_USEPOLLING}
+      CHOKIDAR_INTERVAL: ${CHOKIDAR_INTERVAL}
+      GRPC_AUTH_PORT: ${GRPC_AUTH_PORT}
+      GRPC_USERS_URL: ${GRPC_USERS_URL}
+      GRPC_COMPANYS_URL: ${GRPC_COMPANYS_URL}
     ports:
-      - "5002:5002"
+      - "${GRPC_AUTH_PORT}:${GRPC_AUTH_PORT}"
     command: ["npx", "nest", "start", "authorization", "--watch"]
     volumes:
       - ./:/app
@@ -129,16 +129,16 @@ services:
     restart: unless-stopped
     env_file: .env
     ports:
-      - "3000:3000"
+      - "${PORT}:${PORT}"
     environment:
-      NODE_ENV: docker
-      CHOKIDAR_USEPOLLING: "1"
-      CHOKIDAR_INTERVAL: "300"
-      GRPC_USERS_URL: "users:5001"
-      GRPC_AUTH_URL: "authorization:5002"
-      GRPC_COMPANYS_URL: "companys:5003"
-      GRPC_MEDIA_URL: "media:5004"
-      GRPC_PROJECTS_URL: "projects:5005"
+      NODE_ENV: ${NODE_ENV}
+      CHOKIDAR_USEPOLLING: ${CHOKIDAR_USEPOLLING}
+      CHOKIDAR_INTERVAL: ${CHOKIDAR_INTERVAL}
+      GRPC_USERS_URL: ${GRPC_USERS_URL}
+      GRPC_AUTH_URL: ${GRPC_AUTH_URL}
+      GRPC_COMPANYS_URL: ${GRPC_COMPANYS_URL}
+      GRPC_MEDIA_URL: ${GRPC_MEDIA_URL}
+      GRPC_PROJECTS_URL: ${GRPC_PROJECTS_URL}
     command: ["npx", "nest", "start", "gateway", "--watch"]
     volumes:
       - ./:/app
@@ -159,9 +159,9 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      NODE_ENV: docker
-      CHOKIDAR_USEPOLLING: "1"
-      CHOKIDAR_INTERVAL: "300"
+      NODE_ENV: ${NODE_ENV}
+      CHOKIDAR_USEPOLLING: ${CHOKIDAR_USEPOLLING}
+      CHOKIDAR_INTERVAL: ${CHOKIDAR_INTERVAL}
     command: ["npx", "nest", "start", "mails", "--watch"]
     volumes:
       - ./:/app
@@ -177,8 +177,8 @@ services:
     container_name: woorkroom-minio
     restart: unless-stopped
     environment:
-      MINIO_ROOT_USER: woorkroom
-      MINIO_ROOT_PASSWORD: woorkroom
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -196,20 +196,20 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      NODE_ENV: docker
-      CHOKIDAR_USEPOLLING: "1"
-      CHOKIDAR_INTERVAL: "300"
-      GRPC_MEDIA_PORT: "5004"
-      MEDIA_HTTP_PORT: "3001"
-      MINIO_ENDPOINT: "minio"
-      MINIO_PORT: "9000"
-      MINIO_ACCESS_KEY: "woorkroom"
-      MINIO_SECRET_KEY: "woorkroom"
-      MINIO_BUCKET: "woorkroom-media"
-      MINIO_PUBLIC_URL: "http://localhost:9000"
+      NODE_ENV: ${NODE_ENV}
+      CHOKIDAR_USEPOLLING: ${CHOKIDAR_USEPOLLING}
+      CHOKIDAR_INTERVAL: ${CHOKIDAR_INTERVAL}
+      GRPC_MEDIA_PORT: ${GRPC_MEDIA_PORT}
+      MEDIA_HTTP_PORT: ${MEDIA_HTTP_PORT}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_PORT: ${MINIO_PORT}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_BUCKET: ${MINIO_BUCKET}
+      MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL}
     ports:
-      - "3001:3001"
-      - "5004:5004"
+      - "${MEDIA_HTTP_PORT}:${MEDIA_HTTP_PORT}"
+      - "${GRPC_MEDIA_PORT}:${GRPC_MEDIA_PORT}"
     command: ["npx", "nest", "start", "media", "--watch"]
     volumes:
       - ./:/app
@@ -227,17 +227,17 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      NODE_ENV: docker
-      CHOKIDAR_USEPOLLING: "1"
-      CHOKIDAR_INTERVAL: "300"
-      GRPC_PROJECTS_PORT: "5005"
-      DATABASE_PROJECTS_HOST: "db"
-      DATABASE_PROJECTS_PORT: "5432"
-      DATABASE_PROJECTS_USER: "root"
-      DATABASE_PROJECTS_PASSWORD: "root"
-      DATABASE_PROJECTS_DATABASE: "woorkroom-projects"
+      NODE_ENV: ${NODE_ENV}
+      CHOKIDAR_USEPOLLING: ${CHOKIDAR_USEPOLLING}
+      CHOKIDAR_INTERVAL: ${CHOKIDAR_INTERVAL}
+      GRPC_PROJECTS_PORT: ${GRPC_PROJECTS_PORT}
+      DATABASE_PROJECTS_HOST: ${DATABASE_PROJECTS_HOST}
+      DATABASE_PROJECTS_PORT: ${DATABASE_PROJECTS_PORT}
+      DATABASE_PROJECTS_USER: ${DATABASE_PROJECTS_USER}
+      DATABASE_PROJECTS_PASSWORD: ${DATABASE_PROJECTS_PASSWORD}
+      DATABASE_PROJECTS_DATABASE: ${DATABASE_PROJECTS_DATABASE}
     ports:
-      - "5005:5005"
+      - "${GRPC_PROJECTS_PORT}:${GRPC_PROJECTS_PORT}"
     command: ["npx", "nest", "start", "projects", "--watch"]
     volumes:
       - ./:/app
