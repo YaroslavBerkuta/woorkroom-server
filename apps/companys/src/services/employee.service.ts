@@ -3,7 +3,7 @@ import type { ICompanyServiceInterface, IEmployeeService } from '../types';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Employee } from '../entitys';
-import { CreateEmployeeDto } from 'shared';
+import { CreateEmployeeDto, UpdateEmployeeDto } from 'shared';
 import { CompanyService } from './company.service';
 import { RpcException } from '@nestjs/microservices';
 
@@ -59,6 +59,27 @@ export class EmployeeService implements IEmployeeService {
     const resCompanys = companys.filter((company) => company !== null);
 
     return resCompanys;
+  }
+
+  async updateEmployee(dto: UpdateEmployeeDto) {
+    const employee = await this.employeeRepository.findOne({
+      where: { id: dto.id },
+    });
+
+    if (!employee) {
+      throw new RpcException('Employee not found');
+    }
+
+    Object.assign(employee, {
+      name: dto.name ?? employee.name,
+      lastName: dto.lastName ?? employee.lastName,
+      avatar: dto.avatar ?? employee.avatar,
+      position: dto.position ?? employee.position,
+      location: dto.location ?? employee.location,
+      birthday: dto.birthday || employee.birthday,
+    });
+
+    return this.employeeRepository.save(employee);
   }
 
   async getMyCompanyProfile(companyId: string, userId: string) {

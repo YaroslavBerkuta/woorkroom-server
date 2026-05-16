@@ -1,4 +1,4 @@
-import { CreateEmployeeDto, ICompany, IEmployee } from 'shared';
+import { CreateEmployeeDto, UpdateEmployeeDto, ICompany, IEmployee } from 'shared';
 
 export interface IEmployeeService {
   createEmployee(dto: CreateEmployeeDto): Promise<IEmployee>;
@@ -8,6 +8,7 @@ export interface IEmployeeService {
   ): Promise<IEmployee | null>;
   deleteEmployee(id: string): Promise<boolean>;
   getMyCompanys(userId: string): Promise<ICompany[]>;
+  updateEmployee(dto: UpdateEmployeeDto): Promise<IEmployee>;
   getMyCompanyProfile(
     companyId: string,
     userId: string,

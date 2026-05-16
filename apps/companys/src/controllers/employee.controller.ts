@@ -2,7 +2,7 @@ import { Controller, Inject } from '@nestjs/common';
 import * as types from '../types';
 import { EmployeeService } from '../services';
 import { GrpcMethod } from '@nestjs/microservices';
-import { CreateEmployeeDto } from 'shared';
+import { CreateEmployeeDto, UpdateEmployeeDto } from 'shared';
 
 @Controller()
 export class EmployeeController {
@@ -26,6 +26,11 @@ export class EmployeeController {
   async getMyCompanys(dto: { userId: string }) {
     const companies = await this.employeeService.getMyCompanys(dto.userId);
     return { companies };
+  }
+
+  @GrpcMethod('CompanysService', 'UpdateEmployee')
+  updateEmployee(dto: UpdateEmployeeDto) {
+    return this.employeeService.updateEmployee(dto);
   }
 
   @GrpcMethod('CompanysService', 'GetMyCompanyProfile')

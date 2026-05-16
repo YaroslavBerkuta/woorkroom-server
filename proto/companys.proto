@@ -8,6 +8,7 @@ service CompanysService {
   rpc DeleteCompany (IdRequest) returns (BoolResponse);
   rpc FindCompanyById (IdRequest) returns (CompanyResponse);
   rpc CreateEmployee (CreateEmployeeRequest) returns (EmployeeResponse);
+  rpc UpdateEmployee (UpdateEmployeeRequest) returns (EmployeeResponse);
   rpc DeleteEmployee (IdRequest) returns (BoolResponse);
   rpc GetMyCompanys (UserIdRequest) returns (CompanyListResponse);
   rpc GetMyCompanyProfile (CompanyUserRequest) returns (EmployeeResponse);
@@ -59,6 +60,16 @@ message CreateEmployeeRequest {
   string position = 8;
   string location = 9;
   string birthday = 10;
+}
+
+message UpdateEmployeeRequest {
+  string id = 1;
+  string name = 2;
+  string lastName = 3;
+  string avatar = 4;
+  string position = 5;
+  string location = 6;
+  string birthday = 7;
 }
 
 message CompanyResponse {

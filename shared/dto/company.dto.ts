@@ -38,6 +38,16 @@ export class CreateEmployeeDto {
   birthday?: Date;
 }
 
+export class UpdateEmployeeDto {
+  id: string;
+  name?: string;
+  lastName?: string;
+  avatar?: string;
+  position?: string;
+  location?: string;
+  birthday?: Date;
+}
+
 export class FindCompanyByIdDto {
   @IsDefined()
   @IsString()

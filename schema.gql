@@ -78,6 +78,7 @@ type Mutation {
   requestCode(phone: String!): Boolean!
   register(input: RegisterInput!): Boolean!
   selectMyCompany(companyId: ID!): Boolean!
+  updateMyProfile(input: UpdateProfileInput!): EmployeeModel!
 }
 
 input LoginInput {
@@ -105,4 +106,13 @@ input CreateCompanyInput {
   direction: String
   peopleCountStart: Float!
   peopleCountEnd: Float!
+}
+
+input UpdateProfileInput {
+  name: String
+  lastName: String
+  avatar: String
+  position: String
+  location: String
+  birthday: DateTime
 }
