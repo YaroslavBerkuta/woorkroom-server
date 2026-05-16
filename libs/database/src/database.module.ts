@@ -47,4 +47,26 @@ export class DatabaseModule {
       exports: [TypeOrmModule],
     };
   }
+
+  static forProjects(entities: any[]): DynamicModule {
+    return {
+      module: DatabaseModule,
+      imports: [
+        TypeOrmModule.forRootAsync({
+          inject: [ConfigService],
+          useFactory: (config: ConfigService): TypeOrmModuleOptions => {
+            const db =
+              config.get<Record<string, unknown>>('postgres.projects') ?? {};
+            return {
+              ...db,
+              synchronize: true,
+              entities,
+            };
+          },
+        }),
+        TypeOrmModule.forFeature(entities),
+      ],
+      exports: [TypeOrmModule],
+    };
+  }
 }

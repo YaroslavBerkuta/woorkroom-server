@@ -16,6 +16,14 @@ export const dataBaseConfig = () => ({
       password: process.env.DATABASE_COMPANY_PASSWORD,
       database: process.env.DATABASE_COMPANY_DATABASE,
     },
+    projects: {
+      type: 'postgres',
+      port: Number(process.env.DATABASE_PROJECTS_PORT) || 5432,
+      host: process.env.DATABASE_PROJECTS_HOST,
+      username: process.env.DATABASE_PROJECTS_USER,
+      password: process.env.DATABASE_PROJECTS_PASSWORD,
+      database: process.env.DATABASE_PROJECTS_DATABASE,
+    },
   },
   redis: {
     host: process.env.REDIS_HOST,
@@ -77,6 +85,10 @@ export const grpcConfig = () => ({
     media: {
       port: Number(process.env.GRPC_MEDIA_PORT) || 5004,
       url: process.env.GRPC_MEDIA_URL || 'localhost:5004',
+    },
+    projects: {
+      port: Number(process.env.GRPC_PROJECTS_PORT) || 5005,
+      url: process.env.GRPC_PROJECTS_URL || 'localhost:5005',
     },
   },
 });

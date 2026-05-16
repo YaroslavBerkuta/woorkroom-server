@@ -66,11 +66,46 @@ enum UserStatus {
   DELETED
 }
 
+type ProjectModel {
+  id: ID!
+  companyId: ID!
+  name: String!
+  starts: String
+  deadline: String
+  priority: ProjectPriority
+  description: String
+  image: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum ProjectPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+type ProjectMemberModel {
+  id: ID!
+  projectId: ID!
+  employeeId: ID!
+  role: ProjectMemberRole!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum ProjectMemberRole {
+  REPORTER
+  ASSIGNEE
+}
+
 type Query {
   me: UserModel
   company: CompanyModel!
   myCompanys: [CompanyModel!]!
   companyMembers: [EmployeeModel!]!
+  myProjects: [ProjectModel!]!
+  projectMembers(projectId: String!): [ProjectMemberModel!]!
 }
 
 type Mutation {
@@ -80,6 +115,7 @@ type Mutation {
   register(input: RegisterInput!): Boolean!
   selectMyCompany(companyId: ID!): Boolean!
   updateMyProfile(input: UpdateProfileInput!): EmployeeModel!
+  createProject(input: CreateProjectInput!): ProjectModel!
 }
 
 input LoginInput {
@@ -116,4 +152,15 @@ input UpdateProfileInput {
   position: String
   location: String
   birthday: DateTime
+}
+
+input CreateProjectInput {
+  name: String!
+  starts: String
+  deadline: String
+  priority: ProjectPriority
+  description: String
+  image: String
+  reporterId: String
+  assigneeIds: [String!]
 }
