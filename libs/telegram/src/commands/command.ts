@@ -21,10 +21,14 @@ export abstract class Command {
   }
 
   private static getCommandNameFromContext(ctx: Context): string | undefined {
-    const anyCtx = ctx as any;
+    const raw = ctx as unknown as {
+      message?: { text?: string };
+      update?: { message?: { text?: string } };
+      callbackQuery?: { data?: string };
+      updateType?: string;
+    };
 
-    const messageText: unknown =
-      anyCtx?.message?.text ?? anyCtx?.update?.message?.text;
+    const messageText = raw?.message?.text ?? raw?.update?.message?.text;
     if (typeof messageText === 'string') {
       const firstToken = messageText.trim().split(/\s+/)[0];
       if (firstToken?.startsWith('/')) {
@@ -32,12 +36,12 @@ export abstract class Command {
       }
     }
 
-    const callbackData: unknown = anyCtx?.callbackQuery?.data;
+    const callbackData = raw?.callbackQuery?.data;
     if (typeof callbackData === 'string' && callbackData.length > 0) {
       return `callback:${callbackData}`;
     }
 
-    const updateType: unknown = anyCtx?.updateType;
+    const updateType = raw?.updateType;
     if (typeof updateType === 'string' && updateType.length > 0) {
       return `update:${updateType}`;
     }

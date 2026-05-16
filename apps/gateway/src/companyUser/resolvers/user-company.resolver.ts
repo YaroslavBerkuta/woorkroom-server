@@ -1,11 +1,19 @@
-import { Args, InputType, Field, Mutation, ResolveField, Resolver, GraphQLISODateTime } from '@nestjs/graphql';
+import {
+  Args,
+  InputType,
+  Field,
+  Mutation,
+  ResolveField,
+  Resolver,
+  GraphQLISODateTime,
+} from '@nestjs/graphql';
 import { CompanyModel, EmployeeModel } from '../../companys';
 import { UserModel } from '../../users';
 import { Inject, UseGuards } from '@nestjs/common';
 import { CompanysResolver } from '../../companys/resolvers';
 import * as grpc from 'woorkroom/grpc';
 import { AccessCompanyGuard, GqlSessionAuthGuard } from '../../guards';
-import { CurrentCompanyId, CurrentSessionId, CurrentUserId } from '../../decorators';
+import { CurrentCompanyId, CurrentUserId } from '../../decorators';
 import { IEmployee } from 'shared';
 
 @InputType()
@@ -72,7 +80,10 @@ export class UserCompanyResolver {
     @CurrentCompanyId() companyId: string,
     @CurrentUserId() userId: string,
   ): Promise<EmployeeModel> {
-    const profile = await this.grpcCompanysService.getMyCompanyProfile(companyId, userId);
+    const profile = await this.grpcCompanysService.getMyCompanyProfile(
+      companyId,
+      userId,
+    );
     if (!profile) throw new Error('Profile not found');
     const updated = await this.grpcCompanysService.updateEmployee({
       id: profile.id,
@@ -85,8 +96,8 @@ export class UserCompanyResolver {
     return {
       ...data,
       birthday: data.birthday ? new Date(data.birthday) : null,
-      createdAt: new Date(data.createdAt) || new Date(),
-      updatedAt: new Date(data.updatedAt) || new Date(),
+      createdAt: new Date(data.createdAt),
+      updatedAt: new Date(data.updatedAt),
     };
   }
 }

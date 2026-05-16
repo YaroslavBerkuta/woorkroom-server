@@ -22,7 +22,13 @@ async function bootstrap() {
       package: 'users',
       protoPath: join(process.cwd(), 'proto', 'users.proto'),
       url: `0.0.0.0:${config.get<number>('grpc.users.port')}`,
-      loader: { longs: Number, defaults: true, arrays: true, objects: true, oneofs: true },
+      loader: {
+        longs: Number,
+        defaults: true,
+        arrays: true,
+        objects: true,
+        oneofs: true,
+      },
     },
   });
 

@@ -25,8 +25,8 @@ export class SmtpService {
     subject: string;
     html: string;
     text?: string;
-  }) {
-    return this.transporter.sendMail({
+  }): Promise<void> {
+    await this.transporter.sendMail({
       to: input.to,
       subject: input.subject,
       text: input.text,

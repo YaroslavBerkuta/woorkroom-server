@@ -4,14 +4,22 @@ import { lastValueFrom, Observable } from 'rxjs';
 import { ISession, LoginDto, LogoutDto, RegisterDto } from 'shared';
 import { IGrpcAuthService } from '../types';
 
+interface BoolResponse {
+  value: boolean;
+}
+
+interface SessionListResponse {
+  sessions: ISession[];
+}
+
 interface AuthGrpcClient {
-  sendVerificationCode(data: any): Observable<any>;
-  register(data: any): Observable<any>;
-  login(data: any): Observable<any>;
-  logout(data: any): Observable<any>;
-  getSession(data: any): Observable<any>;
-  getUserSessions(data: any): Observable<any>;
-  selectCompany(data: any): Observable<any>;
+  sendVerificationCode(data: unknown): Observable<BoolResponse>;
+  register(data: unknown): Observable<BoolResponse>;
+  login(data: unknown): Observable<ISession>;
+  logout(data: unknown): Observable<BoolResponse>;
+  getSession(data: unknown): Observable<ISession>;
+  getUserSessions(data: unknown): Observable<SessionListResponse>;
+  selectCompany(data: unknown): Observable<ISession>;
 }
 
 @Injectable()

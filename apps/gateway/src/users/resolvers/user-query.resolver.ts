@@ -1,4 +1,4 @@
-import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { UserModel } from '../models/user.model';
 import * as grpc from 'woorkroom/grpc';
 import { Inject, NotFoundException, UseGuards } from '@nestjs/common';

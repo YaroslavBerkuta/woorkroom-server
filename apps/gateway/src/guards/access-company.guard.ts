@@ -6,7 +6,13 @@ import {
 } from '@nestjs/common';
 import { CanActivate } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { Request } from 'express';
+import { ISession } from 'shared';
 import * as grpc from 'woorkroom/grpc';
+
+interface GqlContext {
+  req: Request & { session?: ISession };
+}
 
 @Injectable()
 export class AccessCompanyGuard implements CanActivate {
@@ -17,11 +23,11 @@ export class AccessCompanyGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const ctx = GqlExecutionContext.create(context);
-    const { req } = ctx.getContext();
-    const args = ctx.getArgs();
+    const { req } = ctx.getContext<GqlContext>();
+    const args = ctx.getArgs<{ companyId?: string }>();
 
-    const userId = req.session.userId;
-    const companyId = args.companyId || req.session.companyId;
+    const userId = req.session?.userId;
+    const companyId = args.companyId || req.session?.companyId;
 
     if (!userId) return false;
 

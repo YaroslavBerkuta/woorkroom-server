@@ -1,4 +1,10 @@
-import { CreateCompanyDto, CreateEmployeeDto, UpdateEmployeeDto, ICompany, IEmployee } from 'shared';
+import {
+  CreateCompanyDto,
+  CreateEmployeeDto,
+  UpdateEmployeeDto,
+  ICompany,
+  IEmployee,
+} from 'shared';
 
 export interface IGrpcCompanyService {
   createCompany(company: CreateCompanyDto): Promise<ICompany>;
@@ -8,6 +14,9 @@ export interface IGrpcCompanyService {
   deleteEmployee(id: string): Promise<boolean>;
   getMyCompanys(userId: string): Promise<ICompany[]>;
   getCompanyById(companyId: string): Promise<ICompany | null>;
-  getMyCompanyProfile(companyId: string, userId: string): Promise<IEmployee | null>;
+  getMyCompanyProfile(
+    companyId: string,
+    userId: string,
+  ): Promise<IEmployee | null>;
   getCompanyMembers(companyId: string): Promise<IEmployee[]>;
 }

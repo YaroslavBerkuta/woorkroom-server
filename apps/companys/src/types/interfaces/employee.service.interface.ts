@@ -1,4 +1,9 @@
-import { CreateEmployeeDto, UpdateEmployeeDto, ICompany, IEmployee } from 'shared';
+import {
+  CreateEmployeeDto,
+  UpdateEmployeeDto,
+  ICompany,
+  IEmployee,
+} from 'shared';
 
 export interface IEmployeeService {
   createEmployee(dto: CreateEmployeeDto): Promise<IEmployee>;

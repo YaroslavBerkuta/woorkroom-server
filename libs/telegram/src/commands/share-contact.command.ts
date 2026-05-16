@@ -28,7 +28,10 @@ export class ShareContactCommand extends Command {
         this.logger.log(`Saved chatId for phone ${phone}`);
       }
 
-      await ctx.reply('Готово! Тепер ти можеш завершити реєстрацію ✅', Markup.removeKeyboard());
+      await ctx.reply(
+        'Готово! Тепер ти можеш завершити реєстрацію ✅',
+        Markup.removeKeyboard(),
+      );
     });
   }
 }

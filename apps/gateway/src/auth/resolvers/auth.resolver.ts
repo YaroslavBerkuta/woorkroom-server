@@ -1,10 +1,16 @@
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
-import { LoginInput, LogoutInput, RegisterInput } from '../inputs';
+import { LoginInput, RegisterInput } from '../inputs';
+import { Request, Response } from 'express';
 import { Inject, UseGuards } from '@nestjs/common';
 import { SessionModel } from '../models';
 import * as grpc from 'woorkroom/grpc';
 import { extractSessionId, GqlSessionAuthGuard } from '../../guards';
 import { CurrentUserId } from '../../decorators';
+
+interface GqlContext {
+  req: Request & { session?: Record<string, unknown> };
+  res: Response;
+}
 
 @Resolver()
 export class AuthResolver {
@@ -14,7 +20,7 @@ export class AuthResolver {
   ) {}
 
   @Mutation(() => SessionModel)
-  async login(@Args('input') input: LoginInput, @Context() ctx: any) {
+  async login(@Args('input') input: LoginInput, @Context() ctx: GqlContext) {
     const session = await this.authService.loginUser(input);
 
     const cookieName = 'sid';
@@ -32,7 +38,7 @@ export class AuthResolver {
 
   @UseGuards(GqlSessionAuthGuard)
   @Mutation(() => Boolean)
-  async logout(@CurrentUserId() userId: string, @Context() ctx: any) {
+  async logout(@CurrentUserId() userId: string, @Context() ctx: GqlContext) {
     const sid = extractSessionId(ctx.req);
     if (sid)
       await this.authService.logoutUser({

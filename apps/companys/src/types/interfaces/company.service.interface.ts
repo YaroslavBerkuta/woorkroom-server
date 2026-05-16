@@ -1,5 +1,4 @@
 import { CreateCompanyDto, ICompany, UpdateCompanyDto } from 'shared';
-import { DeleteResult } from 'typeorm';
 
 export interface ICompanyServiceInterface {
   createCompany(dto: CreateCompanyDto): Promise<ICompany>;

@@ -9,6 +9,9 @@ export class RabbitmqMailsService {
   ) {}
 
   sendVerificationCode(phone: string, code: string) {
-    return this.mailsService.send(EMessageRmqp.SEND_VERIFICATION_CODE, { phone, code });
+    return this.mailsService.send(EMessageRmqp.SEND_VERIFICATION_CODE, {
+      phone,
+      code,
+    });
   }
 }

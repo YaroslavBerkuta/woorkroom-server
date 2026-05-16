@@ -14,7 +14,9 @@ export class MainService {
 
   async sendVerificationCode(phone: string, code: string): Promise<void> {
     const normalizedPhone = phone.replace(/\D/g, '');
-    const chatId = await this.redisService.get<number>(`tg:phone:${normalizedPhone}`);
+    const chatId = await this.redisService.get<number>(
+      `tg:phone:${normalizedPhone}`,
+    );
 
     if (!chatId) {
       this.logger.warn(`No Telegram chatId found for phone ${normalizedPhone}`);

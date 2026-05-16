@@ -8,7 +8,7 @@ import {
   ICompany,
   IEmployee,
 } from 'shared';
-import { IRabbitmqCompanyService } from '../types';
+import { IRabbitmqCompanyService } from 'woorkroom/rabbitmq/types/interfaces/rabbitmq-company.service.interface';
 
 @Injectable()
 export class RabbitmqCompanyService implements IRabbitmqCompanyService {
@@ -22,9 +22,12 @@ export class RabbitmqCompanyService implements IRabbitmqCompanyService {
         .send<boolean>(EMessageRmqp.DELETE_COMPANY, { id })
         .pipe(
           timeout(10_000),
-          catchError((err) =>
+          catchError((err: unknown) =>
             throwError(
-              () => new RpcException(err?.message || 'COMPANY_SERVICE error'),
+              () =>
+                new RpcException(
+                  (err as Error)?.message || 'COMPANY_SERVICE error',
+                ),
             ),
           ),
         ),
@@ -36,9 +39,12 @@ export class RabbitmqCompanyService implements IRabbitmqCompanyService {
         .send<boolean>(EMessageRmqp.DELETE_EMPLOYEE, { id })
         .pipe(
           timeout(10_000),
-          catchError((err) =>
+          catchError((err: unknown) =>
             throwError(
-              () => new RpcException(err?.message || 'COMPANY_SERVICE error'),
+              () =>
+                new RpcException(
+                  (err as Error)?.message || 'COMPANY_SERVICE error',
+                ),
             ),
           ),
         ),
@@ -51,9 +57,12 @@ export class RabbitmqCompanyService implements IRabbitmqCompanyService {
         .send<ICompany>(EMessageRmqp.CREATE_COMPANY, company)
         .pipe(
           timeout(10_000),
-          catchError((err) =>
+          catchError((err: unknown) =>
             throwError(
-              () => new RpcException(err?.message || 'COMPANY_SERVICE error'),
+              () =>
+                new RpcException(
+                  (err as Error)?.message || 'COMPANY_SERVICE error',
+                ),
             ),
           ),
         ),
@@ -66,9 +75,12 @@ export class RabbitmqCompanyService implements IRabbitmqCompanyService {
         .send<IEmployee>(EMessageRmqp.CREATE_EMPLOYEE, employee)
         .pipe(
           timeout(10_000),
-          catchError((err) =>
+          catchError((err: unknown) =>
             throwError(
-              () => new RpcException(err?.message || 'COMPANY_SERVICE error'),
+              () =>
+                new RpcException(
+                  (err as Error)?.message || 'COMPANY_SERVICE error',
+                ),
             ),
           ),
         ),
@@ -81,9 +93,12 @@ export class RabbitmqCompanyService implements IRabbitmqCompanyService {
         .send<ICompany[]>(EMessageRmqp.GET_MY_COMPANYS, { userId })
         .pipe(
           timeout(10_000),
-          catchError((err) =>
+          catchError((err: unknown) =>
             throwError(
-              () => new RpcException(err?.message || 'COMPANY_SERVICE error'),
+              () =>
+                new RpcException(
+                  (err as Error)?.message || 'COMPANY_SERVICE error',
+                ),
             ),
           ),
         ),
@@ -98,9 +113,12 @@ export class RabbitmqCompanyService implements IRabbitmqCompanyService {
         })
         .pipe(
           timeout(10_000),
-          catchError((err) =>
+          catchError((err: unknown) =>
             throwError(
-              () => new RpcException(err?.message || 'COMPANY_SERVICE error'),
+              () =>
+                new RpcException(
+                  (err as Error)?.message || 'COMPANY_SERVICE error',
+                ),
             ),
           ),
         ),
@@ -119,9 +137,12 @@ export class RabbitmqCompanyService implements IRabbitmqCompanyService {
         })
         .pipe(
           timeout(10_000),
-          catchError((err) =>
+          catchError((err: unknown) =>
             throwError(
-              () => new RpcException(err?.message || 'COMPANY_SERVICE error'),
+              () =>
+                new RpcException(
+                  (err as Error)?.message || 'COMPANY_SERVICE error',
+                ),
             ),
           ),
         ),

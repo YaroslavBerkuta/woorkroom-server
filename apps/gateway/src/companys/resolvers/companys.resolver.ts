@@ -67,8 +67,8 @@ export class CompanysResolver {
     return {
       ...data,
       birthday: data.birthday ? new Date(data.birthday) : null,
-      createdAt: new Date(data.createdAt) || new Date(),
-      updatedAt: new Date(data.updatedAt) || new Date(),
+      createdAt: new Date(data.createdAt),
+      updatedAt: new Date(data.updatedAt),
     };
   }
 }

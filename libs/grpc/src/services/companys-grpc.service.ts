@@ -10,17 +10,29 @@ import {
 } from 'shared';
 import { IGrpcCompanyService } from '../types';
 
+interface BoolResponse {
+  value: boolean;
+}
+
+interface CompanyListResponse {
+  companies: ICompany[];
+}
+
+interface EmployeeListResponse {
+  employees: IEmployee[];
+}
+
 interface CompanysGrpcClient {
-  createCompany(data: any): Observable<any>;
-  updateCompany(data: any): Observable<any>;
-  deleteCompany(data: any): Observable<any>;
-  findCompanyById(data: any): Observable<any>;
-  createEmployee(data: any): Observable<any>;
-  updateEmployee(data: any): Observable<any>;
-  deleteEmployee(data: any): Observable<any>;
-  getMyCompanys(data: any): Observable<any>;
-  getMyCompanyProfile(data: any): Observable<any>;
-  getCompanyMembers(data: any): Observable<any>;
+  createCompany(data: unknown): Observable<ICompany>;
+  updateCompany(data: unknown): Observable<ICompany>;
+  deleteCompany(data: unknown): Observable<BoolResponse>;
+  findCompanyById(data: unknown): Observable<ICompany>;
+  createEmployee(data: unknown): Observable<IEmployee>;
+  updateEmployee(data: unknown): Observable<IEmployee>;
+  deleteEmployee(data: unknown): Observable<BoolResponse>;
+  getMyCompanys(data: unknown): Observable<CompanyListResponse>;
+  getMyCompanyProfile(data: unknown): Observable<IEmployee>;
+  getCompanyMembers(data: unknown): Observable<EmployeeListResponse>;
 }
 
 @Injectable()
@@ -68,7 +80,7 @@ export class GrpcCompanysService implements IGrpcCompanyService, OnModuleInit {
       const res = await lastValueFrom(
         this.client.findCompanyById({ id: companyId }),
       );
-      return res?.id ? (res as ICompany) : null;
+      return res?.id ? res : null;
     } catch {
       return null;
     }
@@ -82,7 +94,7 @@ export class GrpcCompanysService implements IGrpcCompanyService, OnModuleInit {
       const res = await lastValueFrom(
         this.client.getMyCompanyProfile({ companyId, userId }),
       );
-      return res?.id ? (res as IEmployee) : null;
+      return res?.id ? res : null;
     } catch {
       return null;
     }

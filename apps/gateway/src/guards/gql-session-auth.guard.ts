@@ -8,6 +8,11 @@ import {
 import { GqlExecutionContext } from '@nestjs/graphql';
 import * as grpc from 'woorkroom/grpc';
 import { Request } from 'express';
+import { ISession } from 'shared';
+
+interface GqlContext {
+  req: Request & { session?: ISession };
+}
 
 @Injectable()
 export class GqlSessionAuthGuard implements CanActivate {
@@ -18,7 +23,7 @@ export class GqlSessionAuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const ctx = GqlExecutionContext.create(context);
-    const { req } = ctx.getContext();
+    const { req } = ctx.getContext<GqlContext>();
 
     if (req.session) return true;
 
@@ -40,7 +45,8 @@ export const extractSessionId = (req: Request): string | null => {
     return auth.slice('Bearer '.length).trim();
   }
 
-  if (req.cookies?.sid) return req.cookies.sid;
+  const cookies = req.cookies as Record<string, string> | undefined;
+  if (typeof cookies?.sid === 'string') return cookies.sid;
 
   return null;
 };

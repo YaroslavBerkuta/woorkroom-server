@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { Request, Response } from 'express';
 import { UsersModule } from './users';
 import { AuthModule } from './auth';
 import { CompanysModule } from './companys';
@@ -17,7 +18,10 @@ import { join } from 'path';
       introspection: process.env.NODE_ENV !== 'production',
       autoSchemaFile: join(process.cwd(), 'schema.gql'),
       fieldResolverEnhancers: ['guards'],
-      context: ({ req, res }) => ({ req, res }),
+      context: ({ req, res }: { req: Request; res: Response }) => ({
+        req,
+        res,
+      }),
     }),
     UsersModule,
     AuthModule,

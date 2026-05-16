@@ -38,7 +38,7 @@ export class UsersService implements IUserServiceInterface {
     try {
       const user = await this.usersRepository.findOneBy({ id });
       return user;
-    } catch (error) {
+    } catch {
       throw new RpcException('User not found');
     }
   }

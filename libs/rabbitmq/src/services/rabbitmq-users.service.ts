@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { catchError, lastValueFrom, throwError, timeout } from 'rxjs';
-import { EMessageRmqp, IUser, CreateUserDto } from 'shared';
-import * as types from '../types';
+import { CreateUserDto, EMessageRmqp, IUser } from 'shared';
+import { IRabbitmqUsersService } from 'woorkroom/rabbitmq/types/interfaces/rabbitmq-users.service.interface';
 
 @Injectable()
-export class RabbitmqUsersService implements types.IRabbitmqUsersService {
+export class RabbitmqUsersService implements IRabbitmqUsersService {
   constructor(
     @Inject('USER_SERVICE') private readonly userService: ClientProxy,
   ) {}
@@ -14,9 +14,10 @@ export class RabbitmqUsersService implements types.IRabbitmqUsersService {
     return lastValueFrom(
       this.userService.send<IUser>(EMessageRmqp.CREATE_USER, user).pipe(
         timeout(10_000),
-        catchError((err) =>
+        catchError((err: unknown) =>
           throwError(
-            () => new RpcException(err?.message || 'USER_SERVICE error'),
+            () =>
+              new RpcException((err as Error)?.message || 'USER_SERVICE error'),
           ),
         ),
       ),
@@ -27,9 +28,10 @@ export class RabbitmqUsersService implements types.IRabbitmqUsersService {
     return lastValueFrom(
       this.userService.send<IUser>(EMessageRmqp.FIND_USER_BY_ID, id).pipe(
         timeout(10_000),
-        catchError((err) =>
+        catchError((err: unknown) =>
           throwError(
-            () => new RpcException(err?.message || 'USER_SERVICE error'),
+            () =>
+              new RpcException((err as Error)?.message || 'USER_SERVICE error'),
           ),
         ),
       ),
@@ -42,9 +44,12 @@ export class RabbitmqUsersService implements types.IRabbitmqUsersService {
         .send<IUser>(EMessageRmqp.FIND_USER_BY_EMAIL, { email })
         .pipe(
           timeout(10_000),
-          catchError((err) =>
+          catchError((err: unknown) =>
             throwError(
-              () => new RpcException(err?.message || 'USER_SERVICE error'),
+              () =>
+                new RpcException(
+                  (err as Error)?.message || 'USER_SERVICE error',
+                ),
             ),
           ),
         ),
@@ -57,9 +62,12 @@ export class RabbitmqUsersService implements types.IRabbitmqUsersService {
         .send<boolean>(EMessageRmqp.DELETE_USER_BY_ID, { id })
         .pipe(
           timeout(10_000),
-          catchError((err) =>
+          catchError((err: unknown) =>
             throwError(
-              () => new RpcException(err?.message || 'USER_SERVICE error'),
+              () =>
+                new RpcException(
+                  (err as Error)?.message || 'USER_SERVICE error',
+                ),
             ),
           ),
         ),
@@ -72,9 +80,12 @@ export class RabbitmqUsersService implements types.IRabbitmqUsersService {
         .send<boolean>(EMessageRmqp.VERIFY_PASSWORD, { hashValue, password })
         .pipe(
           timeout(10_000),
-          catchError((err) =>
+          catchError((err: unknown) =>
             throwError(
-              () => new RpcException(err?.message || 'USER_SERVICE error'),
+              () =>
+                new RpcException(
+                  (err as Error)?.message || 'USER_SERVICE error',
+                ),
             ),
           ),
         ),

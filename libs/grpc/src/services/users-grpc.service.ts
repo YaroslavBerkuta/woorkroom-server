@@ -4,12 +4,16 @@ import { Observable, lastValueFrom } from 'rxjs';
 import { CreateUserDto, IUser } from 'shared';
 import { IGrpcUsersService } from '../types';
 
+interface BoolResponse {
+  value: boolean;
+}
+
 interface UsersGrpcClient {
-  createUser(data: any): Observable<any>;
-  findUserById(data: any): Observable<any>;
-  findUserByEmail(data: any): Observable<any>;
-  deleteUserById(data: any): Observable<any>;
-  verifyPassword(data: any): Observable<any>;
+  createUser(data: unknown): Observable<IUser>;
+  findUserById(data: unknown): Observable<IUser>;
+  findUserByEmail(data: unknown): Observable<IUser>;
+  deleteUserById(data: unknown): Observable<BoolResponse>;
+  verifyPassword(data: unknown): Observable<BoolResponse>;
 }
 
 @Injectable()
@@ -31,7 +35,7 @@ export class GrpcUsersService implements IGrpcUsersService, OnModuleInit {
   async findOneById(id: string): Promise<IUser | null> {
     try {
       const res = await lastValueFrom(this.client.findUserById({ id }));
-      return res?.id ? (res as IUser) : null;
+      return res?.id ? res : null;
     } catch {
       return null;
     }
@@ -40,7 +44,7 @@ export class GrpcUsersService implements IGrpcUsersService, OnModuleInit {
   async findOneByEmail(email: string): Promise<IUser | null> {
     try {
       const res = await lastValueFrom(this.client.findUserByEmail({ email }));
-      return res?.id ? (res as IUser) : null;
+      return res?.id ? res : null;
     } catch {
       return null;
     }

@@ -49,7 +49,9 @@ export class AuthorizationService
     const normalizedPhone = phone.replace(/\D/g, '');
 
     await this.redisService.ttl(`verify:code:${normalizedPhone}`, code, 60 * 5);
-    void this.rabbitmqMailsService.sendVerificationCode(normalizedPhone, code).subscribe();
+    void this.rabbitmqMailsService
+      .sendVerificationCode(normalizedPhone, code)
+      .subscribe();
 
     this.logger.log(`Verification code sent to phone ${normalizedPhone}`);
     return true;
@@ -97,8 +99,8 @@ export class AuthorizationService
         await this.grpcUsersService.deleteUserById(user.id);
         this.logger.warn('User deleted');
       }
-      this.logger.error(e);
-      throw new RpcException(e);
+      this.logger.error(String(e));
+      throw new RpcException(e as string | object);
     }
   }
 

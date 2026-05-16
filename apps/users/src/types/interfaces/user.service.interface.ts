@@ -1,5 +1,4 @@
 import { IUser, CreateUserDto, UpdateUserDto } from 'shared';
-import { DeleteResult } from 'typeorm';
 
 export interface IUserServiceInterface {
   create(dto: CreateUserDto): Promise<IUser>;

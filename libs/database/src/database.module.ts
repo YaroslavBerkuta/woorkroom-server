@@ -11,7 +11,8 @@ export class DatabaseModule {
         TypeOrmModule.forRootAsync({
           inject: [ConfigService],
           useFactory: (config: ConfigService): TypeOrmModuleOptions => {
-            const db = config.get('postgres.users');
+            const db =
+              config.get<Record<string, unknown>>('postgres.users') ?? {};
             return {
               ...db,
               synchronize: true,
@@ -32,7 +33,8 @@ export class DatabaseModule {
         TypeOrmModule.forRootAsync({
           inject: [ConfigService],
           useFactory: (config: ConfigService): TypeOrmModuleOptions => {
-            const db = config.get('postgres.companys');
+            const db =
+              config.get<Record<string, unknown>>('postgres.companys') ?? {};
             return {
               ...db,
               synchronize: true,

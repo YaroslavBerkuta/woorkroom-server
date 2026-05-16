@@ -6,7 +6,7 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { Context, Telegraf } from 'telegraf';
-import { Command, ShareContactCommand, StartCommand } from '../commands';
+import { ShareContactCommand, StartCommand } from '../commands';
 
 @Injectable()
 export class TelegramService implements OnModuleInit, OnModuleDestroy {

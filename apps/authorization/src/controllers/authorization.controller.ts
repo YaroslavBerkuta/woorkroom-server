@@ -17,7 +17,9 @@ export class AuthorizationController {
   @GrpcMethod('AuthService', 'SendVerificationCode')
   async sendVerificationCode(data: { phone: string }) {
     this.logger.log(`SendVerificationCode: ${data.phone}`);
-    const value = await this.authorizationService.sendVerificationCode(data.phone);
+    const value = await this.authorizationService.sendVerificationCode(
+      data.phone,
+    );
     return { value };
   }
 

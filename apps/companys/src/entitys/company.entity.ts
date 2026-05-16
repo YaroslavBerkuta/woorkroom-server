@@ -1,6 +1,5 @@
 import { EntityAbstract, ICompany } from 'shared';
-import { Column, Entity, OneToMany } from 'typeorm';
-import { Employee } from './employee.entity';
+import { Column, Entity } from 'typeorm';
 
 @Entity()
 export class Companys extends EntityAbstract implements ICompany {
