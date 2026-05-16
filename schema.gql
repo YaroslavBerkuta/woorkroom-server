@@ -70,6 +70,8 @@ type ProjectModel {
   id: ID!
   companyId: ID!
   name: String!
+  slug: String!
+  status: ProjectStatus!
   starts: String
   deadline: String
   priority: ProjectPriority
@@ -77,6 +79,11 @@ type ProjectModel {
   image: String
   createdAt: DateTime!
   updatedAt: DateTime!
+}
+
+enum ProjectStatus {
+  ACTIVE
+  CLOSED
 }
 
 enum ProjectPriority {
@@ -99,6 +106,26 @@ enum ProjectMemberRole {
   ASSIGNEE
 }
 
+type ProjectFileModel {
+  id: ID!
+  projectId: ID!
+  url: String!
+  name: String!
+  mimeType: String
+  size: Int
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ProjectLinkModel {
+  id: ID!
+  projectId: ID!
+  url: String!
+  title: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
 type Query {
   me: UserModel
   company: CompanyModel!
@@ -106,6 +133,8 @@ type Query {
   companyMembers: [EmployeeModel!]!
   myProjects: [ProjectModel!]!
   projectMembers(projectId: String!): [ProjectMemberModel!]!
+  projectFiles(projectId: String!): [ProjectFileModel!]!
+  projectLinks(projectId: String!): [ProjectLinkModel!]!
 }
 
 type Mutation {
@@ -116,6 +145,11 @@ type Mutation {
   selectMyCompany(companyId: ID!): Boolean!
   updateMyProfile(input: UpdateProfileInput!): EmployeeModel!
   createProject(input: CreateProjectInput!): ProjectModel!
+  updateProjectStatus(projectId: String!, status: ProjectStatus!): ProjectModel!
+  addProjectFile(projectId: String!, url: String!, name: String!, mimeType: String, size: Float): ProjectFileModel!
+  removeProjectFile(fileId: String!): Boolean!
+  addProjectLink(projectId: String!, url: String!, title: String): ProjectLinkModel!
+  removeProjectLink(linkId: String!): Boolean!
 }
 
 input LoginInput {

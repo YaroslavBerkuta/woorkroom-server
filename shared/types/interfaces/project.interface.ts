@@ -18,3 +18,17 @@ export interface IProjectMember extends IBase {
   employeeId: string;
   role: ProjectMemberRole;
 }
+
+export interface IProjectFile extends IBase {
+  projectId: string;
+  url: string;
+  name: string;
+  mimeType?: string;
+  size?: number;
+}
+
+export interface IProjectLink extends IBase {
+  projectId: string;
+  url: string;
+  title?: string;
+}

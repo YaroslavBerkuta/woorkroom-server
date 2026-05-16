@@ -8,6 +8,12 @@ service ProjectsService {
   rpc GetCompanyProjects (IdRequest) returns (ProjectListResponse);
   rpc GetProjectMembers (IdRequest) returns (ProjectMemberListResponse);
   rpc UpdateProjectStatus (UpdateProjectStatusRequest) returns (ProjectResponse);
+  rpc AddProjectFile (AddProjectFileRequest) returns (ProjectFileResponse);
+  rpc RemoveProjectFile (IdRequest) returns (BoolResponse);
+  rpc GetProjectFiles (IdRequest) returns (ProjectFileListResponse);
+  rpc AddProjectLink (AddProjectLinkRequest) returns (ProjectLinkResponse);
+  rpc RemoveProjectLink (IdRequest) returns (BoolResponse);
+  rpc GetProjectLinks (IdRequest) returns (ProjectLinkListResponse);
 }
 
 message IdRequest {
@@ -67,4 +73,50 @@ message ProjectListResponse {
 
 message ProjectMemberListResponse {
   repeated ProjectMemberResponse members = 1;
+}
+
+message BoolResponse {
+  bool value = 1;
+}
+
+message AddProjectFileRequest {
+  string projectId = 1;
+  string url = 2;
+  string name = 3;
+  string mimeType = 4;
+  int32 size = 5;
+}
+
+message ProjectFileResponse {
+  string id = 1;
+  string projectId = 2;
+  string url = 3;
+  string name = 4;
+  string mimeType = 5;
+  int32 size = 6;
+  string createdAt = 7;
+  string updatedAt = 8;
+}
+
+message ProjectFileListResponse {
+  repeated ProjectFileResponse files = 1;
+}
+
+message AddProjectLinkRequest {
+  string projectId = 1;
+  string url = 2;
+  string title = 3;
+}
+
+message ProjectLinkResponse {
+  string id = 1;
+  string projectId = 2;
+  string url = 3;
+  string title = 4;
+  string createdAt = 5;
+  string updatedAt = 6;
+}
+
+message ProjectLinkListResponse {
+  repeated ProjectLinkResponse links = 1;
 }

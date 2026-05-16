@@ -23,3 +23,17 @@ export class AddProjectMemberDto {
   employeeId: string;
   role: ProjectMemberRole;
 }
+
+export class AddProjectFileDto {
+  projectId: string;
+  url: string;
+  name: string;
+  mimeType?: string;
+  size?: number;
+}
+
+export class AddProjectLinkDto {
+  projectId: string;
+  url: string;
+  title?: string;
+}

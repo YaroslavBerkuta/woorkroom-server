@@ -3,7 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Project } from '../entitys/project.entity';
 import { ProjectMember } from '../entitys/project-member.entity';
-import { CreateProjectDto, UpdateProjectStatusDto } from 'shared';
+import { ProjectFile } from '../entitys/project-file.entity';
+import { ProjectLink } from '../entitys/project-link.entity';
+import { AddProjectFileDto, AddProjectLinkDto, CreateProjectDto, UpdateProjectStatusDto } from 'shared';
 import { ProjectMemberRole } from 'shared';
 import { RpcException } from '@nestjs/microservices';
 
@@ -14,6 +16,10 @@ export class ProjectService {
     private readonly projectRepo: Repository<Project>,
     @InjectRepository(ProjectMember)
     private readonly memberRepo: Repository<ProjectMember>,
+    @InjectRepository(ProjectFile)
+    private readonly fileRepo: Repository<ProjectFile>,
+    @InjectRepository(ProjectLink)
+    private readonly linkRepo: Repository<ProjectLink>,
   ) {}
 
   private toSlug(name: string): string {
@@ -116,5 +122,45 @@ export class ProjectService {
     if (!project) throw new RpcException('Project not found');
     project.status = dto.status;
     return this.projectRepo.save(project);
+  }
+
+  async addProjectFile(dto: AddProjectFileDto): Promise<ProjectFile> {
+    return this.fileRepo.save({
+      projectId: dto.projectId,
+      url: dto.url,
+      name: dto.name,
+      mimeType: dto.mimeType || undefined,
+      size: dto.size || undefined,
+    });
+  }
+
+  async removeProjectFile(id: string): Promise<boolean> {
+    const file = await this.fileRepo.findOne({ where: { id } });
+    if (!file) throw new RpcException('File not found');
+    await this.fileRepo.remove(file);
+    return true;
+  }
+
+  async getProjectFiles(projectId: string): Promise<ProjectFile[]> {
+    return this.fileRepo.find({ where: { projectId }, order: { createdAt: 'ASC' } });
+  }
+
+  async addProjectLink(dto: AddProjectLinkDto): Promise<ProjectLink> {
+    return this.linkRepo.save({
+      projectId: dto.projectId,
+      url: dto.url,
+      title: dto.title || undefined,
+    });
+  }
+
+  async removeProjectLink(id: string): Promise<boolean> {
+    const link = await this.linkRepo.findOne({ where: { id } });
+    if (!link) throw new RpcException('Link not found');
+    await this.linkRepo.remove(link);
+    return true;
+  }
+
+  async getProjectLinks(projectId: string): Promise<ProjectLink[]> {
+    return this.linkRepo.find({ where: { projectId }, order: { createdAt: 'ASC' } });
   }
 }

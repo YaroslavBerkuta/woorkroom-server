@@ -10,8 +10,8 @@ import { Inject, UseGuards } from '@nestjs/common';
 import * as grpc from 'woorkroom/grpc';
 import { AccessCompanyGuard, GqlSessionAuthGuard } from '../../guards';
 import { CurrentCompanyId, CurrentUserId } from '../../decorators';
-import { ProjectMemberModel, ProjectModel } from '../models';
-import { IProject, IProjectMember, ProjectPriority, ProjectStatus } from 'shared';
+import { ProjectFileModel, ProjectLinkModel, ProjectMemberModel, ProjectModel } from '../models';
+import { IProject, IProjectFile, IProjectLink, IProjectMember, ProjectPriority, ProjectStatus } from 'shared';
 
 @InputType()
 export class CreateProjectInput {
@@ -117,7 +117,81 @@ export class ProjectsResolver {
     };
   }
 
+  @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
+  @Mutation(() => ProjectFileModel)
+  async addProjectFile(
+    @Args('projectId', { type: () => String }) projectId: string,
+    @Args('url', { type: () => String }) url: string,
+    @Args('name', { type: () => String }) name: string,
+    @Args('mimeType', { type: () => String, nullable: true }) mimeType?: string,
+    @Args('size', { type: () => Number, nullable: true }) size?: number,
+  ): Promise<ProjectFileModel> {
+    const file = await this.grpcProjectsService.addProjectFile({ projectId, url, name, mimeType, size });
+    return this.wrapFile(file);
+  }
+
+  @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
+  @Mutation(() => Boolean)
+  async removeProjectFile(
+    @Args('fileId', { type: () => String }) fileId: string,
+  ): Promise<boolean> {
+    return this.grpcProjectsService.removeProjectFile(fileId);
+  }
+
+  @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
+  @Query(() => [ProjectFileModel])
+  async projectFiles(
+    @Args('projectId', { type: () => String }) projectId: string,
+  ): Promise<ProjectFileModel[]> {
+    const files = await this.grpcProjectsService.getProjectFiles(projectId);
+    return files.map((f) => this.wrapFile(f));
+  }
+
+  @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
+  @Mutation(() => ProjectLinkModel)
+  async addProjectLink(
+    @Args('projectId', { type: () => String }) projectId: string,
+    @Args('url', { type: () => String }) url: string,
+    @Args('title', { type: () => String, nullable: true }) title?: string,
+  ): Promise<ProjectLinkModel> {
+    const link = await this.grpcProjectsService.addProjectLink({ projectId, url, title });
+    return this.wrapLink(link);
+  }
+
+  @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
+  @Mutation(() => Boolean)
+  async removeProjectLink(
+    @Args('linkId', { type: () => String }) linkId: string,
+  ): Promise<boolean> {
+    return this.grpcProjectsService.removeProjectLink(linkId);
+  }
+
+  @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
+  @Query(() => [ProjectLinkModel])
+  async projectLinks(
+    @Args('projectId', { type: () => String }) projectId: string,
+  ): Promise<ProjectLinkModel[]> {
+    const links = await this.grpcProjectsService.getProjectLinks(projectId);
+    return links.map((l) => this.wrapLink(l));
+  }
+
   private wrapMember(data: IProjectMember): ProjectMemberModel {
+    return {
+      ...data,
+      createdAt: new Date(data.createdAt),
+      updatedAt: new Date(data.updatedAt),
+    };
+  }
+
+  private wrapFile(data: IProjectFile): ProjectFileModel {
+    return {
+      ...data,
+      createdAt: new Date(data.createdAt),
+      updatedAt: new Date(data.updatedAt),
+    };
+  }
+
+  private wrapLink(data: IProjectLink): ProjectLinkModel {
     return {
       ...data,
       createdAt: new Date(data.createdAt),

@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { ProjectService } from '../services';
-import { CreateProjectDto, UpdateProjectStatusDto } from 'shared';
+import { AddProjectFileDto, AddProjectLinkDto, CreateProjectDto, UpdateProjectStatusDto } from 'shared';
 
 @Controller()
 export class ProjectController {
@@ -36,5 +36,39 @@ export class ProjectController {
   @GrpcMethod('ProjectsService', 'UpdateProjectStatus')
   updateProjectStatus(dto: UpdateProjectStatusDto) {
     return this.projectService.updateProjectStatus(dto);
+  }
+
+  @GrpcMethod('ProjectsService', 'AddProjectFile')
+  addProjectFile(dto: AddProjectFileDto) {
+    return this.projectService.addProjectFile(dto);
+  }
+
+  @GrpcMethod('ProjectsService', 'RemoveProjectFile')
+  async removeProjectFile(dto: { id: string }) {
+    const value = await this.projectService.removeProjectFile(dto.id);
+    return { value };
+  }
+
+  @GrpcMethod('ProjectsService', 'GetProjectFiles')
+  async getProjectFiles(dto: { id: string }) {
+    const files = await this.projectService.getProjectFiles(dto.id);
+    return { files };
+  }
+
+  @GrpcMethod('ProjectsService', 'AddProjectLink')
+  addProjectLink(dto: AddProjectLinkDto) {
+    return this.projectService.addProjectLink(dto);
+  }
+
+  @GrpcMethod('ProjectsService', 'RemoveProjectLink')
+  async removeProjectLink(dto: { id: string }) {
+    const value = await this.projectService.removeProjectLink(dto.id);
+    return { value };
+  }
+
+  @GrpcMethod('ProjectsService', 'GetProjectLinks')
+  async getProjectLinks(dto: { id: string }) {
+    const links = await this.projectService.getProjectLinks(dto.id);
+    return { links };
   }
 }
