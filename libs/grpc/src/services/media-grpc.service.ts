@@ -3,9 +3,17 @@ import type { ClientGrpc } from '@nestjs/microservices';
 import { Observable, lastValueFrom } from 'rxjs';
 import type { IGrpcMediaService } from '../types';
 
+interface FileUrlResponse {
+  url: string;
+}
+
+interface BoolResponse {
+  value: boolean;
+}
+
 interface MediaGrpcClient {
-  getFileUrl(data: any): Observable<any>;
-  deleteFile(data: any): Observable<any>;
+  getFileUrl(data: { fileId: string }): Observable<FileUrlResponse>;
+  deleteFile(data: { fileId: string }): Observable<BoolResponse>;
 }
 
 @Injectable()

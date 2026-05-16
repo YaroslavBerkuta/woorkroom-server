@@ -31,7 +31,8 @@ async function bootstrap() {
   });
 
   await app.startAllMicroservices();
-  await app.listen(config.get<number>('media.httpPort') || 3001);
-  console.log(`Media service is running on port ${config.get<number>('media.httpPort') || 3001}`);
+  const port = config.get<number>('media.httpPort') || 3001;
+  await app.listen(port);
+  console.log(`Media service is running on port ${port}`);
 }
 void bootstrap();
