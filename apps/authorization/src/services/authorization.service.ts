@@ -49,7 +49,7 @@ export class AuthorizationService
     const normalizedPhone = phone.replace(/\D/g, '');
 
     await this.redisService.ttl(`verify:code:${normalizedPhone}`, code, 60 * 5);
-    (this.rabbitmqMailsService.sendVerificationCode(normalizedPhone, code) as any).subscribe();
+    this.rabbitmqMailsService.sendVerificationCode(normalizedPhone, code).subscribe();
 
     this.logger.log(`Verification code sent to phone ${normalizedPhone}`);
     return true;
@@ -57,7 +57,9 @@ export class AuthorizationService
 
   async registerUser(dto: RegisterDto): Promise<boolean> {
     const normalizedPhone = dto.user.phoneNumber.replace(/\D/g, '');
-    const savedCode = await this.redisService.get<string>(`verify:code:${normalizedPhone}`);
+    const savedCode = await this.redisService.get<string>(
+      `verify:code:${normalizedPhone}`,
+    );
 
     if (!savedCode || savedCode !== dto.code) {
       throw new RpcException('Invalid or expired verification code');
@@ -172,7 +174,9 @@ export class AuthorizationService
   }
 
   async selectCompany(sessionId: string, companyId: string): Promise<ISession> {
-    const session = await this.redisService.get<ISession>(`session:${sessionId}`);
+    const session = await this.redisService.get<ISession>(
+      `session:${sessionId}`,
+    );
 
     if (!session) {
       throw new RpcException('Session not found');
@@ -188,5 +192,4 @@ export class AuthorizationService
 
     return updatedSession;
   }
-
 }
