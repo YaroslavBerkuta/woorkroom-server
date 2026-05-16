@@ -1,5 +1,5 @@
 import { Field, GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
-import { IProject, ProjectPriority } from 'shared';
+import { IProject, ProjectPriority, ProjectStatus } from 'shared';
 
 @ObjectType()
 export class ProjectModel implements Omit<IProject, 'createdAt' | 'updatedAt'> {
@@ -11,6 +11,12 @@ export class ProjectModel implements Omit<IProject, 'createdAt' | 'updatedAt'> {
 
   @Field(() => String)
   name: string;
+
+  @Field(() => String)
+  slug: string;
+
+  @Field(() => ProjectStatus)
+  status: ProjectStatus;
 
   @Field(() => String, { nullable: true })
   starts?: string;
