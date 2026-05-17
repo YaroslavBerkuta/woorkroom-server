@@ -1,6 +1,6 @@
 import { Controller, Inject } from '@nestjs/common';
-import * as types from '../types';
-import { EmployeeService } from '../services';
+import * as types from '@/types';
+import { EmployeeService } from '@/services';
 import { GrpcMethod } from '@nestjs/microservices';
 import { CreateEmployeeDto, UpdateEmployeeDto } from 'shared';
 

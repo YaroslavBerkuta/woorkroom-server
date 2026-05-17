@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { MediaModule } from './media.module';
+import { MediaModule } from '@/media.module';
 import { ConsoleLogger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';

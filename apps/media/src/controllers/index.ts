@@ -1,1 +1,1 @@
-export * from './media.controller';
+export * from '@/controllers/media.controller';

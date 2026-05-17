@@ -1,5 +1,5 @@
 import { Controller, Inject } from '@nestjs/common';
-import { MainService } from '../services';
+import { MainService } from '@/services';
 import { EMessageRmqp } from 'shared';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 

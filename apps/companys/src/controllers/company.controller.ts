@@ -1,6 +1,6 @@
 import { Controller, Inject } from '@nestjs/common';
-import type { ICompanyServiceInterface } from '../types';
-import { CompanyService } from '../services';
+import type { ICompanyServiceInterface } from '@/types';
+import { CompanyService } from '@/services';
 import { CreateCompanyDto, UpdateCompanyDto } from 'shared';
 import { GrpcMethod } from '@nestjs/microservices';
 import { omit } from 'lodash';

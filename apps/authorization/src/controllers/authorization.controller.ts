@@ -1,7 +1,7 @@
 import { Controller, Logger } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
-import { AuthorizationService } from '../services';
-import * as types from '../types';
+import { AuthorizationService } from '@/services';
+import * as types from '@/types';
 import { GrpcMethod } from '@nestjs/microservices';
 import { LoginDto, RegisterDto } from 'shared';
 

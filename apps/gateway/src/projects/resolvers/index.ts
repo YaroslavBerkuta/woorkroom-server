@@ -1,1 +1,1 @@
-export * from './projects.resolver';
+export * from '@/projects/resolvers/projects.resolver';

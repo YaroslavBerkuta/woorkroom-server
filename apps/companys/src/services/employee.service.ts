@@ -1,10 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { ICompanyServiceInterface, IEmployeeService } from '../types';
+import type { ICompanyServiceInterface, IEmployeeService } from '@/types';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Employee } from '../entitys';
+import { Employee } from '@/entitys';
 import { CreateEmployeeDto, UpdateEmployeeDto } from 'shared';
-import { CompanyService } from './company.service';
+import { CompanyService } from '@/services/company.service';
 import { RpcException } from '@nestjs/microservices';
 
 @Injectable()

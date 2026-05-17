@@ -1,11 +1,11 @@
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
-import { LoginInput, RegisterInput } from '../inputs';
+import { LoginInput, RegisterInput } from '@/auth/inputs';
 import { Request, Response } from 'express';
 import { Inject, UseGuards } from '@nestjs/common';
-import { SessionModel } from '../models';
+import { SessionModel } from '@/auth/models';
 import * as grpc from 'woorkroom/grpc';
-import { extractSessionId, GqlSessionAuthGuard } from '../../guards';
-import { CurrentUserId } from '../../decorators';
+import { extractSessionId, GqlSessionAuthGuard } from '@/guards';
+import { CurrentUserId } from '@/decorators';
 
 interface GqlContext {
   req: Request & { session?: Record<string, unknown> };

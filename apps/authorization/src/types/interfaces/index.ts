@@ -1,1 +1,1 @@
-export * from './authorization-service.interface';
+export * from '@/types/interfaces/authorization-service.interface';

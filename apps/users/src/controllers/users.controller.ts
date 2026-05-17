@@ -1,8 +1,8 @@
 import { Controller, Inject } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { CreateUserDto } from 'shared';
-import { UsersService } from '../services';
-import type { IUserServiceInterface } from '../types';
+import { UsersService } from '@/services';
+import type { IUserServiceInterface } from '@/types';
 
 @Controller()
 export class UsersController {

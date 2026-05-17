@@ -1,1 +1,1 @@
-export * from './user-company.resolver';
+export * from '@/companyUser/resolvers/user-company.resolver';

@@ -1,1 +1,1 @@
-export { MailsController } from './mails.controller';
+export { MailsController } from '@/controllers/mails.controller';

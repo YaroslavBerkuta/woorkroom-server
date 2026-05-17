@@ -1,6 +1,6 @@
 import { Field, ID, InputType } from '@nestjs/graphql';
 import { ILogin, ILogout } from 'shared';
-import { CreateUserInput } from '../../users';
+import { CreateUserInput } from '@/users';
 
 @InputType()
 export class CreateCompanyInput {

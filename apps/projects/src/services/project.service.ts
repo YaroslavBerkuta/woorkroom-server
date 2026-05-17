@@ -4,10 +4,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { In, Repository } from 'typeorm';
 import { Model } from 'mongoose';
 
-import { Project } from '../entitys/project.entity';
-import { ProjectMember } from '../entitys/project-member.entity';
-import { ProjectFile, ProjectFileDocument } from '../schemas/project-file.schema';
-import { ProjectLink, ProjectLinkDocument } from '../schemas/project-link.schema';
+import { Project } from '@/entitys/project.entity';
+import { ProjectMember } from '@/entitys/project-member.entity';
+import { ProjectFile, ProjectFileDocument } from '@/schemas/project-file.schema';
+import { ProjectLink, ProjectLinkDocument } from '@/schemas/project-link.schema';
 import { AddProjectFileDto, AddProjectLinkDto, CreateProjectDto, UpdateProjectDto, UpdateProjectStatusDto } from 'shared';
 import { ProjectMemberRole, ProjectPriority, toBaseSlug, resolveUniqueSlug } from 'shared';
 import { RpcException } from '@nestjs/microservices';

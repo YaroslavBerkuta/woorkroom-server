@@ -1,9 +1,9 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Companys } from '../entitys';
+import { Companys } from '@/entitys';
 import { CreateCompanyDto, UpdateCompanyDto } from 'shared';
-import { ICompanyServiceInterface } from '../types';
+import { ICompanyServiceInterface } from '@/types';
 import { omit } from 'lodash';
 import * as redis from 'woorkroom/redis';
 

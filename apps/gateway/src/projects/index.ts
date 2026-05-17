@@ -1,3 +1,3 @@
-export * from './projects.module';
-export * from './models';
-export * from './resolvers';
+export * from '@/projects/projects.module';
+export * from '@/projects/models';
+export * from '@/projects/resolvers';

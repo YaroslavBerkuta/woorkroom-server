@@ -10,7 +10,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GrpcMethod } from '@nestjs/microservices';
 import { memoryStorage } from 'multer';
-import { MediaService } from '../services';
+import { MediaService } from '@/services';
 
 const IMAGE_ONLY_FOLDERS = ['avatars', 'logos'];
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB

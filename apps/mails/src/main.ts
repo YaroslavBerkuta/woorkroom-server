@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { MailsModule } from './mails.module';
+import { MailsModule } from '@/mails.module';
 import { ConsoleLogger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';

@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { IAuthorizationService } from '../types';
+import { IAuthorizationService } from '@/types';
 import {
   ICompany,
   IEmployee,

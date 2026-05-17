@@ -1,1 +1,1 @@
-export * from './user.input';
+export * from '@/users/inputs/user.input';

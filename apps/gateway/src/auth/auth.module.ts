@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AuthResolver } from './resolvers';
+import { AuthResolver } from '@/auth/resolvers';
 import { GrpcModule } from 'woorkroom/grpc';
 
 @Module({
