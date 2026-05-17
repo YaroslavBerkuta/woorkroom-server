@@ -333,6 +333,71 @@ export class ProjectService {
       });
     }
 
+    if (dto.reporterId !== undefined) {
+      const prevReporter = await this.memberRepo.findOne({
+        where: { projectId: dto.id, role: ProjectMemberRole.REPORTER },
+      });
+      if (prevReporter?.employeeId !== dto.reporterId) {
+        await this.memberRepo.delete({ projectId: dto.id, role: ProjectMemberRole.REPORTER });
+        if (dto.reporterId) {
+          await this.memberRepo.save({
+            projectId: dto.id,
+            employeeId: dto.reporterId,
+            role: ProjectMemberRole.REPORTER,
+          });
+          this.rabbitmqAudit.publish({
+            service: 'projects',
+            action: AuditAction.PROJECT_MEMBER_ADDED,
+            actorEmployeeId: dto.actorEmployeeId ?? '',
+            resourceId: dto.id,
+            meta: {
+              employeeId: dto.reporterId,
+              role: ProjectMemberRole.REPORTER,
+              ...(prevReporter ? { replacedEmployeeId: prevReporter.employeeId } : {}),
+            },
+          });
+        }
+      }
+    }
+
+    if (dto.assigneeIds !== undefined) {
+      const currentAssignees = await this.memberRepo.find({
+        where: { projectId: dto.id, role: ProjectMemberRole.ASSIGNEE },
+      });
+      const currentIds = new Set(currentAssignees.map((m) => m.employeeId));
+      const newIds = new Set(dto.assigneeIds);
+
+      for (const member of currentAssignees) {
+        if (!newIds.has(member.employeeId)) {
+          await this.memberRepo.delete({ id: member.id });
+          this.rabbitmqAudit.publish({
+            service: 'projects',
+            action: AuditAction.PROJECT_MEMBER_REMOVED,
+            actorEmployeeId: dto.actorEmployeeId ?? '',
+            resourceId: dto.id,
+            meta: { employeeId: member.employeeId, role: ProjectMemberRole.ASSIGNEE },
+          });
+        }
+      }
+
+      for (const employeeId of dto.assigneeIds) {
+        if (!currentIds.has(employeeId)) {
+          await this.memberRepo.save({
+            projectId: dto.id,
+            employeeId,
+            role: ProjectMemberRole.ASSIGNEE,
+          });
+          this.rabbitmqAudit.publish({
+            service: 'projects',
+            action: AuditAction.PROJECT_MEMBER_ADDED,
+            actorEmployeeId: dto.actorEmployeeId ?? '',
+            resourceId: dto.id,
+            meta: { employeeId, role: ProjectMemberRole.ASSIGNEE },
+          });
+        }
+      }
+    }
+
     return saved;
   }
 

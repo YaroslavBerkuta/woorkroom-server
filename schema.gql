@@ -282,6 +282,8 @@ input UpdateProjectInput {
   priority: ProjectPriority
   description: String
   image: String
+  reporterId: String
+  assigneeIds: [String!]
 }
 
 input AttachmentInput {

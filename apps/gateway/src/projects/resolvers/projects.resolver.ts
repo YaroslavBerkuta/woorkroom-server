@@ -86,6 +86,12 @@ export class UpdateProjectInput implements Omit<UpdateProjectDto, 'id'> {
 
   @Field(() => String, { nullable: true })
   image?: string;
+
+  @Field(() => String, { nullable: true })
+  reporterId?: string;
+
+  @Field(() => [String], { nullable: true })
+  assigneeIds?: string[];
 }
 
 @InputType()

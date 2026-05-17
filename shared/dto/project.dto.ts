@@ -28,6 +28,8 @@ export class UpdateProjectDto {
   description?: string;
   image?: string;
   actorEmployeeId?: string;
+  reporterId?: string;
+  assigneeIds?: string[];
 }
 
 export class AddProjectMemberDto {

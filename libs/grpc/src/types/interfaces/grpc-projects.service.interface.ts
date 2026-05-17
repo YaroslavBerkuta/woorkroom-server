@@ -45,7 +45,7 @@ export interface IGrpcProjectsService {
   getProjectMembers(projectId: string): Promise<IProjectMember[]>;
   addProjectMember(dto: AddProjectMemberDto): Promise<IProjectMember>;
   removeProjectMember(dto: { id: string; actorEmployeeId?: string }): Promise<boolean>;
-  updateProject(dto: UpdateProjectDto): Promise<IProject>;
+  updateProject(dto: UpdateProjectDto & { reporterId?: string; assigneeIds?: string[] }): Promise<IProject>;
   updateProjectStatus(id: string, status: ProjectStatus, actorEmployeeId?: string): Promise<IProject>;
   addProjectFile(dto: AddProjectFileDto): Promise<IProjectFile>;
   removeProjectFile(dto: { id: string; actorEmployeeId?: string }): Promise<boolean>;

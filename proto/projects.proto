@@ -64,6 +64,8 @@ message UpdateProjectRequest {
   string description = 6;
   string image = 7;
   string actorEmployeeId = 8;
+  string reporterId = 9;
+  repeated string assigneeIds = 10;
 }
 
 message ProjectResponse {
