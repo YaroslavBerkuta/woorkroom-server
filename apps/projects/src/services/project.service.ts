@@ -4,16 +4,16 @@ import { InjectModel } from '@nestjs/mongoose';
 import { In, Repository } from 'typeorm';
 import { Model } from 'mongoose';
 
-import { Project } from '@/entitys/project.entity';
-import { ProjectMember } from '@/entitys/project-member.entity';
+import { Project } from '../entitys/project.entity';
+import { ProjectMember } from '../entitys/project-member.entity';
 import {
   ProjectFile,
   ProjectFileDocument,
-} from '@/schemas/project-file.schema';
+} from '../schemas/project-file.schema';
 import {
   ProjectLink,
   ProjectLinkDocument,
-} from '@/schemas/project-link.schema';
+} from '../schemas/project-link.schema';
 import {
   AddProjectFileDto,
   AddProjectLinkDto,
@@ -313,14 +313,17 @@ export class ProjectService {
   }
 
   async addProjectMember(dto: AddProjectMemberDto): Promise<ProjectMember> {
-    const existing = await this.memberRepo.findOne({
-      where: {
+    if (dto.role === ProjectMemberRole.REPORTER) {
+      await this.memberRepo.delete({
         projectId: dto.projectId,
-        employeeId: dto.employeeId,
-        role: dto.role,
-      },
-    });
-    if (existing) return existing;
+        role: ProjectMemberRole.REPORTER,
+      });
+    } else {
+      const existing = await this.memberRepo.findOne({
+        where: { projectId: dto.projectId, employeeId: dto.employeeId, role: dto.role },
+      });
+      if (existing) return existing;
+    }
     return this.memberRepo.save({
       projectId: dto.projectId,
       employeeId: dto.employeeId,
