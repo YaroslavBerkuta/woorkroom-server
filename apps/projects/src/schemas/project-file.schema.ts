@@ -2,7 +2,8 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { randomUUID } from 'crypto';
 
-export type ProjectFileDocument = ProjectFile & Document & { createdAt: Date; updatedAt: Date };
+export type ProjectFileDocument = ProjectFile &
+  Document & { createdAt: Date; updatedAt: Date };
 
 function docTransform(_: unknown, ret: Record<string, unknown>) {
   ret.id = ret._id;

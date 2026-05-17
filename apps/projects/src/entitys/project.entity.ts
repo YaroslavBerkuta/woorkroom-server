@@ -1,4 +1,9 @@
-import { EntityAbstract, IProject, ProjectPriority, ProjectStatus } from 'shared';
+import {
+  EntityAbstract,
+  IProject,
+  ProjectPriority,
+  ProjectStatus,
+} from 'shared';
 import { Column, Entity, Index, Unique } from 'typeorm';
 
 @Entity({ name: 'project' })

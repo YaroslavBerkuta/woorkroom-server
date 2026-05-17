@@ -121,11 +121,15 @@ export class GrpcProjectsService implements IGrpcProjectsService, OnModuleInit {
   }
 
   async addProjectMember(dto: AddProjectMemberDto): Promise<IProjectMember> {
-    return lastValueFrom(this.client.addProjectMember(dto)) as unknown as Promise<IProjectMember>;
+    return lastValueFrom(
+      this.client.addProjectMember(dto),
+    ) as unknown as Promise<IProjectMember>;
   }
 
   async removeProjectMember(memberId: string): Promise<boolean> {
-    const res = await lastValueFrom(this.client.removeProjectMember({ id: memberId }));
+    const res = await lastValueFrom(
+      this.client.removeProjectMember({ id: memberId }),
+    );
     return res.value;
   }
 

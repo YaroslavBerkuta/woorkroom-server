@@ -14,7 +14,9 @@ export class ProjectDataloaderService {
   ) {
     this.filesLoader = new DataLoader<string, IProjectFile[]>(
       async (projectIds) => {
-        const files = await this.grpcProjectsService.getProjectFilesBatch([...projectIds]);
+        const files = await this.grpcProjectsService.getProjectFilesBatch([
+          ...projectIds,
+        ]);
         const grouped = new Map<string, IProjectFile[]>();
         for (const file of files) {
           const bucket = grouped.get(file.projectId) ?? [];
@@ -27,7 +29,9 @@ export class ProjectDataloaderService {
 
     this.linksLoader = new DataLoader<string, IProjectLink[]>(
       async (projectIds) => {
-        const links = await this.grpcProjectsService.getProjectLinksBatch([...projectIds]);
+        const links = await this.grpcProjectsService.getProjectLinksBatch([
+          ...projectIds,
+        ]);
         const grouped = new Map<string, IProjectLink[]>();
         for (const link of links) {
           const bucket = grouped.get(link.projectId) ?? [];

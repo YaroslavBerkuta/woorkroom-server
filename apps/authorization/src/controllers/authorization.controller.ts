@@ -1,7 +1,5 @@
 import { Controller, Logger } from '@nestjs/common';
-import { Inject } from '@nestjs/common';
 import { AuthorizationService } from '@/services';
-import * as types from '@/types';
 import { GrpcMethod } from '@nestjs/microservices';
 import { LoginDto, RegisterDto } from 'shared';
 
@@ -9,10 +7,7 @@ import { LoginDto, RegisterDto } from 'shared';
 export class AuthorizationController {
   private readonly logger = new Logger(AuthorizationController.name);
 
-  constructor(
-    @Inject(AuthorizationService.name)
-    private readonly authorizationService: types.IAuthorizationService,
-  ) {}
+  constructor(private readonly authorizationService: AuthorizationService) {}
 
   @GrpcMethod('AuthService', 'SendVerificationCode')
   async sendVerificationCode(data: { phone: string }) {

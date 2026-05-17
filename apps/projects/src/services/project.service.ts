@@ -314,7 +314,11 @@ export class ProjectService {
 
   async addProjectMember(dto: AddProjectMemberDto): Promise<ProjectMember> {
     const existing = await this.memberRepo.findOne({
-      where: { projectId: dto.projectId, employeeId: dto.employeeId, role: dto.role },
+      where: {
+        projectId: dto.projectId,
+        employeeId: dto.employeeId,
+        role: dto.role,
+      },
     });
     if (existing) return existing;
     return this.memberRepo.save({

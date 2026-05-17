@@ -6,11 +6,6 @@ import { MediaService } from '@/services';
 @Module({
   imports: [ConfigurationModule],
   controllers: [MediaController],
-  providers: [
-    {
-      provide: MediaService.name,
-      useClass: MediaService,
-    },
-  ],
+  providers: [MediaService],
 })
 export class MediaModule {}

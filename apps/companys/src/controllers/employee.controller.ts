@@ -1,15 +1,11 @@
-import { Controller, Inject } from '@nestjs/common';
-import * as types from '@/types';
+import { Controller } from '@nestjs/common';
 import { EmployeeService } from '@/services';
 import { GrpcMethod } from '@nestjs/microservices';
 import { CreateEmployeeDto, UpdateEmployeeDto } from 'shared';
 
 @Controller()
 export class EmployeeController {
-  constructor(
-    @Inject(EmployeeService.name)
-    private readonly employeeService: types.IEmployeeService,
-  ) {}
+  constructor(private readonly employeeService: EmployeeService) {}
 
   @GrpcMethod('CompanysService', 'CreateEmployee')
   createEmployee(dto: CreateEmployeeDto) {

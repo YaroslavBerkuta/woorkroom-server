@@ -1,15 +1,11 @@
-import { Controller, Inject } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { CreateUserDto } from 'shared';
 import { UsersService } from '@/services';
-import type { IUserServiceInterface } from '@/types';
 
 @Controller()
 export class UsersController {
-  constructor(
-    @Inject(UsersService.name)
-    private readonly usersService: IUserServiceInterface,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @GrpcMethod('UsersService', 'CreateUser')
   createUser(data: CreateUserDto) {

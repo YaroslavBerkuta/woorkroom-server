@@ -19,18 +19,32 @@ export class MainService {
 
   async sendVerificationCode(phone: string, code: string): Promise<void> {
     const normalizedPhone = phone.replace(/\D/g, '');
-    const chatId = await this.redisService.get<number>(`tg:phone:${normalizedPhone}`);
+    const chatId = await this.redisService.get<number>(
+      `tg:phone:${normalizedPhone}`,
+    );
 
     if (!chatId) {
       this.logger.warn(`No Telegram chatId found for phone ${normalizedPhone}`);
-      await this.logEvent('verification_code', phone, 'telegram', 'no_recipient', { normalizedPhone });
+      await this.logEvent(
+        'verification_code',
+        phone,
+        'telegram',
+        'no_recipient',
+        { normalizedPhone },
+      );
       return;
     }
 
-    await this.telegramService.sendMessage(chatId, `Ваш код підтвердження: *${code}*`);
+    await this.telegramService.sendMessage(
+      chatId,
+      `Ваш код підтвердження: *${code}*`,
+    );
     this.logger.log(`Verification code sent to chatId ${chatId}`);
 
-    await this.logEvent('verification_code', phone, 'telegram', 'sent', { normalizedPhone, chatId });
+    await this.logEvent('verification_code', phone, 'telegram', 'sent', {
+      normalizedPhone,
+      chatId,
+    });
   }
 
   private async logEvent(
@@ -41,7 +55,13 @@ export class MainService {
     payload?: Record<string, unknown>,
   ): Promise<void> {
     try {
-      await this.mailEventModel.create({ type, recipient, provider, status, payload });
+      await this.mailEventModel.create({
+        type,
+        recipient,
+        provider,
+        status,
+        payload,
+      });
     } catch (err) {
       this.logger.error('Failed to log mail event', err);
     }

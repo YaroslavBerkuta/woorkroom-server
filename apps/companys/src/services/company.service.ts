@@ -28,7 +28,9 @@ export class CompanyService implements ICompanyServiceInterface {
     }
 
     const updateData = Object.fromEntries(
-      Object.entries(omit(dto, 'id')).filter(([, v]) => v !== '' && v !== 0 && v != null),
+      Object.entries(omit(dto, 'id')).filter(
+        ([, v]) => v !== '' && v !== 0 && v != null,
+      ),
     );
 
     if (Object.keys(updateData).length === 0) return existCompany;

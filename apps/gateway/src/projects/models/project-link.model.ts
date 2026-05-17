@@ -2,7 +2,9 @@ import { Field, GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
 import { IProjectLink } from 'shared';
 
 @ObjectType()
-export class ProjectLinkModel implements Omit<IProjectLink, 'createdAt' | 'updatedAt'> {
+export class ProjectLinkModel
+  implements Omit<IProjectLink, 'createdAt' | 'updatedAt'>
+{
   @Field(() => ID)
   id: string;
 

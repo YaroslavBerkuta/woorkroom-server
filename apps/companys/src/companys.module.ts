@@ -7,17 +7,12 @@ import { CompanysController, EmployeeController } from '@/controllers';
 import { CompanyService, EmployeeService } from '@/services';
 
 @Module({
-  imports: [ConfigurationModule, DatabaseModule.forCompany(entities), RedisModule],
-  controllers: [CompanysController, EmployeeController],
-  providers: [
-    {
-      provide: CompanyService.name,
-      useClass: CompanyService,
-    },
-    {
-      provide: EmployeeService.name,
-      useClass: EmployeeService,
-    },
+  imports: [
+    ConfigurationModule,
+    DatabaseModule.forCompany(entities),
+    RedisModule,
   ],
+  controllers: [CompanysController, EmployeeController],
+  providers: [CompanyService, EmployeeService],
 })
 export class CompanysModule {}

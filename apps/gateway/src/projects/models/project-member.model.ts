@@ -2,7 +2,9 @@ import { Field, GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
 import { IProjectMember, ProjectMemberRole } from 'shared';
 
 @ObjectType()
-export class ProjectMemberModel implements Omit<IProjectMember, 'createdAt' | 'updatedAt'> {
+export class ProjectMemberModel
+  implements Omit<IProjectMember, 'createdAt' | 'updatedAt'>
+{
   @Field(() => ID)
   id: string;
 

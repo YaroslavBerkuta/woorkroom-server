@@ -1,5 +1,4 @@
-import { Controller, Inject } from '@nestjs/common';
-import type { ICompanyServiceInterface } from '@/types';
+import { Controller } from '@nestjs/common';
 import { CompanyService } from '@/services';
 import { CreateCompanyDto, UpdateCompanyDto } from 'shared';
 import { GrpcMethod } from '@nestjs/microservices';
@@ -7,10 +6,7 @@ import { omit } from 'lodash';
 
 @Controller()
 export class CompanysController {
-  constructor(
-    @Inject(CompanyService.name)
-    private readonly companysService: ICompanyServiceInterface,
-  ) {}
+  constructor(private readonly companysService: CompanyService) {}
 
   @GrpcMethod('CompanysService', 'CreateCompany')
   createCompany(data: CreateCompanyDto) {

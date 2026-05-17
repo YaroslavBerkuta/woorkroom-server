@@ -1,6 +1,5 @@
 import {
   Controller,
-  Inject,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -13,24 +12,29 @@ import { memoryStorage } from 'multer';
 import { MediaService } from '@/services';
 
 const IMAGE_ONLY_FOLDERS = ['avatars', 'logos'];
-const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
+const MAX_FILE_SIZE = 50 * 1024 * 1024;
 
 @Controller('media')
 export class MediaController {
-  constructor(
-    @Inject(MediaService.name)
-    private readonly mediaService: MediaService,
-  ) {}
+  constructor(private readonly mediaService: MediaService) {}
 
   @Post('upload')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: memoryStorage(),
       limits: { fileSize: MAX_FILE_SIZE },
-      fileFilter: (_req, file, cb) => {
-        const folder = (_req.body as Record<string, string>)?.folder ?? 'uploads';
-        if (IMAGE_ONLY_FOLDERS.includes(folder) && !file.mimetype.startsWith('image/')) {
-          return cb(new BadRequestException('Only image files are allowed for this folder'), false);
+      fileFilter: (_req: { body: Record<string, string> }, file, cb) => {
+        const folder = _req.body?.folder ?? 'uploads';
+        if (
+          IMAGE_ONLY_FOLDERS.includes(folder) &&
+          !file.mimetype.startsWith('image/')
+        ) {
+          return cb(
+            new BadRequestException(
+              'Only image files are allowed for this folder',
+            ),
+            false,
+          );
         }
         cb(null, true);
       },

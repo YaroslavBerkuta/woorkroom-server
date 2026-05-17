@@ -9,11 +9,6 @@ import { RabbitmqModule } from 'woorkroom/rabbitmq';
 @Module({
   imports: [ConfigurationModule, GrpcModule, RedisModule, RabbitmqModule],
   controllers: [AuthorizationController],
-  providers: [
-    {
-      provide: AuthorizationService.name,
-      useClass: AuthorizationService,
-    },
-  ],
+  providers: [AuthorizationService],
 })
 export class AuthorizationModule {}

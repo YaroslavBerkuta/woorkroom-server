@@ -15,11 +15,6 @@ import { MailEvent, MailEventSchema } from '@/schemas/mail-event.schema';
     MongoModule.forMails([{ name: MailEvent.name, schema: MailEventSchema }]),
   ],
   controllers: [MailsController],
-  providers: [
-    {
-      provide: MainService.name,
-      useClass: MainService,
-    },
-  ],
+  providers: [MainService],
 })
 export class MailsModule {}

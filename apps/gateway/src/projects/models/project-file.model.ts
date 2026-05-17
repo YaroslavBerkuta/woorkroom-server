@@ -1,8 +1,16 @@
-import { Field, GraphQLISODateTime, ID, Int, ObjectType } from '@nestjs/graphql';
+import {
+  Field,
+  GraphQLISODateTime,
+  ID,
+  Int,
+  ObjectType,
+} from '@nestjs/graphql';
 import { IProjectFile } from 'shared';
 
 @ObjectType()
-export class ProjectFileModel implements Omit<IProjectFile, 'createdAt' | 'updatedAt'> {
+export class ProjectFileModel
+  implements Omit<IProjectFile, 'createdAt' | 'updatedAt'>
+{
   @Field(() => ID)
   id: string;
 

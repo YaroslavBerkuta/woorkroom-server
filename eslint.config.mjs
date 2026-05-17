@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['eslint.config.mjs'],
+    ignores: ['eslint.config.mjs', 'scripts/**', 'dist/**'],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
@@ -19,7 +19,24 @@ export default tseslint.config(
       },
       sourceType: 'commonjs',
       parserOptions: {
-        projectService: true,
+        project: [
+          './apps/authorization/tsconfig.app.json',
+          './apps/companys/tsconfig.app.json',
+          './apps/gateway/tsconfig.app.json',
+          './apps/mails/tsconfig.app.json',
+          './apps/media/tsconfig.app.json',
+          './apps/projects/tsconfig.app.json',
+          './apps/users/tsconfig.app.json',
+          './libs/config/tsconfig.lib.json',
+          './libs/database/tsconfig.lib.json',
+          './libs/grpc/tsconfig.lib.json',
+          './libs/mongo/tsconfig.lib.json',
+          './libs/rabbitmq/tsconfig.lib.json',
+          './libs/redis/tsconfig.lib.json',
+          './libs/smtp/tsconfig.lib.json',
+          './libs/telegram/tsconfig.lib.json',
+          './tsconfig.json',
+        ],
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -29,7 +46,7 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
-      "prettier/prettier": ["error", { endOfLine: "auto" }],
+      'prettier/prettier': ['error', { endOfLine: 'auto' }],
     },
   },
 );

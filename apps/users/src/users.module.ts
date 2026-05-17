@@ -8,11 +8,6 @@ import { UsersController } from '@/controllers';
 @Module({
   imports: [ConfigurationModule, DatabaseModule.forUsers(entities)],
   controllers: [UsersController],
-  providers: [
-    {
-      provide: UsersService.name,
-      useClass: UsersService,
-    },
-  ],
+  providers: [UsersService],
 })
 export class UsersModule {}

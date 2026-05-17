@@ -1,5 +1,5 @@
-import { Inject, Injectable } from '@nestjs/common';
-import type { ICompanyServiceInterface, IEmployeeService } from '@/types';
+import { Injectable } from '@nestjs/common';
+import type { IEmployeeService } from '@/types';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Employee } from '@/entitys';
@@ -12,8 +12,7 @@ export class EmployeeService implements IEmployeeService {
   constructor(
     @InjectRepository(Employee)
     private readonly employeeRepository: Repository<Employee>,
-    @Inject(CompanyService.name)
-    private readonly companysService: ICompanyServiceInterface,
+    private readonly companysService: CompanyService,
   ) {}
 
   async createEmployee(dto: CreateEmployeeDto) {

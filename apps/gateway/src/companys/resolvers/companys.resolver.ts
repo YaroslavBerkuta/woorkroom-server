@@ -1,4 +1,13 @@
-import { Args, Field, ID, InputType, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Field,
+  ID,
+  InputType,
+  Int,
+  Mutation,
+  Query,
+  Resolver,
+} from '@nestjs/graphql';
 import { CompanyModel, EmployeeModel } from '@/companys/models';
 import { ICompany, IEmployee, UpdateCompanyDto, UserRole } from 'shared';
 import { Inject, NotFoundException, UseGuards } from '@nestjs/common';
@@ -71,7 +80,8 @@ export class CompanysResolver {
   @Mutation(() => CompanyModel)
   async createCompany(
     @CurrentUserId() userId: string,
-    @Args('input', { type: () => CreateCompanyInput }) input: CreateCompanyInput,
+    @Args('input', { type: () => CreateCompanyInput })
+    input: CreateCompanyInput,
   ) {
     const company = await this.grpcCompanysService.createCompany(input);
     await this.grpcCompanysService.createEmployee({
@@ -86,7 +96,8 @@ export class CompanysResolver {
   @Mutation(() => CompanyModel)
   async updateCompany(
     @CurrentCompanyId() companyId: string,
-    @Args('input', { type: () => UpdateCompanyInput }) input: UpdateCompanyInput,
+    @Args('input', { type: () => UpdateCompanyInput })
+    input: UpdateCompanyInput,
   ) {
     const updated = await this.grpcCompanysService.updateCompany({
       id: companyId,

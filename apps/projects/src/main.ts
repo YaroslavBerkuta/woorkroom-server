@@ -34,6 +34,9 @@ async function bootstrap() {
 
   await app.startAllMicroservices();
   await app.init();
-  console.log('Projects service is running on port', config.get('grpc.projects.port'));
+  console.log(
+    'Projects service is running on port',
+    config.get('grpc.projects.port'),
+  );
 }
 void bootstrap();
