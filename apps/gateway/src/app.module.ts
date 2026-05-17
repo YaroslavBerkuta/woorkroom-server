@@ -8,6 +8,7 @@ import { CompanysModule } from './companys';
 import { CompanyUserModule } from './companyUser';
 import { ProjectsModule } from './projects';
 import { ActivityModule } from './activity/activity.module';
+import { MediaProxyModule } from './media/media-proxy.module';
 import { ConfigurationModule } from 'woorkroom/config';
 import { join } from 'path';
 
@@ -31,6 +32,7 @@ import { join } from 'path';
     CompanyUserModule,
     ProjectsModule,
     ActivityModule,
+    MediaProxyModule,
   ],
 })
 export class AppModule {}

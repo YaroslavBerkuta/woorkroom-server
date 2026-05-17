@@ -115,6 +115,8 @@ export const minioConfig = () => ({
   },
   media: {
     httpPort: Number(process.env.MEDIA_HTTP_PORT) || 3001,
+    fileBaseUrl: process.env.MEDIA_FILE_BASE_URL,
+    internalUrl: process.env.MEDIA_INTERNAL_URL || 'http://media:3001',
   },
 });
 
