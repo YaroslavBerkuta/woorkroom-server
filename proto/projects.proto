@@ -8,6 +8,8 @@ service ProjectsService {
   rpc GetMyProjectsPaginated (GetMyProjectsPaginatedRequest) returns (ProjectsConnectionResponse);
   rpc GetCompanyProjects (IdRequest) returns (ProjectListResponse);
   rpc GetProjectMembers (IdRequest) returns (ProjectMemberListResponse);
+  rpc AddProjectMember (AddProjectMemberRequest) returns (ProjectMemberResponse);
+  rpc RemoveProjectMember (IdRequest) returns (BoolResponse);
   rpc GetProject (IdRequest) returns (ProjectResponse);
   rpc UpdateProjectStatus (UpdateProjectStatusRequest) returns (ProjectResponse);
   rpc UpdateProject (UpdateProjectRequest) returns (ProjectResponse);
@@ -125,6 +127,12 @@ message ProjectsConnectionResponse {
   repeated ProjectEdgeResponse edges = 1;
   PageInfoResponse pageInfo = 2;
   int32 totalCount = 3;
+}
+
+message AddProjectMemberRequest {
+  string projectId = 1;
+  string employeeId = 2;
+  string role = 3;
 }
 
 message ProjectMemberListResponse {
