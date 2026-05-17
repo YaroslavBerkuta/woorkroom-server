@@ -117,7 +117,8 @@
       "^woorkroom/redis(|/.*)$": "<rootDir>/libs/redis/src/$1",
       "^woorkroom/smtp(|/.*)$": "<rootDir>/libs/smtp/src/$1",
       "^woorkroom/telegram(|/.*)$": "<rootDir>/libs/telegram/src/$1",
-      "^woorkroom/grpc(|/.*)$": "<rootDir>/libs/grpc/src/$1"
+      "^woorkroom/grpc(|/.*)$": "<rootDir>/libs/grpc/src/$1",
+      "^woorkroom/mongo(|/.*)$": "<rootDir>/libs/mongo/src/$1"
     }
   }
 }

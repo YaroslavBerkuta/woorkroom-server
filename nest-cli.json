@@ -127,6 +127,15 @@
         "tsConfigPath": "apps/users/tsconfig.app.json"
       }
     },
+    "mongo": {
+      "type": "library",
+      "root": "libs/mongo",
+      "entryFile": "index",
+      "sourceRoot": "libs/mongo/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/mongo/tsconfig.lib.json"
+      }
+    },
     "media": {
       "type": "application",
       "root": "apps/media",

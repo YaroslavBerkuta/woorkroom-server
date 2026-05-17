@@ -69,6 +69,12 @@
       ],
       "woorkroom/grpc/*": [
         "libs/grpc/src/*"
+      ],
+      "woorkroom/mongo": [
+        "libs/mongo/src"
+      ],
+      "woorkroom/mongo/*": [
+        "libs/mongo/src/*"
       ]
     }
   }
