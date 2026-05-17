@@ -12,6 +12,17 @@ export class ProjectController {
     return this.projectService.createProject(dto);
   }
 
+  @GrpcMethod('ProjectsService', 'GetMyProjectsPaginated')
+  getMyProjectsPaginated(dto: {
+    companyId: string;
+    employeeId: string;
+    first?: number;
+    after?: string;
+    filter?: Record<string, unknown>;
+  }) {
+    return this.projectService.getMyProjectsPaginated(dto);
+  }
+
   @GrpcMethod('ProjectsService', 'GetMyProjects')
   async getMyProjects(dto: { companyId: string; employeeId: string }) {
     const projects = await this.projectService.getMyProjects(
@@ -65,6 +76,12 @@ export class ProjectController {
     return { files };
   }
 
+  @GrpcMethod('ProjectsService', 'GetProjectFilesBatch')
+  async getProjectFilesBatch(dto: { projectIds: string[] }) {
+    const files = await this.projectService.getProjectFilesBatch(dto.projectIds ?? []);
+    return { files };
+  }
+
   @GrpcMethod('ProjectsService', 'AddProjectLink')
   addProjectLink(dto: AddProjectLinkDto) {
     return this.projectService.addProjectLink(dto);
@@ -79,6 +96,12 @@ export class ProjectController {
   @GrpcMethod('ProjectsService', 'GetProjectLinks')
   async getProjectLinks(dto: { id: string }) {
     const links = await this.projectService.getProjectLinks(dto.id);
+    return { links };
+  }
+
+  @GrpcMethod('ProjectsService', 'GetProjectLinksBatch')
+  async getProjectLinksBatch(dto: { projectIds: string[] }) {
+    const links = await this.projectService.getProjectLinksBatch(dto.projectIds ?? []);
     return { links };
   }
 }

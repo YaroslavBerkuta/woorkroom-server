@@ -1,8 +1,11 @@
 import {
   Args,
   Field,
+  ID,
   InputType,
+  Int,
   Mutation,
+  ObjectType,
   Parent,
   Query,
   ResolveField,
@@ -14,6 +17,40 @@ import { AccessCompanyGuard, GqlSessionAuthGuard } from '../../guards';
 import { CurrentCompanyId, CurrentUserId } from '../../decorators';
 import { ProjectFileModel, ProjectLinkModel, ProjectMemberModel, ProjectModel } from '../models';
 import { IProject, IProjectFile, IProjectLink, IProjectMember, ProjectPriority, ProjectStatus, UpdateProjectDto } from 'shared';
+import { ProjectDataloaderService } from '../dataloader/project-dataloader.service';
+
+@InputType()
+export class ProjectFilterInput {
+  @Field(() => String, { nullable: true }) name?: string;
+  @Field(() => String, { nullable: true }) slug?: string;
+  @Field(() => [ProjectPriority], { nullable: true }) priority?: ProjectPriority[];
+  @Field(() => [ProjectStatus], { nullable: true }) status?: ProjectStatus[];
+  @Field(() => [ID], { nullable: true }) reporterIds?: string[];
+  @Field(() => [ID], { nullable: true }) assigneeIds?: string[];
+  @Field(() => String, { nullable: true }) startsFrom?: string;
+  @Field(() => String, { nullable: true }) startsTo?: string;
+  @Field(() => String, { nullable: true }) deadlineFrom?: string;
+  @Field(() => String, { nullable: true }) deadlineTo?: string;
+}
+
+@ObjectType()
+export class PageInfoModel {
+  @Field(() => Boolean) hasNextPage: boolean;
+  @Field(() => String, { nullable: true }) endCursor?: string;
+}
+
+@ObjectType()
+export class ProjectEdgeModel {
+  @Field(() => ProjectModel) node: ProjectModel;
+  @Field(() => String) cursor: string;
+}
+
+@ObjectType()
+export class ProjectsConnectionModel {
+  @Field(() => [ProjectEdgeModel]) edges: ProjectEdgeModel[];
+  @Field(() => PageInfoModel) pageInfo: PageInfoModel;
+  @Field(() => Int) totalCount: number;
+}
 
 @InputType()
 export class UpdateProjectInput implements Omit<UpdateProjectDto, 'id'> {
@@ -70,6 +107,7 @@ export class ProjectsResolver {
     private readonly grpcProjectsService: grpc.IGrpcProjectsService,
     @Inject(grpc.GrpcCompanysService.name)
     private readonly grpcCompanysService: grpc.IGrpcCompanyService,
+    private readonly projectDataloader: ProjectDataloaderService,
   ) {}
 
   @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
@@ -122,6 +160,38 @@ export class ProjectsResolver {
   }
 
   @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
+  @Query(() => ProjectsConnectionModel)
+  async myProjectsPaginated(
+    @CurrentCompanyId() companyId: string,
+    @CurrentUserId() userId: string,
+    @Args('first', { type: () => Int, nullable: true, defaultValue: 20 }) first: number,
+    @Args('after', { type: () => String, nullable: true }) after?: string,
+    @Args('filter', { type: () => ProjectFilterInput, nullable: true }) filter?: ProjectFilterInput,
+  ): Promise<ProjectsConnectionModel> {
+    const profile = await this.grpcCompanysService.getMyCompanyProfile(companyId, userId);
+    if (!profile) {
+      return { edges: [], pageInfo: { hasNextPage: false, endCursor: undefined }, totalCount: 0 };
+    }
+
+    const result = await this.grpcProjectsService.getMyProjectsPaginated({
+      companyId,
+      employeeId: profile.id,
+      first,
+      after,
+      filter,
+    });
+
+    return {
+      edges: result.edges.map((e) => ({
+        node: this.wrapProject(e.node),
+        cursor: e.cursor,
+      })),
+      pageInfo: result.pageInfo,
+      totalCount: result.totalCount,
+    };
+  }
+
+  @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
   @Query(() => [ProjectModel])
   async companyProjects(
     @CurrentCompanyId() companyId: string,
@@ -162,13 +232,13 @@ export class ProjectsResolver {
 
   @ResolveField('files', () => [ProjectFileModel])
   async resolveFiles(@Parent() project: ProjectModel): Promise<ProjectFileModel[]> {
-    const files = await this.grpcProjectsService.getProjectFiles(project.id);
+    const files = await this.projectDataloader.filesLoader.load(project.id);
     return files.map((f) => this.wrapFile(f));
   }
 
   @ResolveField('links', () => [ProjectLinkModel])
   async resolveLinks(@Parent() project: ProjectModel): Promise<ProjectLinkModel[]> {
-    const links = await this.grpcProjectsService.getProjectLinks(project.id);
+    const links = await this.projectDataloader.linksLoader.load(project.id);
     return links.map((l) => this.wrapLink(l));
   }
 

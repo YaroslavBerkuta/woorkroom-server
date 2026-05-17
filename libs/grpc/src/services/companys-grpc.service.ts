@@ -4,6 +4,7 @@ import { Observable, lastValueFrom } from 'rxjs';
 import {
   CreateCompanyDto,
   CreateEmployeeDto,
+  UpdateCompanyDto,
   UpdateEmployeeDto,
   ICompany,
   IEmployee,
@@ -50,6 +51,10 @@ export class GrpcCompanysService implements IGrpcCompanyService, OnModuleInit {
 
   async createCompany(company: CreateCompanyDto): Promise<ICompany> {
     return lastValueFrom(this.client.createCompany(company));
+  }
+
+  async updateCompany(dto: UpdateCompanyDto): Promise<ICompany> {
+    return lastValueFrom(this.client.updateCompany(dto));
   }
 
   async createEmployee(employee: CreateEmployeeDto): Promise<IEmployee> {

@@ -9,7 +9,7 @@ import {
 } from '@nestjs/graphql';
 import { CompanyModel, EmployeeModel } from '../../companys';
 import { UserModel } from '../../users';
-import { Inject, UseGuards } from '@nestjs/common';
+import { Inject, Injectable, Scope, UseGuards } from '@nestjs/common';
 import { CompanysResolver } from '../../companys/resolvers';
 import * as grpc from 'woorkroom/grpc';
 import { AccessCompanyGuard, GqlSessionAuthGuard } from '../../guards';
@@ -37,8 +37,12 @@ export class UpdateProfileInput {
   birthday?: Date;
 }
 
+@Injectable({ scope: Scope.REQUEST })
 @Resolver(() => UserModel)
 export class UserCompanyResolver {
+  private _company: CompanyModel | null | undefined = undefined;
+  private _profile: EmployeeModel | null | undefined = undefined;
+
   constructor(
     @Inject(grpc.GrpcCompanysService.name)
     private readonly grpcCompanysService: grpc.IGrpcCompanyService,
@@ -47,14 +51,12 @@ export class UserCompanyResolver {
 
   @UseGuards(GqlSessionAuthGuard)
   @ResolveField(() => CompanyModel, { nullable: true })
-  async company(@CurrentCompanyId() companyId: string) {
-    if (!companyId) return null;
-
+  async company(@CurrentCompanyId() companyId: string): Promise<CompanyModel | null> {
+    if (this._company !== undefined) return this._company;
+    if (!companyId) return (this._company = null);
     const company = await this.grpcCompanysService.getCompanyById(companyId);
-
-    if (!company) return null;
-
-    return this.companysResolver.wrapData(company);
+    this._company = company ? this.companysResolver.wrapData(company) : null;
+    return this._company;
   }
 
   @UseGuards(GqlSessionAuthGuard)
@@ -63,14 +65,11 @@ export class UserCompanyResolver {
     @CurrentCompanyId() companyId: string,
     @CurrentUserId() userId: string,
   ): Promise<EmployeeModel | null> {
-    if (!companyId) return null;
-
-    const profile = await this.grpcCompanysService.getMyCompanyProfile(
-      companyId,
-      userId,
-    );
-
-    return profile ? this.wrapData(profile) : null;
+    if (this._profile !== undefined) return this._profile;
+    if (!companyId) return (this._profile = null);
+    const profile = await this.grpcCompanysService.getMyCompanyProfile(companyId, userId);
+    this._profile = profile ? this.wrapData(profile) : null;
+    return this._profile;
   }
 
   @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)

@@ -5,6 +5,7 @@ package projects;
 service ProjectsService {
   rpc CreateProject (CreateProjectRequest) returns (ProjectResponse);
   rpc GetMyProjects (GetMyProjectsRequest) returns (ProjectListResponse);
+  rpc GetMyProjectsPaginated (GetMyProjectsPaginatedRequest) returns (ProjectsConnectionResponse);
   rpc GetCompanyProjects (IdRequest) returns (ProjectListResponse);
   rpc GetProjectMembers (IdRequest) returns (ProjectMemberListResponse);
   rpc GetProject (IdRequest) returns (ProjectResponse);
@@ -13,13 +14,19 @@ service ProjectsService {
   rpc AddProjectFile (AddProjectFileRequest) returns (ProjectFileResponse);
   rpc RemoveProjectFile (IdRequest) returns (BoolResponse);
   rpc GetProjectFiles (IdRequest) returns (ProjectFileListResponse);
+  rpc GetProjectFilesBatch (ProjectIdsRequest) returns (ProjectFileListResponse);
   rpc AddProjectLink (AddProjectLinkRequest) returns (ProjectLinkResponse);
   rpc RemoveProjectLink (IdRequest) returns (BoolResponse);
   rpc GetProjectLinks (IdRequest) returns (ProjectLinkListResponse);
+  rpc GetProjectLinksBatch (ProjectIdsRequest) returns (ProjectLinkListResponse);
 }
 
 message IdRequest {
   string id = 1;
+}
+
+message ProjectIdsRequest {
+  repeated string projectIds = 1;
 }
 
 message GetMyProjectsRequest {
@@ -81,6 +88,43 @@ message ProjectMemberResponse {
 
 message ProjectListResponse {
   repeated ProjectResponse projects = 1;
+}
+
+message ProjectFilterRequest {
+  string name = 1;
+  string slug = 2;
+  repeated string priority = 3;
+  repeated string status = 4;
+  repeated string reporterIds = 5;
+  repeated string assigneeIds = 6;
+  string startsFrom = 7;
+  string startsTo = 8;
+  string deadlineFrom = 9;
+  string deadlineTo = 10;
+}
+
+message GetMyProjectsPaginatedRequest {
+  string companyId = 1;
+  string employeeId = 2;
+  int32 first = 3;
+  string after = 4;
+  ProjectFilterRequest filter = 5;
+}
+
+message PageInfoResponse {
+  bool hasNextPage = 1;
+  string endCursor = 2;
+}
+
+message ProjectEdgeResponse {
+  ProjectResponse node = 1;
+  string cursor = 2;
+}
+
+message ProjectsConnectionResponse {
+  repeated ProjectEdgeResponse edges = 1;
+  PageInfoResponse pageInfo = 2;
+  int32 totalCount = 3;
 }
 
 message ProjectMemberListResponse {

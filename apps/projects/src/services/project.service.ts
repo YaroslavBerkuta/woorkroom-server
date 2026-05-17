@@ -1,13 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
+
 import { Project } from '../entitys/project.entity';
 import { ProjectMember } from '../entitys/project-member.entity';
 import { ProjectFile } from '../entitys/project-file.entity';
 import { ProjectLink } from '../entitys/project-link.entity';
 import { AddProjectFileDto, AddProjectLinkDto, CreateProjectDto, UpdateProjectDto, UpdateProjectStatusDto } from 'shared';
-import { ProjectMemberRole, ProjectPriority } from 'shared';
+import { ProjectMemberRole, ProjectPriority, toBaseSlug, resolveUniqueSlug } from 'shared';
 import { RpcException } from '@nestjs/microservices';
+
+interface ProjectFilter {
+  name?: string;
+  slug?: string;
+  priority?: string[];
+  status?: string[];
+  reporterIds?: string[];
+  assigneeIds?: string[];
+  startsFrom?: string;
+  startsTo?: string;
+  deadlineFrom?: string;
+  deadlineTo?: string;
+}
+
+interface GetMyProjectsPaginatedDto {
+  companyId: string;
+  employeeId: string;
+  first?: number;
+  after?: string;
+  filter?: ProjectFilter;
+}
 
 @Injectable()
 export class ProjectService {
@@ -22,29 +44,16 @@ export class ProjectService {
     private readonly linkRepo: Repository<ProjectLink>,
   ) {}
 
-  private toSlug(name: string): string {
-    return name
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w\s-]/g, '')
-      .replace(/[\s_]+/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '');
-  }
-
   private async resolveSlug(companyId: string, name: string, excludeId?: string): Promise<string> {
-    const base = this.toSlug(name);
+    const base = toBaseSlug(name);
     const existing = await this.projectRepo.find({
       where: { companyId },
       select: ['id', 'slug'],
     });
-    const slugSet = new Set(existing.filter((p) => p.id !== excludeId).map((p) => p.slug));
-
-    if (!slugSet.has(base)) return base;
-
-    let counter = 2;
-    while (slugSet.has(`${base}-${counter}`)) counter++;
-    return `${base}-${counter}`;
+    const existingSlugs = existing
+      .filter((p) => p.id !== excludeId)
+      .map((p) => p.slug);
+    return resolveUniqueSlug(base, existingSlugs);
   }
 
   async createProject(dto: CreateProjectDto): Promise<Project> {
@@ -90,6 +99,84 @@ export class ProjectService {
     }
 
     return project;
+  }
+
+  async getMyProjectsPaginated(dto: GetMyProjectsPaginatedDto) {
+    const { companyId, employeeId, filter = {} } = dto;
+    const first = Math.min(dto.first || 20, 100);
+
+    const memberships = await this.memberRepo.find({ where: { employeeId } });
+    let projectIds = memberships.map((m) => m.projectId);
+
+    if (!projectIds.length) {
+      return { edges: [], pageInfo: { hasNextPage: false, endCursor: '' }, totalCount: 0 };
+    }
+
+    if (filter.reporterIds?.length || filter.assigneeIds?.length) {
+      const parts: string[] = [];
+      const params: Record<string, unknown> = {};
+      if (filter.reporterIds?.length) {
+        parts.push(`(pm.employeeId IN (:...reporterIds) AND pm.role = '${ProjectMemberRole.REPORTER}')`);
+        params.reporterIds = filter.reporterIds;
+      }
+      if (filter.assigneeIds?.length) {
+        parts.push(`(pm.employeeId IN (:...assigneeIds) AND pm.role = '${ProjectMemberRole.ASSIGNEE}')`);
+        params.assigneeIds = filter.assigneeIds;
+      }
+      const rows = await this.memberRepo
+        .createQueryBuilder('pm')
+        .select('DISTINCT pm.projectId', 'projectId')
+        .where(parts.join(' OR '), params)
+        .getRawMany<{ projectId: string }>();
+      const memberProjectIds = new Set(rows.map((r) => r.projectId));
+      projectIds = projectIds.filter((id) => memberProjectIds.has(id));
+    }
+
+    if (!projectIds.length) {
+      return { edges: [], pageInfo: { hasNextPage: false, endCursor: '' }, totalCount: 0 };
+    }
+
+    const qb = this.projectRepo
+      .createQueryBuilder('p')
+      .where('p.companyId = :companyId', { companyId })
+      .andWhere('p.id IN (:...projectIds)', { projectIds });
+
+    if (filter.name) qb.andWhere('p.name ILIKE :name', { name: `%${filter.name}%` });
+    if (filter.slug) qb.andWhere('p.slug ILIKE :slug', { slug: `%${filter.slug}%` });
+    if (filter.priority?.length) qb.andWhere('p.priority IN (:...priority)', { priority: filter.priority });
+    if (filter.status?.length) qb.andWhere('p.status IN (:...status)', { status: filter.status });
+    if (filter.startsFrom) qb.andWhere('p.starts >= :startsFrom', { startsFrom: filter.startsFrom });
+    if (filter.startsTo) qb.andWhere('p.starts <= :startsTo', { startsTo: filter.startsTo });
+    if (filter.deadlineFrom) qb.andWhere('p.deadline >= :deadlineFrom', { deadlineFrom: filter.deadlineFrom });
+    if (filter.deadlineTo) qb.andWhere('p.deadline <= :deadlineTo', { deadlineTo: filter.deadlineTo });
+
+    const totalCount = await qb.clone().getCount();
+
+    if (dto.after) {
+      const decoded = Buffer.from(dto.after, 'base64').toString('utf-8');
+      const colonIdx = decoded.lastIndexOf(':');
+      const cursorDate = decoded.substring(0, colonIdx);
+      const cursorId = decoded.substring(colonIdx + 1);
+      qb.andWhere(
+        '(p.createdAt < :cursorDate OR (p.createdAt = :cursorDate AND p.id < :cursorId))',
+        { cursorDate, cursorId },
+      );
+    }
+
+    qb.orderBy('p.createdAt', 'DESC').addOrderBy('p.id', 'DESC').take(first + 1);
+
+    const items = await qb.getMany();
+    const hasNextPage = items.length > first;
+    const pageItems = items.slice(0, first);
+
+    const edges = pageItems.map((p) => ({
+      node: p,
+      cursor: Buffer.from(`${p.createdAt.toISOString()}:${p.id}`).toString('base64'),
+    }));
+
+    const endCursor = edges.length > 0 ? edges[edges.length - 1].cursor : '';
+
+    return { edges, pageInfo: { hasNextPage, endCursor }, totalCount };
   }
 
   async getMyProjects(companyId: string, employeeId: string): Promise<Project[]> {
@@ -168,6 +255,10 @@ export class ProjectService {
     return this.fileRepo.find({ where: { projectId }, order: { createdAt: 'ASC' } });
   }
 
+  async getProjectFilesBatch(projectIds: string[]): Promise<ProjectFile[]> {
+    return this.fileRepo.find({ where: { projectId: In(projectIds) }, order: { createdAt: 'ASC' } });
+  }
+
   async addProjectLink(dto: AddProjectLinkDto): Promise<ProjectLink> {
     return this.linkRepo.save({
       projectId: dto.projectId,
@@ -185,5 +276,9 @@ export class ProjectService {
 
   async getProjectLinks(projectId: string): Promise<ProjectLink[]> {
     return this.linkRepo.find({ where: { projectId }, order: { createdAt: 'ASC' } });
+  }
+
+  async getProjectLinksBatch(projectIds: string[]): Promise<ProjectLink[]> {
+    return this.linkRepo.find({ where: { projectId: In(projectIds) }, order: { createdAt: 'ASC' } });
   }
 }

@@ -1,131 +1,76 @@
-## Нові API для інтеграції
+## Company Logo Upload — UI
 
-### 1. `companyMembers` query
+### Що потрібно реалізувати
 
-Повертає всіх співробітників поточної компанії.
+Додати можливість завантажити логотип компанії в налаштуваннях компанії.
+
+---
+
+### API
+
+#### 1. Завантаження файлу (REST)
+
+```
+POST http://<host>:3001/media/upload
+Content-Type: multipart/form-data
+
+fields:
+  file    — зображення (jpg, png, webp тощо)
+  folder  — "logos"
+```
+
+Відповідь:
+```json
+{
+  "fileId": "logos/uuid.webp",
+  "url": "http://...",
+  "webpUrl": "http://...",
+  "thumbnailUrl": "http://...",
+  "mimetype": "image/png",
+  "size": 51200
+}
+```
+
+Дозволені типи: тільки `image/*`. Ліміт: 50 MB.
+
+#### 2. Збереження логотипу (GraphQL)
 
 ```graphql
-query {
-  companyMembers {
+mutation UpdateCompany($input: UpdateCompanyInput!) {
+  updateCompany(input: $input) {
     id
-    userId
-    companyId
-    role        # OWNER | ADMIN | EMPLOYEE
-    position
-    firstName
-    lastName
-    avatar
-    createdAt
+    logo
   }
 }
 ```
 
-> Потребує: активна сесія + `x-company-id` header.
+`UpdateCompanyInput` — всі поля nullable:
+```
+name, service, describes, logo, direction, peopleCountStart, peopleCountEnd
+```
+
+Передавати тільки `logo`:
+```json
+{ "input": { "logo": "<url з media upload>" } }
+```
+
+Для відображення логотипу використовувати `webpUrl ?? url`.
 
 ---
 
-### 2. `createProject` mutation
+### UX-сценарій
 
-```graphql
-mutation CreateProject($input: CreateProjectInput!) {
-  createProject(input: $input) {
-    id
-    slug
-    name
-    status      # ACTIVE | CLOSED
-    priority    # low | medium | high | null
-    starts
-    deadline
-    description
-    image
-    createdAt
-  }
-}
-```
-
-**Input:**
-```graphql
-input CreateProjectInput {
-  name: String!
-  starts: String        # ISO date "2026-06-01"
-  deadline: String      # ISO date
-  priority: ProjectPriority   # low | medium | high
-  description: String
-  image: String         # media URL
-  reporterId: String    # employeeId (якщо не передати — creator стає reporter)
-  assigneeIds: [String] # employeeIds
-}
-```
-
-> Потребує: активна сесія + `x-company-id` header.
+1. У налаштуваннях компанії є область для логотипу (placeholder або поточне зображення).
+2. Клік → відкривається file picker (тільки `image/*`).
+3. Після вибору файлу — одразу `POST /media/upload` з `folder=logos`.
+4. Після успішного upload — `mutation updateCompany({ logo: url })`.
+5. Логотип відображається.
+6. Показувати loading/spinner під час завантаження.
+7. При помилці — toast з повідомленням.
 
 ---
 
-### 3. `myProjects` query
+### Де відображати логотип
 
-Проекти де поточний юзер є учасником (reporter або assignee).
-
-```graphql
-query {
-  myProjects {
-    id
-    slug
-    name
-    status
-    priority
-    starts
-    deadline
-    description
-    image
-    createdAt
-  }
-}
-```
-
-> Потребує: активна сесія + `x-company-id` header.
-
----
-
-### 4. `projectMembers` query
-
-```graphql
-query ProjectMembers($projectId: String!) {
-  projectMembers(projectId: $projectId) {
-    id
-    projectId
-    employeeId
-    role    # REPORTER | ASSIGNEE
-    createdAt
-  }
-}
-```
-
-> Потребує: активна сесія + `x-company-id` header.
-
----
-
-## Нові enum-и
-
-```graphql
-enum ProjectStatus {
-  ACTIVE
-  CLOSED
-}
-
-enum ProjectMemberRole {
-  REPORTER
-  ASSIGNEE
-}
-
-enum ProjectPriority {
-  low
-  medium
-  high
-}
-```
-
-## Примітки
-
-- `slug` генерується автоматично на сервері з `name`. Унікальний в межах компанії. Використовувати як URL-ключ (`/projects/my-project-slug`).
-- `status` за замовчуванням `ACTIVE` при створенні.
-- `projectMembers` повертає лише `employeeId` — якщо потрібні деталі юзера, треба зробити окремий запит `companyMembers` і join на клієнті.
+- У хедері / сайдбарі поряд з назвою компанії
+- На сторінці налаштувань компанії (edit-форма)

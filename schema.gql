@@ -128,6 +128,22 @@ enum ProjectMemberRole {
   ASSIGNEE
 }
 
+type PageInfoModel {
+  hasNextPage: Boolean!
+  endCursor: String
+}
+
+type ProjectEdgeModel {
+  node: ProjectModel!
+  cursor: String!
+}
+
+type ProjectsConnectionModel {
+  edges: [ProjectEdgeModel!]!
+  pageInfo: PageInfoModel!
+  totalCount: Int!
+}
+
 type Query {
   me: UserModel
   company: CompanyModel!
@@ -135,10 +151,24 @@ type Query {
   companyMembers: [EmployeeModel!]!
   getProject(projectId: String!): ProjectModel!
   myProjects: [ProjectModel!]!
+  myProjectsPaginated(first: Int = 20, after: String, filter: ProjectFilterInput): ProjectsConnectionModel!
   companyProjects: [ProjectModel!]!
   projectMembers(projectId: String!): [ProjectMemberModel!]!
   projectFiles(projectId: String!): [ProjectFileModel!]!
   projectLinks(projectId: String!): [ProjectLinkModel!]!
+}
+
+input ProjectFilterInput {
+  name: String
+  slug: String
+  priority: [ProjectPriority!]
+  status: [ProjectStatus!]
+  reporterIds: [ID!]
+  assigneeIds: [ID!]
+  startsFrom: String
+  startsTo: String
+  deadlineFrom: String
+  deadlineTo: String
 }
 
 type Mutation {
@@ -147,6 +177,8 @@ type Mutation {
   requestCode(phone: String!): Boolean!
   register(input: RegisterInput!): Boolean!
   selectMyCompany(companyId: ID!): Boolean!
+  createCompany(input: CreateCompanyInput!): CompanyModel!
+  updateCompany(input: UpdateCompanyInput!): CompanyModel!
   updateMyProfile(input: UpdateProfileInput!): EmployeeModel!
   createProject(input: CreateProjectInput!): ProjectModel!
   updateProject(projectId: String!, input: UpdateProjectInput!): ProjectModel!
@@ -182,6 +214,16 @@ input CreateCompanyInput {
   direction: String
   peopleCountStart: Float!
   peopleCountEnd: Float!
+}
+
+input UpdateCompanyInput {
+  name: String
+  service: String
+  describes: String
+  logo: String
+  direction: String
+  peopleCountStart: Int
+  peopleCountEnd: Int
 }
 
 input UpdateProfileInput {

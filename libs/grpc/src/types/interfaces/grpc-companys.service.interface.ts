@@ -1,6 +1,7 @@
 import {
   CreateCompanyDto,
   CreateEmployeeDto,
+  UpdateCompanyDto,
   UpdateEmployeeDto,
   ICompany,
   IEmployee,
@@ -8,6 +9,7 @@ import {
 
 export interface IGrpcCompanyService {
   createCompany(company: CreateCompanyDto): Promise<ICompany>;
+  updateCompany(dto: UpdateCompanyDto): Promise<ICompany>;
   createEmployee(employee: CreateEmployeeDto): Promise<IEmployee>;
   updateEmployee(dto: UpdateEmployeeDto): Promise<IEmployee>;
   deleteCompany(id: string): Promise<boolean>;

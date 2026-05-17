@@ -25,7 +25,13 @@ export class CompanyService implements ICompanyServiceInterface {
       throw new NotFoundException('Company not found');
     }
 
-    await this.companyRepository.update(id, omit(dto, 'id'));
+    const updateData = Object.fromEntries(
+      Object.entries(omit(dto, 'id')).filter(([, v]) => v !== '' && v !== 0 && v != null),
+    );
+
+    if (Object.keys(updateData).length === 0) return existCompany;
+
+    await this.companyRepository.update(id, updateData);
 
     const updatedCompany = await this.findCompanyById(id);
 

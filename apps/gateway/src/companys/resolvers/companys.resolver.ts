@@ -1,6 +1,6 @@
-import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Field, ID, InputType, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CompanyModel, EmployeeModel } from '../models';
-import { ICompany, IEmployee } from 'shared';
+import { ICompany, IEmployee, UpdateCompanyDto, UserRole } from 'shared';
 import { Inject, NotFoundException, UseGuards } from '@nestjs/common';
 import { AccessCompanyGuard, GqlSessionAuthGuard } from '../../guards';
 import * as grpc from 'woorkroom/grpc';
@@ -9,6 +9,25 @@ import {
   CurrentSessionId,
   CurrentUserId,
 } from '../../decorators';
+import { CreateCompanyInput } from '../../auth/inputs';
+
+@InputType()
+export class UpdateCompanyInput implements Omit<UpdateCompanyDto, 'id'> {
+  @Field(() => String, { nullable: true })
+  name?: string;
+  @Field(() => String, { nullable: true })
+  service?: string;
+  @Field(() => String, { nullable: true })
+  describes?: string;
+  @Field(() => String, { nullable: true })
+  logo?: string;
+  @Field(() => String, { nullable: true })
+  direction?: string;
+  @Field(() => Int, { nullable: true })
+  peopleCountStart?: number;
+  @Field(() => Int, { nullable: true })
+  peopleCountEnd?: number;
+}
 
 @Resolver(() => CompanyModel)
 export class CompanysResolver {
@@ -46,6 +65,34 @@ export class CompanysResolver {
   async myCompanys(@CurrentUserId() userId: string) {
     const companys = await this.grpcCompanysService.getMyCompanys(userId);
     return companys.map((company) => this.wrapData(company));
+  }
+
+  @UseGuards(GqlSessionAuthGuard)
+  @Mutation(() => CompanyModel)
+  async createCompany(
+    @CurrentUserId() userId: string,
+    @Args('input', { type: () => CreateCompanyInput }) input: CreateCompanyInput,
+  ) {
+    const company = await this.grpcCompanysService.createCompany(input);
+    await this.grpcCompanysService.createEmployee({
+      companyId: company.id,
+      userId,
+      role: UserRole.OWNER,
+    });
+    return this.wrapData(company);
+  }
+
+  @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
+  @Mutation(() => CompanyModel)
+  async updateCompany(
+    @CurrentCompanyId() companyId: string,
+    @Args('input', { type: () => UpdateCompanyInput }) input: UpdateCompanyInput,
+  ) {
+    const updated = await this.grpcCompanysService.updateCompany({
+      id: companyId,
+      ...input,
+    });
+    return this.wrapData(updated);
   }
 
   @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
