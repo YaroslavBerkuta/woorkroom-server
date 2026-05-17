@@ -2,7 +2,28 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "declaration": false,
-    "outDir": "../../dist/apps/users"
+    "outDir": "../../dist/apps/users",
+    "paths": {
+      "@/*": ["apps/users/src/*"],
+      "woorkroom/config": ["libs/config/src"],
+      "woorkroom/config/*": ["libs/config/src/*"],
+      "woorkroom/database": ["libs/database/src"],
+      "woorkroom/database/*": ["libs/database/src/*"],
+      "woorkroom/grpc": ["libs/grpc/src"],
+      "woorkroom/grpc/*": ["libs/grpc/src/*"],
+      "woorkroom/logger": ["libs/logger/src"],
+      "woorkroom/logger/*": ["libs/logger/src/*"],
+      "woorkroom/mongo": ["libs/mongo/src"],
+      "woorkroom/mongo/*": ["libs/mongo/src/*"],
+      "woorkroom/rabbitmq": ["libs/rabbitmq/src"],
+      "woorkroom/rabbitmq/*": ["libs/rabbitmq/src/*"],
+      "woorkroom/redis": ["libs/redis/src"],
+      "woorkroom/redis/*": ["libs/redis/src/*"],
+      "woorkroom/smtp": ["libs/smtp/src"],
+      "woorkroom/smtp/*": ["libs/smtp/src/*"],
+      "woorkroom/telegram": ["libs/telegram/src"],
+      "woorkroom/telegram/*": ["libs/telegram/src/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
