@@ -63,13 +63,32 @@ export class MediaService implements OnModuleInit {
     }
   }
 
+  private extFromMimetype(mime: string): string {
+    const base = mime.split(';')[0].trim();
+    const map: Record<string, string> = {
+      'audio/webm': '.webm',
+      'video/webm': '.webm',
+      'audio/ogg': '.ogg',
+      'video/ogg': '.ogv',
+      'audio/mp4': '.m4a',
+      'video/mp4': '.mp4',
+      'audio/mpeg': '.mp3',
+      'audio/wav': '.wav',
+      'application/pdf': '.pdf',
+      'application/msword': '.doc',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
+    };
+    return map[base] ?? '.bin';
+  }
+
   async uploadFile(
     file: Express.Multer.File,
     folder = 'uploads',
   ): Promise<IMediaFile> {
     const fileId = v4();
     const isImage = file.mimetype.startsWith('image/');
-    const ext = extname(file.originalname).toLowerCase() || '.bin';
+    const ext = extname(file.originalname).toLowerCase() || this.extFromMimetype(file.mimetype);
+    const contentType = file.mimetype.split(';')[0].trim();
 
     const objectName = `${folder}/${fileId}${ext}`;
     let webpUrl: string | undefined;
@@ -80,7 +99,7 @@ export class MediaService implements OnModuleInit {
       objectName,
       file.buffer,
       file.buffer.length,
-      { 'Content-Type': file.mimetype },
+      { 'Content-Type': contentType },
     );
 
     if (isImage) {
@@ -119,7 +138,7 @@ export class MediaService implements OnModuleInit {
       url: `${this.publicUrl}/${this.bucket}/${objectName}`,
       webpUrl,
       thumbnailUrl,
-      mimetype: file.mimetype,
+      mimetype: contentType,
       size: file.buffer.length,
     };
   }
