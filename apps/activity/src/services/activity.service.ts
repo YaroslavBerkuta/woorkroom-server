@@ -12,11 +12,20 @@ interface RecordHistoryDto {
   meta?: Record<string, unknown>;
 }
 
+interface AttachmentDto {
+  url: string;
+  thumbnailUrl?: string;
+  name: string;
+  mimetype: string;
+  size: number;
+}
+
 interface AddCommentDto {
   resourceId: string;
   resourceType: string;
   actorEmployeeId: string;
   content: string;
+  attachments?: AttachmentDto[];
 }
 
 @Injectable()
@@ -49,17 +58,23 @@ export class ActivityService {
       type: 'comment',
       actorEmployeeId: dto.actorEmployeeId,
       content: dto.content,
+      attachments: dto.attachments ?? [],
       isEdited: false,
     });
     const saved = await doc.save();
     return this.serialize(saved.toObject() as ActivityEventDocument & { id: string });
   }
 
-  async editComment(id: string, content: string): Promise<Record<string, unknown>> {
+  async editComment(
+    id: string,
+    content: string,
+    attachments?: AttachmentDto[],
+  ): Promise<Record<string, unknown>> {
     const doc = await this.activityEventModel.findById(id).exec();
     if (!doc) throw new RpcException('Comment not found');
 
     doc.content = content;
+    if (attachments !== undefined) doc.attachments = attachments;
     doc.isEdited = true;
     doc.editedAt = new Date();
     const saved = await doc.save();
@@ -112,6 +127,13 @@ export class ActivityService {
       type: obj.type,
       actorEmployeeId: obj.actorEmployeeId,
       content: obj.content ?? '',
+      attachments: (obj.attachments ?? []).map((a) => ({
+        url: a.url,
+        thumbnailUrl: a.thumbnailUrl ?? '',
+        name: a.name,
+        mimetype: a.mimetype,
+        size: a.size,
+      })),
       meta: JSON.stringify(obj.meta ?? {}),
       isEdited: obj.isEdited ?? false,
       editedAt: obj.editedAt ? obj.editedAt.toISOString() : '',

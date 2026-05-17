@@ -1,4 +1,22 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
+
+@ObjectType()
+export class AttachmentModel {
+  @Field(() => String)
+  url: string;
+
+  @Field(() => String, { nullable: true })
+  thumbnailUrl?: string;
+
+  @Field(() => String)
+  name: string;
+
+  @Field(() => String)
+  mimetype: string;
+
+  @Field(() => Int)
+  size: number;
+}
 
 @ObjectType()
 export class ActivityEventModel {
@@ -19,6 +37,9 @@ export class ActivityEventModel {
 
   @Field(() => String, { nullable: true })
   content?: string;
+
+  @Field(() => [AttachmentModel])
+  attachments: AttachmentModel[];
 
   @Field(() => String)
   meta: string;

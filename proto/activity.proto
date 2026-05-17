@@ -19,6 +19,14 @@ message GetActivityFeedRequest {
   int32 offset = 4;
 }
 
+message AttachmentMessage {
+  string url = 1;
+  string thumbnailUrl = 2;
+  string name = 3;
+  string mimetype = 4;
+  int32 size = 5;
+}
+
 message ActivityEventMessage {
   string id = 1;
   string resourceId = 2;
@@ -30,6 +38,7 @@ message ActivityEventMessage {
   bool isEdited = 8;
   string editedAt = 9;
   string createdAt = 10;
+  repeated AttachmentMessage attachments = 11;
 }
 
 message ActivityFeedResponse {
@@ -42,11 +51,13 @@ message AddCommentRequest {
   string resourceType = 2;
   string actorEmployeeId = 3;
   string content = 4;
+  repeated AttachmentMessage attachments = 5;
 }
 
 message EditCommentRequest {
   string id = 1;
   string content = 2;
+  repeated AttachmentMessage attachments = 3;
 }
 
 message BoolResponse {

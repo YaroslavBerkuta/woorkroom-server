@@ -46,6 +46,7 @@ export class GrpcActivityService implements IGrpcActivityService, OnModuleInit {
     resourceType: string;
     actorEmployeeId: string;
     content: string;
+    attachments?: IActivityEventItem['attachments'];
   }): Promise<IActivityEventItem> {
     return lastValueFrom(this.client.addComment(dto));
   }
@@ -53,6 +54,7 @@ export class GrpcActivityService implements IGrpcActivityService, OnModuleInit {
   async editComment(dto: {
     id: string;
     content: string;
+    attachments?: IActivityEventItem['attachments'];
   }): Promise<IActivityEventItem> {
     return lastValueFrom(this.client.editComment(dto));
   }

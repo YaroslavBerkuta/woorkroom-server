@@ -48,13 +48,18 @@ export class ActivityController {
     resourceType: string;
     actorEmployeeId: string;
     content: string;
+    attachments?: { url: string; thumbnailUrl?: string; name: string; mimetype: string; size: number }[];
   }) {
     return this.activityService.addComment(dto);
   }
 
   @GrpcMethod('ActivityService', 'EditComment')
-  async editComment(dto: { id: string; content: string }) {
-    return this.activityService.editComment(dto.id, dto.content);
+  async editComment(dto: {
+    id: string;
+    content: string;
+    attachments?: { url: string; thumbnailUrl?: string; name: string; mimetype: string; size: number }[];
+  }) {
+    return this.activityService.editComment(dto.id, dto.content, dto.attachments);
   }
 
   @GrpcMethod('ActivityService', 'DeleteComment')

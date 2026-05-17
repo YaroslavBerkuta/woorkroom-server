@@ -2,6 +2,18 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { randomUUID } from 'crypto';
 
+@Schema({ _id: false })
+class Attachment {
+  @Prop({ required: true }) url: string;
+  @Prop() thumbnailUrl?: string;
+  @Prop({ required: true }) name: string;
+  @Prop({ required: true }) mimetype: string;
+  @Prop({ required: true }) size: number;
+}
+const AttachmentSchema = SchemaFactory.createForClass(Attachment);
+
+export { Attachment };
+
 export type ActivityEventDocument = ActivityEvent &
   Document & { createdAt: Date; updatedAt: Date };
 
@@ -36,6 +48,9 @@ export class ActivityEvent {
 
   @Prop()
   content?: string;
+
+  @Prop({ type: [AttachmentSchema], default: [] })
+  attachments?: Attachment[];
 
   @Prop({ type: MongooseSchema.Types.Mixed, default: {} })
   meta?: Record<string, unknown>;

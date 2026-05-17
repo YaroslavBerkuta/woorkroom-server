@@ -1,3 +1,11 @@
+export interface IActivityAttachment {
+  url: string;
+  thumbnailUrl?: string;
+  name: string;
+  mimetype: string;
+  size: number;
+}
+
 export interface IActivityEventItem {
   id: string;
   resourceId: string;
@@ -5,6 +13,7 @@ export interface IActivityEventItem {
   type: string;
   actorEmployeeId: string;
   content: string;
+  attachments: IActivityAttachment[];
   meta: string;
   isEdited: boolean;
   editedAt: string;
@@ -23,7 +32,12 @@ export interface IGrpcActivityService {
     resourceType: string;
     actorEmployeeId: string;
     content: string;
+    attachments?: IActivityAttachment[];
   }): Promise<IActivityEventItem>;
-  editComment(dto: { id: string; content: string }): Promise<IActivityEventItem>;
+  editComment(dto: {
+    id: string;
+    content: string;
+    attachments?: IActivityAttachment[];
+  }): Promise<IActivityEventItem>;
   deleteComment(id: string): Promise<boolean>;
 }
