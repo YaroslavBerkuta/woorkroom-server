@@ -288,7 +288,10 @@ export class ProjectService {
     const project = await this.projectRepo.findOne({ where: { id: dto.id } });
     if (!project) throw new RpcException('Project not found');
 
+    const changes: Record<string, { from: unknown; to: unknown }> = {};
+
     if (dto.name && dto.name !== project.name) {
+      changes.name = { from: project.name, to: dto.name };
       project.name = dto.name;
       project.slug = await this.resolveSlug(
         project.companyId,
@@ -296,25 +299,39 @@ export class ProjectService {
         project.id,
       );
     }
-    if (dto.starts !== undefined) project.starts = dto.starts || undefined;
-    if (dto.deadline !== undefined)
+    if (dto.starts !== undefined && dto.starts !== (project.starts ?? '')) {
+      changes.starts = { from: project.starts ?? null, to: dto.starts || null };
+      project.starts = dto.starts || undefined;
+    }
+    if (dto.deadline !== undefined && dto.deadline !== (project.deadline ?? '')) {
+      changes.deadline = { from: project.deadline ?? null, to: dto.deadline || null };
       project.deadline = dto.deadline || undefined;
-    if (dto.priority !== undefined)
+    }
+    if (dto.priority !== undefined && dto.priority !== project.priority) {
+      changes.priority = { from: project.priority, to: dto.priority };
       project.priority = dto.priority || undefined;
-    if (dto.description !== undefined)
+    }
+    if (dto.description !== undefined && dto.description !== (project.description ?? '')) {
+      changes.description = { from: project.description ?? null, to: dto.description || null };
       project.description = dto.description || undefined;
-    if (dto.image !== undefined) project.image = dto.image || undefined;
+    }
+    if (dto.image !== undefined && dto.image !== (project.image ?? '')) {
+      changes.image = { from: project.image ?? null, to: dto.image || null };
+      project.image = dto.image || undefined;
+    }
 
     const saved = await this.projectRepo.save(project);
     await this.redis.del(`project:${dto.id}`);
 
-    this.rabbitmqAudit.publish({
-      service: 'projects',
-      action: AuditAction.PROJECT_UPDATED,
-      actorEmployeeId: dto.actorEmployeeId ?? '',
-      resourceId: dto.id,
-      meta: { changes: dto },
-    });
+    if (Object.keys(changes).length > 0) {
+      this.rabbitmqAudit.publish({
+        service: 'projects',
+        action: AuditAction.PROJECT_UPDATED,
+        actorEmployeeId: dto.actorEmployeeId ?? '',
+        resourceId: dto.id,
+        meta: { changes },
+      });
+    }
 
     return saved;
   }
@@ -338,7 +355,13 @@ export class ProjectService {
   }
 
   async addProjectMember(dto: AddProjectMemberDto): Promise<ProjectMember> {
+    let replacedEmployeeId: string | undefined;
+
     if (dto.role === ProjectMemberRole.REPORTER) {
+      const prevReporter = await this.memberRepo.findOne({
+        where: { projectId: dto.projectId, role: ProjectMemberRole.REPORTER },
+      });
+      replacedEmployeeId = prevReporter?.employeeId;
       await this.memberRepo.delete({
         projectId: dto.projectId,
         role: ProjectMemberRole.REPORTER,
@@ -364,7 +387,11 @@ export class ProjectService {
       action: AuditAction.PROJECT_MEMBER_ADDED,
       actorEmployeeId: dto.actorEmployeeId ?? '',
       resourceId: dto.projectId,
-      meta: { employeeId: dto.employeeId, role: dto.role },
+      meta: {
+        employeeId: dto.employeeId,
+        role: dto.role,
+        ...(replacedEmployeeId ? { replacedEmployeeId } : {}),
+      },
     });
 
     return member;

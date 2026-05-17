@@ -144,13 +144,25 @@ type ProjectsConnectionModel {
   totalCount: Int!
 }
 
-type AuditEventModel {
+type AttachmentModel {
+  url: String!
+  thumbnailUrl: String
+  name: String!
+  mimetype: String!
+  size: Int!
+}
+
+type ActivityEventModel {
   id: ID!
-  service: String!
-  action: String!
-  actorEmployeeId: String!
   resourceId: String!
+  resourceType: String!
+  type: String!
+  actorEmployeeId: String!
+  content: String
+  attachments: [AttachmentModel!]!
   meta: String!
+  isEdited: Boolean!
+  editedAt: String
   createdAt: String!
 }
 
@@ -166,7 +178,7 @@ type Query {
   projectMembers(projectId: String!): [ProjectMemberModel!]!
   projectFiles(projectId: String!): [ProjectFileModel!]!
   projectLinks(projectId: String!): [ProjectLinkModel!]!
-  auditEvents(resourceId: String!, limit: Int = 20, offset: Int = 0): [AuditEventModel!]!
+  activityFeed(resourceId: String!, types: [String!], limit: Int = 20, offset: Int = 0): [ActivityEventModel!]!
 }
 
 input ProjectFilterInput {
@@ -200,6 +212,9 @@ type Mutation {
   removeProjectFile(fileId: String!): Boolean!
   addProjectLink(projectId: String!, url: String!, title: String): ProjectLinkModel!
   removeProjectLink(linkId: String!): Boolean!
+  addComment(resourceId: String!, resourceType: String!, content: String!, attachments: [AttachmentInput!]): ActivityEventModel!
+  editComment(id: String!, content: String!, attachments: [AttachmentInput!]): ActivityEventModel!
+  deleteComment(id: String!): Boolean!
 }
 
 input LoginInput {
@@ -266,4 +281,12 @@ input UpdateProjectInput {
   priority: ProjectPriority
   description: String
   image: String
+}
+
+input AttachmentInput {
+  url: String!
+  thumbnailUrl: String
+  name: String!
+  mimetype: String!
+  size: Int!
 }
