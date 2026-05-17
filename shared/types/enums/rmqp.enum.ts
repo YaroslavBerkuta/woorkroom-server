@@ -24,4 +24,6 @@ export enum EMessageRmqp {
 
   SEND_VERIFICATION_CODE = 'send_verification_code',
   VERIFY_PASSWORD = 'verify_password',
+
+  AUDIT_EVENT = 'audit_event',
 }

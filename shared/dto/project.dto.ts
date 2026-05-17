@@ -16,6 +16,7 @@ export class CreateProjectDto {
 export class UpdateProjectStatusDto {
   id: string;
   status: ProjectStatus;
+  actorEmployeeId?: string;
 }
 
 export class UpdateProjectDto {
@@ -26,12 +27,14 @@ export class UpdateProjectDto {
   priority?: ProjectPriority;
   description?: string;
   image?: string;
+  actorEmployeeId?: string;
 }
 
 export class AddProjectMemberDto {
   projectId: string;
   employeeId: string;
   role: ProjectMemberRole;
+  actorEmployeeId?: string;
 }
 
 export class AddProjectFileDto {
@@ -40,10 +43,27 @@ export class AddProjectFileDto {
   name: string;
   mimeType?: string;
   size?: number;
+  actorEmployeeId?: string;
 }
 
 export class AddProjectLinkDto {
   projectId: string;
   url: string;
   title?: string;
+  actorEmployeeId?: string;
+}
+
+export class RemoveProjectMemberDto {
+  id: string;
+  actorEmployeeId?: string;
+}
+
+export class RemoveProjectFileDto {
+  id: string;
+  actorEmployeeId?: string;
+}
+
+export class RemoveProjectLinkDto {
+  id: string;
+  actorEmployeeId?: string;
 }

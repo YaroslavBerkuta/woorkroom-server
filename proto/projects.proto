@@ -9,16 +9,16 @@ service ProjectsService {
   rpc GetCompanyProjects (IdRequest) returns (ProjectListResponse);
   rpc GetProjectMembers (IdRequest) returns (ProjectMemberListResponse);
   rpc AddProjectMember (AddProjectMemberRequest) returns (ProjectMemberResponse);
-  rpc RemoveProjectMember (IdRequest) returns (BoolResponse);
+  rpc RemoveProjectMember (RemoveProjectMemberRequest) returns (BoolResponse);
   rpc GetProject (IdRequest) returns (ProjectResponse);
   rpc UpdateProjectStatus (UpdateProjectStatusRequest) returns (ProjectResponse);
   rpc UpdateProject (UpdateProjectRequest) returns (ProjectResponse);
   rpc AddProjectFile (AddProjectFileRequest) returns (ProjectFileResponse);
-  rpc RemoveProjectFile (IdRequest) returns (BoolResponse);
+  rpc RemoveProjectFile (RemoveProjectFileRequest) returns (BoolResponse);
   rpc GetProjectFiles (IdRequest) returns (ProjectFileListResponse);
   rpc GetProjectFilesBatch (ProjectIdsRequest) returns (ProjectFileListResponse);
   rpc AddProjectLink (AddProjectLinkRequest) returns (ProjectLinkResponse);
-  rpc RemoveProjectLink (IdRequest) returns (BoolResponse);
+  rpc RemoveProjectLink (RemoveProjectLinkRequest) returns (BoolResponse);
   rpc GetProjectLinks (IdRequest) returns (ProjectLinkListResponse);
   rpc GetProjectLinksBatch (ProjectIdsRequest) returns (ProjectLinkListResponse);
 }
@@ -52,6 +52,7 @@ message CreateProjectRequest {
 message UpdateProjectStatusRequest {
   string id = 1;
   string status = 2;
+  string actorEmployeeId = 3;
 }
 
 message UpdateProjectRequest {
@@ -62,6 +63,7 @@ message UpdateProjectRequest {
   string priority = 5;
   string description = 6;
   string image = 7;
+  string actorEmployeeId = 8;
 }
 
 message ProjectResponse {
@@ -133,6 +135,12 @@ message AddProjectMemberRequest {
   string projectId = 1;
   string employeeId = 2;
   string role = 3;
+  string actorEmployeeId = 4;
+}
+
+message RemoveProjectMemberRequest {
+  string id = 1;
+  string actorEmployeeId = 2;
 }
 
 message ProjectMemberListResponse {
@@ -149,6 +157,12 @@ message AddProjectFileRequest {
   string name = 3;
   string mimeType = 4;
   int32 size = 5;
+  string actorEmployeeId = 6;
+}
+
+message RemoveProjectFileRequest {
+  string id = 1;
+  string actorEmployeeId = 2;
 }
 
 message ProjectFileResponse {
@@ -170,6 +184,12 @@ message AddProjectLinkRequest {
   string projectId = 1;
   string url = 2;
   string title = 3;
+  string actorEmployeeId = 4;
+}
+
+message RemoveProjectLinkRequest {
+  string id = 1;
+  string actorEmployeeId = 2;
 }
 
 message ProjectLinkResponse {

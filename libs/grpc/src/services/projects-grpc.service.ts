@@ -126,9 +126,12 @@ export class GrpcProjectsService implements IGrpcProjectsService, OnModuleInit {
     ) as unknown as Promise<IProjectMember>;
   }
 
-  async removeProjectMember(memberId: string): Promise<boolean> {
+  async removeProjectMember(dto: {
+    id: string;
+    actorEmployeeId?: string;
+  }): Promise<boolean> {
     const res = await lastValueFrom(
-      this.client.removeProjectMember({ id: memberId }),
+      this.client.removeProjectMember(dto),
     );
     return res.value;
   }
@@ -140,16 +143,22 @@ export class GrpcProjectsService implements IGrpcProjectsService, OnModuleInit {
   async updateProjectStatus(
     id: string,
     status: ProjectStatus,
+    actorEmployeeId?: string,
   ): Promise<IProject> {
-    return lastValueFrom(this.client.updateProjectStatus({ id, status }));
+    return lastValueFrom(
+      this.client.updateProjectStatus({ id, status, actorEmployeeId }),
+    );
   }
 
   async addProjectFile(dto: AddProjectFileDto): Promise<IProjectFile> {
     return lastValueFrom(this.client.addProjectFile(dto));
   }
 
-  async removeProjectFile(id: string): Promise<boolean> {
-    const res = await lastValueFrom(this.client.removeProjectFile({ id }));
+  async removeProjectFile(dto: {
+    id: string;
+    actorEmployeeId?: string;
+  }): Promise<boolean> {
+    const res = await lastValueFrom(this.client.removeProjectFile(dto));
     return res.value;
   }
 
@@ -171,8 +180,11 @@ export class GrpcProjectsService implements IGrpcProjectsService, OnModuleInit {
     return lastValueFrom(this.client.addProjectLink(dto));
   }
 
-  async removeProjectLink(id: string): Promise<boolean> {
-    const res = await lastValueFrom(this.client.removeProjectLink({ id }));
+  async removeProjectLink(dto: {
+    id: string;
+    actorEmployeeId?: string;
+  }): Promise<boolean> {
+    const res = await lastValueFrom(this.client.removeProjectLink(dto));
     return res.value;
   }
 

@@ -230,10 +230,17 @@ export class ProjectsResolver {
   async updateProject(
     @Args('projectId', { type: () => String }) projectId: string,
     @Args('input') input: UpdateProjectInput,
+    @CurrentCompanyId() companyId: string,
+    @CurrentUserId() userId: string,
   ): Promise<ProjectModel> {
+    const profile = await this.grpcCompanysService.getMyCompanyProfile(
+      companyId,
+      userId,
+    );
     const project = await this.grpcProjectsService.updateProject({
       id: projectId,
       ...input,
+      actorEmployeeId: profile?.id,
     });
     return this.wrapProject(project);
   }
@@ -243,10 +250,17 @@ export class ProjectsResolver {
   async updateProjectStatus(
     @Args('projectId', { type: () => String }) projectId: string,
     @Args('status', { type: () => ProjectStatus }) status: ProjectStatus,
+    @CurrentCompanyId() companyId: string,
+    @CurrentUserId() userId: string,
   ): Promise<ProjectModel> {
+    const profile = await this.grpcCompanysService.getMyCompanyProfile(
+      companyId,
+      userId,
+    );
     const project = await this.grpcProjectsService.updateProjectStatus(
       projectId,
       status,
+      profile?.id,
     );
     return this.wrapProject(project);
   }
@@ -266,11 +280,18 @@ export class ProjectsResolver {
     @Args('projectId', { type: () => String }) projectId: string,
     @Args('employeeId', { type: () => String }) employeeId: string,
     @Args('role', { type: () => ProjectMemberRole }) role: ProjectMemberRole,
+    @CurrentCompanyId() companyId: string,
+    @CurrentUserId() userId: string,
   ): Promise<ProjectMemberModel> {
+    const profile = await this.grpcCompanysService.getMyCompanyProfile(
+      companyId,
+      userId,
+    );
     const member = await this.grpcProjectsService.addProjectMember({
       projectId,
       employeeId,
       role,
+      actorEmployeeId: profile?.id,
     });
     return this.wrapMember(member);
   }
@@ -279,8 +300,17 @@ export class ProjectsResolver {
   @Mutation(() => Boolean)
   async removeProjectMember(
     @Args('memberId', { type: () => String }) memberId: string,
+    @CurrentCompanyId() companyId: string,
+    @CurrentUserId() userId: string,
   ): Promise<boolean> {
-    return this.grpcProjectsService.removeProjectMember(memberId);
+    const profile = await this.grpcCompanysService.getMyCompanyProfile(
+      companyId,
+      userId,
+    );
+    return this.grpcProjectsService.removeProjectMember({
+      id: memberId,
+      actorEmployeeId: profile?.id,
+    });
   }
 
   @ResolveField('files', () => [ProjectFileModel])
@@ -330,8 +360,17 @@ export class ProjectsResolver {
   @Mutation(() => Boolean)
   async removeProjectFile(
     @Args('fileId', { type: () => String }) fileId: string,
+    @CurrentCompanyId() companyId: string,
+    @CurrentUserId() userId: string,
   ): Promise<boolean> {
-    return this.grpcProjectsService.removeProjectFile(fileId);
+    const profile = await this.grpcCompanysService.getMyCompanyProfile(
+      companyId,
+      userId,
+    );
+    return this.grpcProjectsService.removeProjectFile({
+      id: fileId,
+      actorEmployeeId: profile?.id,
+    });
   }
 
   @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
@@ -362,8 +401,17 @@ export class ProjectsResolver {
   @Mutation(() => Boolean)
   async removeProjectLink(
     @Args('linkId', { type: () => String }) linkId: string,
+    @CurrentCompanyId() companyId: string,
+    @CurrentUserId() userId: string,
   ): Promise<boolean> {
-    return this.grpcProjectsService.removeProjectLink(linkId);
+    const profile = await this.grpcCompanysService.getMyCompanyProfile(
+      companyId,
+      userId,
+    );
+    return this.grpcProjectsService.removeProjectLink({
+      id: linkId,
+      actorEmployeeId: profile?.id,
+    });
   }
 
   @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)

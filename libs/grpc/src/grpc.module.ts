@@ -8,6 +8,7 @@ import { GrpcAuthService } from './services/auth-grpc.service';
 import { GrpcCompanysService } from './services/companys-grpc.service';
 import { GrpcMediaService } from './services/media-grpc.service';
 import { GrpcProjectsService } from './services/projects-grpc.service';
+import { GrpcAuditService } from './services/audit-grpc.service';
 
 const grpcLoaderOptions = {
   longs: Number,
@@ -86,6 +87,19 @@ const grpcLoaderOptions = {
           },
         }),
       },
+      {
+        name: 'AUDIT_GRPC_CLIENT',
+        inject: [ConfigService],
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.GRPC,
+          options: {
+            package: 'audit',
+            protoPath: join(process.cwd(), 'proto', 'audit.proto'),
+            url: config.get<string>('grpc.audit.url'),
+            loader: grpcLoaderOptions,
+          },
+        }),
+      },
     ]),
   ],
   providers: [
@@ -94,6 +108,7 @@ const grpcLoaderOptions = {
     { provide: GrpcCompanysService.name, useClass: GrpcCompanysService },
     { provide: GrpcMediaService.name, useClass: GrpcMediaService },
     { provide: GrpcProjectsService.name, useClass: GrpcProjectsService },
+    { provide: GrpcAuditService.name, useClass: GrpcAuditService },
   ],
   exports: [
     GrpcUsersService.name,
@@ -101,6 +116,7 @@ const grpcLoaderOptions = {
     GrpcCompanysService.name,
     GrpcMediaService.name,
     GrpcProjectsService.name,
+    GrpcAuditService.name,
   ],
 })
 export class GrpcModule {}

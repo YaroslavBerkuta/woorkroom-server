@@ -7,6 +7,7 @@ import { AuthModule } from './auth';
 import { CompanysModule } from './companys';
 import { CompanyUserModule } from './companyUser';
 import { ProjectsModule } from './projects';
+import { AuditModule } from './audit/audit.module';
 import { ConfigurationModule } from 'woorkroom/config';
 import { join } from 'path';
 
@@ -29,6 +30,7 @@ import { join } from 'path';
     CompanysModule,
     CompanyUserModule,
     ProjectsModule,
+    AuditModule,
   ],
 })
 export class AppModule {}

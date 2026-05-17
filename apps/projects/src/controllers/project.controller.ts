@@ -6,6 +6,9 @@ import {
   AddProjectLinkDto,
   AddProjectMemberDto,
   CreateProjectDto,
+  RemoveProjectFileDto,
+  RemoveProjectLinkDto,
+  RemoveProjectMemberDto,
   UpdateProjectDto,
   UpdateProjectStatusDto,
 } from 'shared';
@@ -72,8 +75,8 @@ export class ProjectController {
   }
 
   @GrpcMethod('ProjectsService', 'RemoveProjectMember')
-  async removeProjectMember(dto: { id: string }) {
-    const value = await this.projectService.removeProjectMember(dto.id);
+  async removeProjectMember(dto: RemoveProjectMemberDto) {
+    const value = await this.projectService.removeProjectMember(dto);
     return { value };
   }
 
@@ -83,8 +86,8 @@ export class ProjectController {
   }
 
   @GrpcMethod('ProjectsService', 'RemoveProjectFile')
-  async removeProjectFile(dto: { id: string }) {
-    const value = await this.projectService.removeProjectFile(dto.id);
+  async removeProjectFile(dto: RemoveProjectFileDto) {
+    const value = await this.projectService.removeProjectFile(dto);
     return { value };
   }
 
@@ -108,8 +111,8 @@ export class ProjectController {
   }
 
   @GrpcMethod('ProjectsService', 'RemoveProjectLink')
-  async removeProjectLink(dto: { id: string }) {
-    const value = await this.projectService.removeProjectLink(dto.id);
+  async removeProjectLink(dto: RemoveProjectLinkDto) {
+    const value = await this.projectService.removeProjectLink(dto);
     return { value };
   }
 

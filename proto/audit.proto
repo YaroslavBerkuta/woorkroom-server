@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package audit;
+
+service AuditService {
+  rpc GetAuditEvents (GetAuditEventsRequest) returns (AuditEventsResponse);
+}
+
+message GetAuditEventsRequest {
+  string resourceId = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message AuditEventMessage {
+  string id = 1;
+  string service = 2;
+  string action = 3;
+  string actorEmployeeId = 4;
+  string resourceId = 5;
+  string meta = 6;
+  string createdAt = 7;
+}
+
+message AuditEventsResponse {
+  repeated AuditEventMessage events = 1;
+  int32 total = 2;
+}

@@ -153,6 +153,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/projects/tsconfig.app.json"
       }
+    },
+    "audit": {
+      "type": "application",
+      "root": "apps/audit",
+      "entryFile": "main",
+      "sourceRoot": "apps/audit/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/audit/tsconfig.app.json"
+      }
     }
   }
 }

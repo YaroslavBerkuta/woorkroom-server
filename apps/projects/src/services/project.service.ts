@@ -19,10 +19,14 @@ import {
   AddProjectLinkDto,
   AddProjectMemberDto,
   CreateProjectDto,
+  RemoveProjectFileDto,
+  RemoveProjectLinkDto,
+  RemoveProjectMemberDto,
   UpdateProjectDto,
   UpdateProjectStatusDto,
 } from 'shared';
 import {
+  AuditAction,
   ProjectMemberRole,
   ProjectPriority,
   toBaseSlug,
@@ -30,6 +34,7 @@ import {
 } from 'shared';
 import { RpcException } from '@nestjs/microservices';
 import * as redis from 'woorkroom/redis';
+import { RabbitmqAuditService } from 'woorkroom/rabbitmq';
 
 interface ProjectFilter {
   name?: string;
@@ -65,6 +70,8 @@ export class ProjectService {
     private readonly linkModel: Model<ProjectLinkDocument>,
     @Inject(redis.RedisService.name)
     private readonly redis: redis.IRedisService,
+    @Inject(RabbitmqAuditService.name)
+    private readonly rabbitmqAudit: RabbitmqAuditService,
   ) {}
 
   private async resolveSlug(
@@ -300,6 +307,15 @@ export class ProjectService {
 
     const saved = await this.projectRepo.save(project);
     await this.redis.del(`project:${dto.id}`);
+
+    this.rabbitmqAudit.publish({
+      service: 'projects',
+      action: AuditAction.PROJECT_UPDATED,
+      actorEmployeeId: dto.actorEmployeeId ?? '',
+      resourceId: dto.id,
+      meta: { changes: dto },
+    });
+
     return saved;
   }
 
@@ -309,6 +325,15 @@ export class ProjectService {
     project.status = dto.status;
     const saved = await this.projectRepo.save(project);
     await this.redis.del(`project:${dto.id}`);
+
+    this.rabbitmqAudit.publish({
+      service: 'projects',
+      action: AuditAction.PROJECT_STATUS_UPDATED,
+      actorEmployeeId: dto.actorEmployeeId ?? '',
+      resourceId: dto.id,
+      meta: { status: dto.status },
+    });
+
     return saved;
   }
 
@@ -328,15 +353,37 @@ export class ProjectService {
       });
       if (existing) return existing;
     }
-    return this.memberRepo.save({
+    const member = await this.memberRepo.save({
       projectId: dto.projectId,
       employeeId: dto.employeeId,
       role: dto.role,
     });
+
+    this.rabbitmqAudit.publish({
+      service: 'projects',
+      action: AuditAction.PROJECT_MEMBER_ADDED,
+      actorEmployeeId: dto.actorEmployeeId ?? '',
+      resourceId: dto.projectId,
+      meta: { employeeId: dto.employeeId, role: dto.role },
+    });
+
+    return member;
   }
 
-  async removeProjectMember(memberId: string): Promise<boolean> {
-    const result = await this.memberRepo.delete({ id: memberId });
+  async removeProjectMember(dto: RemoveProjectMemberDto): Promise<boolean> {
+    const member = await this.memberRepo.findOne({ where: { id: dto.id } });
+    const result = await this.memberRepo.delete({ id: dto.id });
+
+    if ((result.affected ?? 0) > 0 && member) {
+      this.rabbitmqAudit.publish({
+        service: 'projects',
+        action: AuditAction.PROJECT_MEMBER_REMOVED,
+        actorEmployeeId: dto.actorEmployeeId ?? '',
+        resourceId: member.projectId,
+        meta: { employeeId: member.employeeId, role: member.role },
+      });
+    }
+
     return (result.affected ?? 0) > 0;
   }
 
@@ -349,12 +396,35 @@ export class ProjectService {
       size: dto.size || undefined,
     });
     const saved = await doc.save();
-    return saved.toObject();
+    const obj = saved.toObject();
+
+    this.rabbitmqAudit.publish({
+      service: 'projects',
+      action: AuditAction.PROJECT_FILE_ADDED,
+      actorEmployeeId: dto.actorEmployeeId ?? '',
+      resourceId: dto.projectId,
+      meta: { name: dto.name, url: dto.url },
+    });
+
+    return obj;
   }
 
-  async removeProjectFile(id: string): Promise<boolean> {
-    const deleted = await this.fileModel.findByIdAndDelete(id).exec();
+  async removeProjectFile(dto: RemoveProjectFileDto): Promise<boolean> {
+    const file = await this.fileModel.findById(dto.id).exec();
+    const deleted = await this.fileModel.findByIdAndDelete(dto.id).exec();
     if (!deleted) throw new RpcException('File not found');
+
+    if (file) {
+      const fileObj = file.toObject() as { name?: string; url?: string; projectId?: string };
+      this.rabbitmqAudit.publish({
+        service: 'projects',
+        action: AuditAction.PROJECT_FILE_REMOVED,
+        actorEmployeeId: dto.actorEmployeeId ?? '',
+        resourceId: fileObj.projectId ?? '',
+        meta: { name: fileObj.name ?? '', url: fileObj.url ?? '' },
+      });
+    }
+
     return true;
   }
 
@@ -381,12 +451,35 @@ export class ProjectService {
       title: dto.title || undefined,
     });
     const saved = await doc.save();
-    return saved.toObject();
+    const obj = saved.toObject();
+
+    this.rabbitmqAudit.publish({
+      service: 'projects',
+      action: AuditAction.PROJECT_LINK_ADDED,
+      actorEmployeeId: dto.actorEmployeeId ?? '',
+      resourceId: dto.projectId,
+      meta: { url: dto.url, title: dto.title ?? '' },
+    });
+
+    return obj;
   }
 
-  async removeProjectLink(id: string): Promise<boolean> {
-    const deleted = await this.linkModel.findByIdAndDelete(id).exec();
+  async removeProjectLink(dto: RemoveProjectLinkDto): Promise<boolean> {
+    const link = await this.linkModel.findById(dto.id).exec();
+    const deleted = await this.linkModel.findByIdAndDelete(dto.id).exec();
     if (!deleted) throw new RpcException('Link not found');
+
+    if (link) {
+      const linkObj = link.toObject() as { url?: string; title?: string; projectId?: string };
+      this.rabbitmqAudit.publish({
+        service: 'projects',
+        action: AuditAction.PROJECT_LINK_REMOVED,
+        actorEmployeeId: dto.actorEmployeeId ?? '',
+        resourceId: linkObj.projectId ?? '',
+        meta: { url: linkObj.url ?? '', title: linkObj.title ?? '' },
+      });
+    }
+
     return true;
   }
 

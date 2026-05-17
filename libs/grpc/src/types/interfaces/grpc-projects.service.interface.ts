@@ -44,15 +44,15 @@ export interface IGrpcProjectsService {
   getCompanyProjects(companyId: string): Promise<IProject[]>;
   getProjectMembers(projectId: string): Promise<IProjectMember[]>;
   addProjectMember(dto: AddProjectMemberDto): Promise<IProjectMember>;
-  removeProjectMember(memberId: string): Promise<boolean>;
+  removeProjectMember(dto: { id: string; actorEmployeeId?: string }): Promise<boolean>;
   updateProject(dto: UpdateProjectDto): Promise<IProject>;
-  updateProjectStatus(id: string, status: ProjectStatus): Promise<IProject>;
+  updateProjectStatus(id: string, status: ProjectStatus, actorEmployeeId?: string): Promise<IProject>;
   addProjectFile(dto: AddProjectFileDto): Promise<IProjectFile>;
-  removeProjectFile(id: string): Promise<boolean>;
+  removeProjectFile(dto: { id: string; actorEmployeeId?: string }): Promise<boolean>;
   getProjectFiles(projectId: string): Promise<IProjectFile[]>;
   getProjectFilesBatch(projectIds: string[]): Promise<IProjectFile[]>;
   addProjectLink(dto: AddProjectLinkDto): Promise<IProjectLink>;
-  removeProjectLink(id: string): Promise<boolean>;
+  removeProjectLink(dto: { id: string; actorEmployeeId?: string }): Promise<boolean>;
   getProjectLinks(projectId: string): Promise<IProjectLink[]>;
   getProjectLinksBatch(projectIds: string[]): Promise<IProjectLink[]>;
 }

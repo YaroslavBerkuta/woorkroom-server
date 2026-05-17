@@ -40,4 +40,20 @@ export class MongoModule {
       exports: [MongooseModule],
     };
   }
+
+  static forAudit(schemas: MongoSchemaDefinition[]): DynamicModule {
+    return {
+      module: MongoModule,
+      imports: [
+        MongooseModule.forRootAsync({
+          inject: [ConfigService],
+          useFactory: (config: ConfigService) => ({
+            uri: config.get<string>('mongo.audit'),
+          }),
+        }),
+        MongooseModule.forFeature(schemas),
+      ],
+      exports: [MongooseModule],
+    };
+  }
 }

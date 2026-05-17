@@ -4,6 +4,7 @@ import { ConfigurationModule } from 'woorkroom/config';
 import { DatabaseModule } from 'woorkroom/database';
 import { MongoModule } from 'woorkroom/mongo';
 import { RedisModule } from 'woorkroom/redis';
+import { RabbitmqModule } from 'woorkroom/rabbitmq';
 import { entities } from './entitys';
 import { Project } from './entitys/project.entity';
 import { ProjectMember } from './entitys/project-member.entity';
@@ -26,6 +27,7 @@ import {
       { name: ProjectLink.name, schema: ProjectLinkSchema },
     ]),
     RedisModule,
+    RabbitmqModule,
   ],
   controllers: [ProjectController],
   providers: [ProjectService],
