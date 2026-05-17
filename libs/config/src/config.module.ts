@@ -7,6 +7,7 @@ import {
   grpcConfig,
   mailConfig,
   minioConfig,
+  mongoConfig,
   rmqpConfig,
 } from './configuration';
 
@@ -22,6 +23,7 @@ import {
         appConfig,
         grpcConfig,
         minioConfig,
+        mongoConfig,
       ],
     }),
   ],

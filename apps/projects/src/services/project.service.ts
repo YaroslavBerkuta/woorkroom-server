@@ -1,14 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { InjectModel } from '@nestjs/mongoose';
 import { In, Repository } from 'typeorm';
+import { Model } from 'mongoose';
 
 import { Project } from '../entitys/project.entity';
 import { ProjectMember } from '../entitys/project-member.entity';
-import { ProjectFile } from '../entitys/project-file.entity';
-import { ProjectLink } from '../entitys/project-link.entity';
+import { ProjectFile, ProjectFileDocument } from '../schemas/project-file.schema';
+import { ProjectLink, ProjectLinkDocument } from '../schemas/project-link.schema';
 import { AddProjectFileDto, AddProjectLinkDto, CreateProjectDto, UpdateProjectDto, UpdateProjectStatusDto } from 'shared';
 import { ProjectMemberRole, ProjectPriority, toBaseSlug, resolveUniqueSlug } from 'shared';
 import { RpcException } from '@nestjs/microservices';
+import * as redis from 'woorkroom/redis';
 
 interface ProjectFilter {
   name?: string;
@@ -38,10 +41,12 @@ export class ProjectService {
     private readonly projectRepo: Repository<Project>,
     @InjectRepository(ProjectMember)
     private readonly memberRepo: Repository<ProjectMember>,
-    @InjectRepository(ProjectFile)
-    private readonly fileRepo: Repository<ProjectFile>,
-    @InjectRepository(ProjectLink)
-    private readonly linkRepo: Repository<ProjectLink>,
+    @InjectModel(ProjectFile.name)
+    private readonly fileModel: Model<ProjectFileDocument>,
+    @InjectModel(ProjectLink.name)
+    private readonly linkModel: Model<ProjectLinkDocument>,
+    @Inject(redis.RedisService.name)
+    private readonly redis: redis.IRedisService,
   ) {}
 
   private async resolveSlug(companyId: string, name: string, excludeId?: string): Promise<string> {
@@ -205,8 +210,13 @@ export class ProjectService {
   }
 
   async getProject(id: string): Promise<Project> {
+    const cached = await this.redis.get<Project>(`project:${id}`);
+    if (cached) return cached;
+
     const project = await this.projectRepo.findOne({ where: { id } });
     if (!project) throw new RpcException('Project not found');
+
+    await this.redis.ttl(`project:${id}`, project, 60);
     return project;
   }
 
@@ -224,61 +234,77 @@ export class ProjectService {
     if (dto.description !== undefined) project.description = dto.description || undefined;
     if (dto.image !== undefined) project.image = dto.image || undefined;
 
-    return this.projectRepo.save(project);
+    const saved = await this.projectRepo.save(project);
+    await this.redis.del(`project:${dto.id}`);
+    return saved;
   }
 
   async updateProjectStatus(dto: UpdateProjectStatusDto): Promise<Project> {
     const project = await this.projectRepo.findOne({ where: { id: dto.id } });
     if (!project) throw new RpcException('Project not found');
     project.status = dto.status;
-    return this.projectRepo.save(project);
+    const saved = await this.projectRepo.save(project);
+    await this.redis.del(`project:${dto.id}`);
+    return saved;
   }
 
-  async addProjectFile(dto: AddProjectFileDto): Promise<ProjectFile> {
-    return this.fileRepo.save({
+  async addProjectFile(dto: AddProjectFileDto) {
+    const doc = new this.fileModel({
       projectId: dto.projectId,
       url: dto.url,
       name: dto.name,
       mimeType: dto.mimeType || undefined,
       size: dto.size || undefined,
     });
+    const saved = await doc.save();
+    return saved.toObject();
   }
 
   async removeProjectFile(id: string): Promise<boolean> {
-    const file = await this.fileRepo.findOne({ where: { id } });
-    if (!file) throw new RpcException('File not found');
-    await this.fileRepo.remove(file);
+    const deleted = await this.fileModel.findByIdAndDelete(id).exec();
+    if (!deleted) throw new RpcException('File not found');
     return true;
   }
 
-  async getProjectFiles(projectId: string): Promise<ProjectFile[]> {
-    return this.fileRepo.find({ where: { projectId }, order: { createdAt: 'ASC' } });
+  async getProjectFiles(projectId: string) {
+    const docs = await this.fileModel.find({ projectId }).sort({ createdAt: 1 }).exec();
+    return docs.map((d) => d.toObject());
   }
 
-  async getProjectFilesBatch(projectIds: string[]): Promise<ProjectFile[]> {
-    return this.fileRepo.find({ where: { projectId: In(projectIds) }, order: { createdAt: 'ASC' } });
+  async getProjectFilesBatch(projectIds: string[]) {
+    const docs = await this.fileModel
+      .find({ projectId: { $in: projectIds } })
+      .sort({ createdAt: 1 })
+      .exec();
+    return docs.map((d) => d.toObject());
   }
 
-  async addProjectLink(dto: AddProjectLinkDto): Promise<ProjectLink> {
-    return this.linkRepo.save({
+  async addProjectLink(dto: AddProjectLinkDto) {
+    const doc = new this.linkModel({
       projectId: dto.projectId,
       url: dto.url,
       title: dto.title || undefined,
     });
+    const saved = await doc.save();
+    return saved.toObject();
   }
 
   async removeProjectLink(id: string): Promise<boolean> {
-    const link = await this.linkRepo.findOne({ where: { id } });
-    if (!link) throw new RpcException('Link not found');
-    await this.linkRepo.remove(link);
+    const deleted = await this.linkModel.findByIdAndDelete(id).exec();
+    if (!deleted) throw new RpcException('Link not found');
     return true;
   }
 
-  async getProjectLinks(projectId: string): Promise<ProjectLink[]> {
-    return this.linkRepo.find({ where: { projectId }, order: { createdAt: 'ASC' } });
+  async getProjectLinks(projectId: string) {
+    const docs = await this.linkModel.find({ projectId }).sort({ createdAt: 1 }).exec();
+    return docs.map((d) => d.toObject());
   }
 
-  async getProjectLinksBatch(projectIds: string[]): Promise<ProjectLink[]> {
-    return this.linkRepo.find({ where: { projectId: In(projectIds) }, order: { createdAt: 'ASC' } });
+  async getProjectLinksBatch(projectIds: string[]) {
+    const docs = await this.linkModel
+      .find({ projectId: { $in: projectIds } })
+      .sort({ createdAt: 1 })
+      .exec();
+    return docs.map((d) => d.toObject());
   }
 }

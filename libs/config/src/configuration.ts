@@ -108,6 +108,13 @@ export const minioConfig = () => ({
   },
 });
 
+export const mongoConfig = () => ({
+  mongo: {
+    projects: process.env.MONGODB_PROJECTS_URI || 'mongodb://localhost:27017/woorkroom_projects',
+    mails: process.env.MONGODB_MAILS_URI || 'mongodb://localhost:27017/woorkroom_mails',
+  },
+});
+
 export const appConfig = () => ({
   app: {
     port: Number(process.env.PORT) || 3000,
