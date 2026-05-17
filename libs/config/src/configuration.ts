@@ -49,6 +49,7 @@ export const rmqpConfig = () => ({
       mails: process.env.RABBITMQ_QUEUE_MAILS,
       authorization: process.env.RABBITMQ_QUEUE_AUTHORIZATION,
       audit: process.env.RABBITMQ_QUEUE_AUDIT,
+      activity: process.env.RABBITMQ_QUEUE_ACTIVITY,
     },
   },
 });
@@ -95,6 +96,10 @@ export const grpcConfig = () => ({
       port: Number(process.env.GRPC_AUDIT_PORT) || 5006,
       url: process.env.GRPC_AUDIT_URL || 'localhost:5006',
     },
+    activity: {
+      port: Number(process.env.GRPC_ACTIVITY_PORT) || 5007,
+      url: process.env.GRPC_ACTIVITY_URL || 'localhost:5007',
+    },
   },
 });
 
@@ -124,6 +129,9 @@ export const mongoConfig = () => ({
     audit:
       process.env.MONGODB_AUDIT_URI ||
       'mongodb://localhost:27017/woorkroom_audit',
+    activity:
+      process.env.MONGODB_ACTIVITY_URI ||
+      'mongodb://localhost:27017/woorkroom_activity',
   },
 });
 

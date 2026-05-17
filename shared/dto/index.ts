@@ -3,3 +3,4 @@ export * from './profile.dto';
 export * from './company.dto';
 export * from './authorization.dto';
 export * from './project.dto';
+export * from './activity.dto';

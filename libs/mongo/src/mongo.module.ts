@@ -56,4 +56,20 @@ export class MongoModule {
       exports: [MongooseModule],
     };
   }
+
+  static forActivity(schemas: MongoSchemaDefinition[]): DynamicModule {
+    return {
+      module: MongoModule,
+      imports: [
+        MongooseModule.forRootAsync({
+          inject: [ConfigService],
+          useFactory: (config: ConfigService) => ({
+            uri: config.get<string>('mongo.activity'),
+          }),
+        }),
+        MongooseModule.forFeature(schemas),
+      ],
+      exports: [MongooseModule],
+    };
+  }
 }

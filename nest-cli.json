@@ -162,6 +162,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/audit/tsconfig.app.json"
       }
+    },
+    "activity": {
+      "type": "application",
+      "root": "apps/activity",
+      "entryFile": "main",
+      "sourceRoot": "apps/activity/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/activity/tsconfig.app.json"
+      }
     }
   }
 }

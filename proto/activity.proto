@@ -1,0 +1,54 @@
+syntax = "proto3";
+package activity;
+
+service ActivityService {
+  rpc GetActivityFeed (GetActivityFeedRequest) returns (ActivityFeedResponse);
+  rpc AddComment (AddCommentRequest) returns (ActivityEventMessage);
+  rpc EditComment (EditCommentRequest) returns (ActivityEventMessage);
+  rpc DeleteComment (IdRequest) returns (BoolResponse);
+}
+
+message IdRequest {
+  string id = 1;
+}
+
+message GetActivityFeedRequest {
+  string resourceId = 1;
+  repeated string types = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message ActivityEventMessage {
+  string id = 1;
+  string resourceId = 2;
+  string resourceType = 3;
+  string type = 4;
+  string actorEmployeeId = 5;
+  string content = 6;
+  string meta = 7;
+  bool isEdited = 8;
+  string editedAt = 9;
+  string createdAt = 10;
+}
+
+message ActivityFeedResponse {
+  repeated ActivityEventMessage events = 1;
+  int32 total = 2;
+}
+
+message AddCommentRequest {
+  string resourceId = 1;
+  string resourceType = 2;
+  string actorEmployeeId = 3;
+  string content = 4;
+}
+
+message EditCommentRequest {
+  string id = 1;
+  string content = 2;
+}
+
+message BoolResponse {
+  bool value = 1;
+}

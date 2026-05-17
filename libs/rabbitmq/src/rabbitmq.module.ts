@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigurationModule } from 'woorkroom/config';
-import { RabbitmqMailsService, RabbitmqAuditService } from './services';
+import { RabbitmqMailsService, RabbitmqAuditService, RabbitmqActivityService } from './services';
 
 @Module({
   imports: [
@@ -32,6 +32,18 @@ import { RabbitmqMailsService, RabbitmqAuditService } from './services';
           },
         }),
       },
+      {
+        inject: [ConfigService],
+        name: 'ACTIVITY_SERVICE',
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: config.get<string[]>('rmqp.urls'),
+            queue: config.get<string>('rmqp.queue.activity'),
+            queueOptions: { durable: true },
+          },
+        }),
+      },
     ]),
   ],
   providers: [
@@ -43,7 +55,11 @@ import { RabbitmqMailsService, RabbitmqAuditService } from './services';
       provide: RabbitmqAuditService.name,
       useClass: RabbitmqAuditService,
     },
+    {
+      provide: RabbitmqActivityService.name,
+      useClass: RabbitmqActivityService,
+    },
   ],
-  exports: [RabbitmqMailsService.name, RabbitmqAuditService.name],
+  exports: [RabbitmqMailsService.name, RabbitmqAuditService.name, RabbitmqActivityService.name],
 })
 export class RabbitmqModule {}

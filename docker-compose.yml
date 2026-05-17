@@ -132,22 +132,22 @@ services:
     networks:
       - woorkroom-net
 
-  audit:
+  activity:
     build:
       context: .
       dockerfile: docker/Dockerfile.dev
-    container_name: woorkroom-audit
+    container_name: woorkroom-activity
     restart: unless-stopped
     env_file: .env
     environment:
       NODE_ENV: ${NODE_ENV}
       CHOKIDAR_USEPOLLING: ${CHOKIDAR_USEPOLLING}
       CHOKIDAR_INTERVAL: ${CHOKIDAR_INTERVAL}
-      GRPC_AUDIT_PORT: ${GRPC_AUDIT_PORT}
-      MONGODB_AUDIT_URI: mongodb://woorkroom-mongo:27017/woorkroom_audit
+      GRPC_ACTIVITY_PORT: ${GRPC_ACTIVITY_PORT}
+      MONGODB_ACTIVITY_URI: mongodb://woorkroom-mongo:27017/woorkroom_activity
     ports:
-      - "${GRPC_AUDIT_PORT}:${GRPC_AUDIT_PORT}"
-    command: ["npx", "nest", "start", "audit", "--watch"]
+      - "${GRPC_ACTIVITY_PORT}:${GRPC_ACTIVITY_PORT}"
+    command: ["npx", "nest", "start", "activity", "--watch"]
     volumes:
       - ./:/app
       - woorkroom-node_modules:/app/node_modules
@@ -175,7 +175,7 @@ services:
       GRPC_COMPANYS_URL: ${GRPC_COMPANYS_URL}
       GRPC_MEDIA_URL: ${GRPC_MEDIA_URL}
       GRPC_PROJECTS_URL: ${GRPC_PROJECTS_URL}
-      GRPC_AUDIT_URL: ${GRPC_AUDIT_URL}
+      GRPC_ACTIVITY_URL: ${GRPC_ACTIVITY_URL}
     command: ["npx", "nest", "start", "gateway", "--watch"]
     volumes:
       - ./:/app
@@ -185,7 +185,7 @@ services:
       - authorization
       - companys
       - projects
-      - audit
+      - activity
     networks:
       - woorkroom-net
 

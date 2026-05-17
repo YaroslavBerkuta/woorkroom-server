@@ -34,7 +34,7 @@ import {
 } from 'shared';
 import { RpcException } from '@nestjs/microservices';
 import * as redis from 'woorkroom/redis';
-import { RabbitmqAuditService } from 'woorkroom/rabbitmq';
+import { RabbitmqActivityService } from 'woorkroom/rabbitmq';
 
 interface ProjectFilter {
   name?: string;
@@ -70,8 +70,8 @@ export class ProjectService {
     private readonly linkModel: Model<ProjectLinkDocument>,
     @Inject(redis.RedisService.name)
     private readonly redis: redis.IRedisService,
-    @Inject(RabbitmqAuditService.name)
-    private readonly rabbitmqAudit: RabbitmqAuditService,
+    @Inject(RabbitmqActivityService.name)
+    private readonly rabbitmqAudit: RabbitmqActivityService,
   ) {}
 
   private async resolveSlug(

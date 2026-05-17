@@ -144,6 +144,16 @@ type ProjectsConnectionModel {
   totalCount: Int!
 }
 
+type AuditEventModel {
+  id: ID!
+  service: String!
+  action: String!
+  actorEmployeeId: String!
+  resourceId: String!
+  meta: String!
+  createdAt: String!
+}
+
 type Query {
   me: UserModel
   company: CompanyModel!
@@ -156,6 +166,7 @@ type Query {
   projectMembers(projectId: String!): [ProjectMemberModel!]!
   projectFiles(projectId: String!): [ProjectFileModel!]!
   projectLinks(projectId: String!): [ProjectLinkModel!]!
+  auditEvents(resourceId: String!, limit: Int = 20, offset: Int = 0): [AuditEventModel!]!
 }
 
 input ProjectFilterInput {

@@ -1,0 +1,16 @@
+import { Module } from '@nestjs/common';
+import { ConfigurationModule } from 'woorkroom/config';
+import { MongoModule } from 'woorkroom/mongo';
+import { ActivityController } from './controllers';
+import { ActivityService } from './services';
+import { ActivityEvent, ActivityEventSchema } from './schemas/activity-event.schema';
+
+@Module({
+  imports: [
+    ConfigurationModule,
+    MongoModule.forActivity([{ name: ActivityEvent.name, schema: ActivityEventSchema }]),
+  ],
+  controllers: [ActivityController],
+  providers: [ActivityService],
+})
+export class ActivityModule {}
