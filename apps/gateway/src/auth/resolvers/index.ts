@@ -1,1 +1,1 @@
-export * from '@/auth/resolvers/auth.resolver';
+export * from './auth.resolver';

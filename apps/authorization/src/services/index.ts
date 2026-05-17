@@ -1,1 +1,1 @@
-export * from '@/services/authorization.service';
+export * from './authorization.service';

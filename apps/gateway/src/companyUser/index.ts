@@ -1,2 +1,2 @@
-export * from '@/companyUser/company-user.module';
-export * from '@/companyUser/resolvers';
+export * from './company-user.module';
+export * from './resolvers';

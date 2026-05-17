@@ -1,11 +1,11 @@
 import { Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { UserModel } from '@/users/models/user.model';
+import { UserModel } from '../models/user.model';
 import * as grpc from 'woorkroom/grpc';
 import { Inject, NotFoundException, UseGuards } from '@nestjs/common';
 import { IUser } from 'shared';
-import { SessionModel } from '@/auth';
-import { CurrentUserId } from '@/decorators';
-import { GqlSessionAuthGuard } from '@/guards';
+import { SessionModel } from '../../auth';
+import { CurrentUserId } from '../../decorators';
+import { GqlSessionAuthGuard } from '../../guards';
 
 @Resolver(() => UserModel)
 export class UserQueryResolver {

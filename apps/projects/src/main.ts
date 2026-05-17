@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ProjectsModule } from '@/projects.module';
+import { ProjectsModule } from './projects.module';
 import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';

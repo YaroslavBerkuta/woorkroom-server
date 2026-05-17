@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Users } from '@/entitys/users.entity';
+import { Users } from '../entitys/users.entity';
 import { compare, hash } from 'bcryptjs';
 import { CreateUserDto, UpdateUserDto } from 'shared';
-import { IUserServiceInterface } from '@/types';
+import { IUserServiceInterface } from '../types';
 import { omit } from 'lodash';
 import { RpcException } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';

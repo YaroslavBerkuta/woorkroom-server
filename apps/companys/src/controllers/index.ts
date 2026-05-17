@@ -1,2 +1,2 @@
-export * from '@/controllers/company.controller';
-export * from '@/controllers/employee.controller';
+export * from './company.controller';
+export * from './employee.controller';

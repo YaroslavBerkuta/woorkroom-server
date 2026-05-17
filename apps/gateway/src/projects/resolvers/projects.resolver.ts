@@ -13,14 +13,14 @@ import {
 } from '@nestjs/graphql';
 import { Inject, UseGuards } from '@nestjs/common';
 import * as grpc from 'woorkroom/grpc';
-import { AccessCompanyGuard, GqlSessionAuthGuard } from '@/guards';
-import { CurrentCompanyId, CurrentUserId } from '@/decorators';
+import { AccessCompanyGuard, GqlSessionAuthGuard } from '../../guards';
+import { CurrentCompanyId, CurrentUserId } from '../../decorators';
 import {
   ProjectFileModel,
   ProjectLinkModel,
   ProjectMemberModel,
   ProjectModel,
-} from '@/projects/models';
+} from '../models';
 import {
   IProject,
   IProjectFile,
@@ -31,7 +31,7 @@ import {
   ProjectStatus,
   UpdateProjectDto,
 } from 'shared';
-import { ProjectDataloaderService } from '@/projects/dataloader/project-dataloader.service';
+import { ProjectDataloaderService } from '../dataloader/project-dataloader.service';
 
 @InputType()
 export class ProjectFilterInput {

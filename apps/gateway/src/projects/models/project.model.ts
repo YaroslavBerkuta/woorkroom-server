@@ -1,7 +1,7 @@
 import { Field, GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
 import { IProject, ProjectPriority, ProjectStatus } from 'shared';
-import { ProjectFileModel } from '@/projects/models/project-file.model';
-import { ProjectLinkModel } from '@/projects/models/project-link.model';
+import { ProjectFileModel } from './project-file.model';
+import { ProjectLinkModel } from './project-link.model';
 
 @ObjectType()
 export class ProjectModel implements Omit<IProject, 'createdAt' | 'updatedAt'> {

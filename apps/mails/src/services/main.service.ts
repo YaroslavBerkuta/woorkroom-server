@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { TelegramService } from 'woorkroom/telegram';
 import * as redis from 'woorkroom/redis';
-import { MailEvent, MailEventDocument } from '@/schemas/mail-event.schema';
+import { MailEvent, MailEventDocument } from '../schemas/mail-event.schema';
 
 @Injectable()
 export class MainService {

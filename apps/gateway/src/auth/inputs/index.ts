@@ -1,1 +1,1 @@
-export * from '@/auth/inputs/auth.input';
+export * from './auth.input';

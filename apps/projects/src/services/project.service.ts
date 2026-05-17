@@ -320,7 +320,11 @@ export class ProjectService {
       });
     } else {
       const existing = await this.memberRepo.findOne({
-        where: { projectId: dto.projectId, employeeId: dto.employeeId, role: dto.role },
+        where: {
+          projectId: dto.projectId,
+          employeeId: dto.employeeId,
+          role: dto.role,
+        },
       });
       if (existing) return existing;
     }

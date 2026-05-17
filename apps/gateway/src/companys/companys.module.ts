@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { GrpcModule } from 'woorkroom/grpc';
-import { CompanysResolver } from '@/companys/resolvers';
+import { CompanysResolver } from './resolvers';
 
 @Module({
   imports: [GrpcModule],

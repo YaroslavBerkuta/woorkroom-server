@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { AuthorizationModule } from '@/authorization.module';
+import { AuthorizationModule } from './authorization.module';
 import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';

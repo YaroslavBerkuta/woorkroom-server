@@ -1,2 +1,2 @@
-export * from '@/guards/gql-session-auth.guard';
-export * from '@/guards/access-company.guard';
+export * from './gql-session-auth.guard';
+export * from './access-company.guard';

@@ -4,17 +4,17 @@ import { ConfigurationModule } from 'woorkroom/config';
 import { DatabaseModule } from 'woorkroom/database';
 import { MongoModule } from 'woorkroom/mongo';
 import { RedisModule } from 'woorkroom/redis';
-import { entities } from '@/entitys';
-import { Project } from '@/entitys/project.entity';
-import { ProjectMember } from '@/entitys/project-member.entity';
-import { ProjectController } from '@/controllers';
-import { ProjectService } from '@/services';
+import { entities } from './entitys';
+import { Project } from './entitys/project.entity';
+import { ProjectMember } from './entitys/project-member.entity';
+import { ProjectController } from './controllers';
+import { ProjectService } from './services';
 import {
   ProjectFile,
   ProjectFileSchema,
   ProjectLink,
   ProjectLinkSchema,
-} from '@/schemas';
+} from './schemas';
 
 @Module({
   imports: [

@@ -8,17 +8,17 @@ import {
   Query,
   Resolver,
 } from '@nestjs/graphql';
-import { CompanyModel, EmployeeModel } from '@/companys/models';
+import { CompanyModel, EmployeeModel } from '../models';
 import { ICompany, IEmployee, UpdateCompanyDto, UserRole } from 'shared';
 import { Inject, NotFoundException, UseGuards } from '@nestjs/common';
-import { AccessCompanyGuard, GqlSessionAuthGuard } from '@/guards';
+import { AccessCompanyGuard, GqlSessionAuthGuard } from '../../guards';
 import * as grpc from 'woorkroom/grpc';
 import {
   CurrentCompanyId,
   CurrentSessionId,
   CurrentUserId,
-} from '@/decorators';
-import { CreateCompanyInput } from '@/auth/inputs';
+} from '../../decorators';
+import { CreateCompanyInput } from '../../auth/inputs';
 
 @InputType()
 export class UpdateCompanyInput implements Omit<UpdateCompanyDto, 'id'> {

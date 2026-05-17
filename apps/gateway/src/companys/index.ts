@@ -1,2 +1,2 @@
-export * from '@/companys/companys.module';
-export * from '@/companys/models';
+export * from './companys.module';
+export * from './models';

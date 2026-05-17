@@ -1,5 +1,5 @@
 import { Controller, Logger } from '@nestjs/common';
-import { AuthorizationService } from '@/services';
+import { AuthorizationService } from '../services';
 import { GrpcMethod } from '@nestjs/microservices';
 import { LoginDto, RegisterDto } from 'shared';
 

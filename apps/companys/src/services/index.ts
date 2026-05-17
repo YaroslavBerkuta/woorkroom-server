@@ -1,2 +1,2 @@
-export * from '@/services/company.service';
-export * from '@/services/employee.service';
+export * from './company.service';
+export * from './employee.service';

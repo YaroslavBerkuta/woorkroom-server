@@ -1,1 +1,1 @@
-export * from '@/types/interfaces/user.service.interface';
+export * from './user.service.interface';

@@ -1,1 +1,1 @@
-export * from '@/services/media.service';
+export * from './media.service';

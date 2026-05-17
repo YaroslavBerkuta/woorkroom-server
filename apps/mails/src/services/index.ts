@@ -1,1 +1,1 @@
-export * from '@/services/main.service';
+export * from './main.service';

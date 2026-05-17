@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { UserQueryResolver } from '@/users/resolvers';
+import { UserQueryResolver } from './resolvers';
 import { GrpcModule } from 'woorkroom/grpc';
 
 @Module({

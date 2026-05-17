@@ -1,1 +1,1 @@
-export * from '@/controllers/authorization.controller';
+export * from './authorization.controller';
