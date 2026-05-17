@@ -1,14 +1,48 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { Observable, lastValueFrom } from 'rxjs';
-import { AddProjectFileDto, AddProjectLinkDto, CreateProjectDto, IProject, IProjectFile, IProjectLink, IProjectMember, ProjectStatus, UpdateProjectDto } from 'shared';
-import { IGrpcProjectsService, IProjectFilter, IProjectsConnection } from '../types';
+import {
+  AddProjectFileDto,
+  AddProjectLinkDto,
+  AddProjectMemberDto,
+  CreateProjectDto,
+  IProject,
+  IProjectFile,
+  IProjectLink,
+  IProjectMember,
+  ProjectStatus,
+  UpdateProjectDto,
+} from 'shared';
+import {
+  IGrpcProjectsService,
+  IProjectFilter,
+  IProjectsConnection,
+} from '../types';
 
-interface ProjectListResponse { projects: IProject[]; }
-interface ProjectMemberListResponse { members: IProjectMember[]; }
-interface ProjectFileListResponse { files: IProjectFile[]; }
-interface ProjectLinkListResponse { links: IProjectLink[]; }
-interface BoolResponse { value: boolean; }
+interface ProjectListResponse {
+  projects: IProject[];
+}
+interface ProjectMemberListResponse {
+  members: IProjectMember[];
+}
+interface ProjectFileListResponse {
+  files: IProjectFile[];
+}
+interface ProjectLinkListResponse {
+  links: IProjectLink[];
+}
+interface BoolResponse {
+  value: boolean;
+}
+
+interface ProjectMemberResponse {
+  id: string;
+  projectId: string;
+  employeeId: string;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 interface ProjectsGrpcClient {
   createProject(data: unknown): Observable<IProject>;
@@ -19,6 +53,8 @@ interface ProjectsGrpcClient {
   getProjectLinksBatch(data: unknown): Observable<ProjectLinkListResponse>;
   getCompanyProjects(data: unknown): Observable<ProjectListResponse>;
   getProjectMembers(data: unknown): Observable<ProjectMemberListResponse>;
+  addProjectMember(data: unknown): Observable<ProjectMemberResponse>;
+  removeProjectMember(data: unknown): Observable<BoolResponse>;
   updateProject(data: unknown): Observable<IProject>;
   updateProjectStatus(data: unknown): Observable<IProject>;
   addProjectFile(data: unknown): Observable<IProjectFile>;
@@ -60,7 +96,10 @@ export class GrpcProjectsService implements IGrpcProjectsService, OnModuleInit {
     return lastValueFrom(this.client.getProject({ id }));
   }
 
-  async getMyProjects(companyId: string, employeeId: string): Promise<IProject[]> {
+  async getMyProjects(
+    companyId: string,
+    employeeId: string,
+  ): Promise<IProject[]> {
     const res = await lastValueFrom(
       this.client.getMyProjects({ companyId, employeeId }),
     );
@@ -81,11 +120,23 @@ export class GrpcProjectsService implements IGrpcProjectsService, OnModuleInit {
     return res.members ?? [];
   }
 
+  async addProjectMember(dto: AddProjectMemberDto): Promise<IProjectMember> {
+    return lastValueFrom(this.client.addProjectMember(dto)) as unknown as Promise<IProjectMember>;
+  }
+
+  async removeProjectMember(memberId: string): Promise<boolean> {
+    const res = await lastValueFrom(this.client.removeProjectMember({ id: memberId }));
+    return res.value;
+  }
+
   async updateProject(dto: UpdateProjectDto): Promise<IProject> {
     return lastValueFrom(this.client.updateProject(dto));
   }
 
-  async updateProjectStatus(id: string, status: ProjectStatus): Promise<IProject> {
+  async updateProjectStatus(
+    id: string,
+    status: ProjectStatus,
+  ): Promise<IProject> {
     return lastValueFrom(this.client.updateProjectStatus({ id, status }));
   }
 
@@ -99,12 +150,16 @@ export class GrpcProjectsService implements IGrpcProjectsService, OnModuleInit {
   }
 
   async getProjectFiles(projectId: string): Promise<IProjectFile[]> {
-    const res = await lastValueFrom(this.client.getProjectFiles({ id: projectId }));
+    const res = await lastValueFrom(
+      this.client.getProjectFiles({ id: projectId }),
+    );
     return res.files ?? [];
   }
 
   async getProjectFilesBatch(projectIds: string[]): Promise<IProjectFile[]> {
-    const res = await lastValueFrom(this.client.getProjectFilesBatch({ projectIds }));
+    const res = await lastValueFrom(
+      this.client.getProjectFilesBatch({ projectIds }),
+    );
     return res.files ?? [];
   }
 
@@ -118,12 +173,16 @@ export class GrpcProjectsService implements IGrpcProjectsService, OnModuleInit {
   }
 
   async getProjectLinks(projectId: string): Promise<IProjectLink[]> {
-    const res = await lastValueFrom(this.client.getProjectLinks({ id: projectId }));
+    const res = await lastValueFrom(
+      this.client.getProjectLinks({ id: projectId }),
+    );
     return res.links ?? [];
   }
 
   async getProjectLinksBatch(projectIds: string[]): Promise<IProjectLink[]> {
-    const res = await lastValueFrom(this.client.getProjectLinksBatch({ projectIds }));
+    const res = await lastValueFrom(
+      this.client.getProjectLinksBatch({ projectIds }),
+    );
     return res.links ?? [];
   }
 }

@@ -6,10 +6,28 @@ import { Model } from 'mongoose';
 
 import { Project } from '@/entitys/project.entity';
 import { ProjectMember } from '@/entitys/project-member.entity';
-import { ProjectFile, ProjectFileDocument } from '@/schemas/project-file.schema';
-import { ProjectLink, ProjectLinkDocument } from '@/schemas/project-link.schema';
-import { AddProjectFileDto, AddProjectLinkDto, CreateProjectDto, UpdateProjectDto, UpdateProjectStatusDto } from 'shared';
-import { ProjectMemberRole, ProjectPriority, toBaseSlug, resolveUniqueSlug } from 'shared';
+import {
+  ProjectFile,
+  ProjectFileDocument,
+} from '@/schemas/project-file.schema';
+import {
+  ProjectLink,
+  ProjectLinkDocument,
+} from '@/schemas/project-link.schema';
+import {
+  AddProjectFileDto,
+  AddProjectLinkDto,
+  AddProjectMemberDto,
+  CreateProjectDto,
+  UpdateProjectDto,
+  UpdateProjectStatusDto,
+} from 'shared';
+import {
+  ProjectMemberRole,
+  ProjectPriority,
+  toBaseSlug,
+  resolveUniqueSlug,
+} from 'shared';
 import { RpcException } from '@nestjs/microservices';
 import * as redis from 'woorkroom/redis';
 
@@ -49,7 +67,11 @@ export class ProjectService {
     private readonly redis: redis.IRedisService,
   ) {}
 
-  private async resolveSlug(companyId: string, name: string, excludeId?: string): Promise<string> {
+  private async resolveSlug(
+    companyId: string,
+    name: string,
+    excludeId?: string,
+  ): Promise<string> {
     const base = toBaseSlug(name);
     const existing = await this.projectRepo.find({
       where: { companyId },
@@ -114,18 +136,26 @@ export class ProjectService {
     let projectIds = memberships.map((m) => m.projectId);
 
     if (!projectIds.length) {
-      return { edges: [], pageInfo: { hasNextPage: false, endCursor: '' }, totalCount: 0 };
+      return {
+        edges: [],
+        pageInfo: { hasNextPage: false, endCursor: '' },
+        totalCount: 0,
+      };
     }
 
     if (filter.reporterIds?.length || filter.assigneeIds?.length) {
       const parts: string[] = [];
       const params: Record<string, unknown> = {};
       if (filter.reporterIds?.length) {
-        parts.push(`(pm.employeeId IN (:...reporterIds) AND pm.role = '${ProjectMemberRole.REPORTER}')`);
+        parts.push(
+          `(pm.employeeId IN (:...reporterIds) AND pm.role = '${ProjectMemberRole.REPORTER}')`,
+        );
         params.reporterIds = filter.reporterIds;
       }
       if (filter.assigneeIds?.length) {
-        parts.push(`(pm.employeeId IN (:...assigneeIds) AND pm.role = '${ProjectMemberRole.ASSIGNEE}')`);
+        parts.push(
+          `(pm.employeeId IN (:...assigneeIds) AND pm.role = '${ProjectMemberRole.ASSIGNEE}')`,
+        );
         params.assigneeIds = filter.assigneeIds;
       }
       const rows = await this.memberRepo
@@ -138,7 +168,11 @@ export class ProjectService {
     }
 
     if (!projectIds.length) {
-      return { edges: [], pageInfo: { hasNextPage: false, endCursor: '' }, totalCount: 0 };
+      return {
+        edges: [],
+        pageInfo: { hasNextPage: false, endCursor: '' },
+        totalCount: 0,
+      };
     }
 
     const qb = this.projectRepo
@@ -146,14 +180,28 @@ export class ProjectService {
       .where('p.companyId = :companyId', { companyId })
       .andWhere('p.id IN (:...projectIds)', { projectIds });
 
-    if (filter.name) qb.andWhere('p.name ILIKE :name', { name: `%${filter.name}%` });
-    if (filter.slug) qb.andWhere('p.slug ILIKE :slug', { slug: `%${filter.slug}%` });
-    if (filter.priority?.length) qb.andWhere('p.priority IN (:...priority)', { priority: filter.priority });
-    if (filter.status?.length) qb.andWhere('p.status IN (:...status)', { status: filter.status });
-    if (filter.startsFrom) qb.andWhere('p.starts >= :startsFrom', { startsFrom: filter.startsFrom });
-    if (filter.startsTo) qb.andWhere('p.starts <= :startsTo', { startsTo: filter.startsTo });
-    if (filter.deadlineFrom) qb.andWhere('p.deadline >= :deadlineFrom', { deadlineFrom: filter.deadlineFrom });
-    if (filter.deadlineTo) qb.andWhere('p.deadline <= :deadlineTo', { deadlineTo: filter.deadlineTo });
+    if (filter.name)
+      qb.andWhere('p.name ILIKE :name', { name: `%${filter.name}%` });
+    if (filter.slug)
+      qb.andWhere('p.slug ILIKE :slug', { slug: `%${filter.slug}%` });
+    if (filter.priority?.length)
+      qb.andWhere('p.priority IN (:...priority)', {
+        priority: filter.priority,
+      });
+    if (filter.status?.length)
+      qb.andWhere('p.status IN (:...status)', { status: filter.status });
+    if (filter.startsFrom)
+      qb.andWhere('p.starts >= :startsFrom', { startsFrom: filter.startsFrom });
+    if (filter.startsTo)
+      qb.andWhere('p.starts <= :startsTo', { startsTo: filter.startsTo });
+    if (filter.deadlineFrom)
+      qb.andWhere('p.deadline >= :deadlineFrom', {
+        deadlineFrom: filter.deadlineFrom,
+      });
+    if (filter.deadlineTo)
+      qb.andWhere('p.deadline <= :deadlineTo', {
+        deadlineTo: filter.deadlineTo,
+      });
 
     const totalCount = await qb.clone().getCount();
 
@@ -168,7 +216,9 @@ export class ProjectService {
       );
     }
 
-    qb.orderBy('p.createdAt', 'DESC').addOrderBy('p.id', 'DESC').take(first + 1);
+    qb.orderBy('p.createdAt', 'DESC')
+      .addOrderBy('p.id', 'DESC')
+      .take(first + 1);
 
     const items = await qb.getMany();
     const hasNextPage = items.length > first;
@@ -176,7 +226,9 @@ export class ProjectService {
 
     const edges = pageItems.map((p) => ({
       node: p,
-      cursor: Buffer.from(`${p.createdAt.toISOString()}:${p.id}`).toString('base64'),
+      cursor: Buffer.from(`${p.createdAt.toISOString()}:${p.id}`).toString(
+        'base64',
+      ),
     }));
 
     const endCursor = edges.length > 0 ? edges[edges.length - 1].cursor : '';
@@ -184,7 +236,10 @@ export class ProjectService {
     return { edges, pageInfo: { hasNextPage, endCursor }, totalCount };
   }
 
-  async getMyProjects(companyId: string, employeeId: string): Promise<Project[]> {
+  async getMyProjects(
+    companyId: string,
+    employeeId: string,
+  ): Promise<Project[]> {
     const memberships = await this.memberRepo.find({ where: { employeeId } });
     const projectIds = memberships.map((m) => m.projectId);
 
@@ -204,7 +259,9 @@ export class ProjectService {
   }
 
   async getProjectMembers(projectId: string): Promise<ProjectMember[]> {
-    const project = await this.projectRepo.findOne({ where: { id: projectId } });
+    const project = await this.projectRepo.findOne({
+      where: { id: projectId },
+    });
     if (!project) throw new RpcException('Project not found');
     return this.memberRepo.find({ where: { projectId } });
   }
@@ -226,12 +283,19 @@ export class ProjectService {
 
     if (dto.name && dto.name !== project.name) {
       project.name = dto.name;
-      project.slug = await this.resolveSlug(project.companyId, dto.name, project.id);
+      project.slug = await this.resolveSlug(
+        project.companyId,
+        dto.name,
+        project.id,
+      );
     }
     if (dto.starts !== undefined) project.starts = dto.starts || undefined;
-    if (dto.deadline !== undefined) project.deadline = dto.deadline || undefined;
-    if (dto.priority !== undefined) project.priority = dto.priority || undefined;
-    if (dto.description !== undefined) project.description = dto.description || undefined;
+    if (dto.deadline !== undefined)
+      project.deadline = dto.deadline || undefined;
+    if (dto.priority !== undefined)
+      project.priority = dto.priority || undefined;
+    if (dto.description !== undefined)
+      project.description = dto.description || undefined;
     if (dto.image !== undefined) project.image = dto.image || undefined;
 
     const saved = await this.projectRepo.save(project);
@@ -246,6 +310,23 @@ export class ProjectService {
     const saved = await this.projectRepo.save(project);
     await this.redis.del(`project:${dto.id}`);
     return saved;
+  }
+
+  async addProjectMember(dto: AddProjectMemberDto): Promise<ProjectMember> {
+    const existing = await this.memberRepo.findOne({
+      where: { projectId: dto.projectId, employeeId: dto.employeeId, role: dto.role },
+    });
+    if (existing) return existing;
+    return this.memberRepo.save({
+      projectId: dto.projectId,
+      employeeId: dto.employeeId,
+      role: dto.role,
+    });
+  }
+
+  async removeProjectMember(memberId: string): Promise<boolean> {
+    const result = await this.memberRepo.delete({ id: memberId });
+    return (result.affected ?? 0) > 0;
   }
 
   async addProjectFile(dto: AddProjectFileDto) {
@@ -267,7 +348,10 @@ export class ProjectService {
   }
 
   async getProjectFiles(projectId: string) {
-    const docs = await this.fileModel.find({ projectId }).sort({ createdAt: 1 }).exec();
+    const docs = await this.fileModel
+      .find({ projectId })
+      .sort({ createdAt: 1 })
+      .exec();
     return docs.map((d) => d.toObject());
   }
 
@@ -296,7 +380,10 @@ export class ProjectService {
   }
 
   async getProjectLinks(projectId: string) {
-    const docs = await this.linkModel.find({ projectId }).sort({ createdAt: 1 }).exec();
+    const docs = await this.linkModel
+      .find({ projectId })
+      .sort({ createdAt: 1 })
+      .exec();
     return docs.map((d) => d.toObject());
   }
 

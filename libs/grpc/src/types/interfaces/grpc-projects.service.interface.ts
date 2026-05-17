@@ -1,4 +1,15 @@
-import { AddProjectFileDto, AddProjectLinkDto, CreateProjectDto, IProject, IProjectFile, IProjectLink, IProjectMember, ProjectStatus, UpdateProjectDto } from 'shared';
+import {
+  AddProjectFileDto,
+  AddProjectLinkDto,
+  AddProjectMemberDto,
+  CreateProjectDto,
+  IProject,
+  IProjectFile,
+  IProjectLink,
+  IProjectMember,
+  ProjectStatus,
+  UpdateProjectDto,
+} from 'shared';
 
 export interface IProjectFilter {
   name?: string;
@@ -32,6 +43,8 @@ export interface IGrpcProjectsService {
   getMyProjects(companyId: string, employeeId: string): Promise<IProject[]>;
   getCompanyProjects(companyId: string): Promise<IProject[]>;
   getProjectMembers(projectId: string): Promise<IProjectMember[]>;
+  addProjectMember(dto: AddProjectMemberDto): Promise<IProjectMember>;
+  removeProjectMember(memberId: string): Promise<boolean>;
   updateProject(dto: UpdateProjectDto): Promise<IProject>;
   updateProjectStatus(id: string, status: ProjectStatus): Promise<IProject>;
   addProjectFile(dto: AddProjectFileDto): Promise<IProjectFile>;

@@ -15,15 +15,30 @@ import { Inject, UseGuards } from '@nestjs/common';
 import * as grpc from 'woorkroom/grpc';
 import { AccessCompanyGuard, GqlSessionAuthGuard } from '@/guards';
 import { CurrentCompanyId, CurrentUserId } from '@/decorators';
-import { ProjectFileModel, ProjectLinkModel, ProjectMemberModel, ProjectModel } from '@/projects/models';
-import { IProject, IProjectFile, IProjectLink, IProjectMember, ProjectPriority, ProjectStatus, UpdateProjectDto } from 'shared';
+import {
+  ProjectFileModel,
+  ProjectLinkModel,
+  ProjectMemberModel,
+  ProjectModel,
+} from '@/projects/models';
+import {
+  IProject,
+  IProjectFile,
+  IProjectLink,
+  IProjectMember,
+  ProjectMemberRole,
+  ProjectPriority,
+  ProjectStatus,
+  UpdateProjectDto,
+} from 'shared';
 import { ProjectDataloaderService } from '@/projects/dataloader/project-dataloader.service';
 
 @InputType()
 export class ProjectFilterInput {
   @Field(() => String, { nullable: true }) name?: string;
   @Field(() => String, { nullable: true }) slug?: string;
-  @Field(() => [ProjectPriority], { nullable: true }) priority?: ProjectPriority[];
+  @Field(() => [ProjectPriority], { nullable: true })
+  priority?: ProjectPriority[];
   @Field(() => [ProjectStatus], { nullable: true }) status?: ProjectStatus[];
   @Field(() => [ID], { nullable: true }) reporterIds?: string[];
   @Field(() => [ID], { nullable: true }) assigneeIds?: string[];
@@ -164,13 +179,22 @@ export class ProjectsResolver {
   async myProjectsPaginated(
     @CurrentCompanyId() companyId: string,
     @CurrentUserId() userId: string,
-    @Args('first', { type: () => Int, nullable: true, defaultValue: 20 }) first: number,
+    @Args('first', { type: () => Int, nullable: true, defaultValue: 20 })
+    first: number,
     @Args('after', { type: () => String, nullable: true }) after?: string,
-    @Args('filter', { type: () => ProjectFilterInput, nullable: true }) filter?: ProjectFilterInput,
+    @Args('filter', { type: () => ProjectFilterInput, nullable: true })
+    filter?: ProjectFilterInput,
   ): Promise<ProjectsConnectionModel> {
-    const profile = await this.grpcCompanysService.getMyCompanyProfile(companyId, userId);
+    const profile = await this.grpcCompanysService.getMyCompanyProfile(
+      companyId,
+      userId,
+    );
     if (!profile) {
-      return { edges: [], pageInfo: { hasNextPage: false, endCursor: undefined }, totalCount: 0 };
+      return {
+        edges: [],
+        pageInfo: { hasNextPage: false, endCursor: undefined },
+        totalCount: 0,
+      };
     }
 
     const result = await this.grpcProjectsService.getMyProjectsPaginated({
@@ -196,7 +220,8 @@ export class ProjectsResolver {
   async companyProjects(
     @CurrentCompanyId() companyId: string,
   ): Promise<ProjectModel[]> {
-    const projects = await this.grpcProjectsService.getCompanyProjects(companyId);
+    const projects =
+      await this.grpcProjectsService.getCompanyProjects(companyId);
     return projects.map((p) => this.wrapProject(p));
   }
 
@@ -206,7 +231,10 @@ export class ProjectsResolver {
     @Args('projectId', { type: () => String }) projectId: string,
     @Args('input') input: UpdateProjectInput,
   ): Promise<ProjectModel> {
-    const project = await this.grpcProjectsService.updateProject({ id: projectId, ...input });
+    const project = await this.grpcProjectsService.updateProject({
+      id: projectId,
+      ...input,
+    });
     return this.wrapProject(project);
   }
 
@@ -216,7 +244,10 @@ export class ProjectsResolver {
     @Args('projectId', { type: () => String }) projectId: string,
     @Args('status', { type: () => ProjectStatus }) status: ProjectStatus,
   ): Promise<ProjectModel> {
-    const project = await this.grpcProjectsService.updateProjectStatus(projectId, status);
+    const project = await this.grpcProjectsService.updateProjectStatus(
+      projectId,
+      status,
+    );
     return this.wrapProject(project);
   }
 
@@ -225,19 +256,45 @@ export class ProjectsResolver {
   async projectMembers(
     @Args('projectId', { type: () => String }) projectId: string,
   ): Promise<ProjectMemberModel[]> {
-    const members =
-      await this.grpcProjectsService.getProjectMembers(projectId);
+    const members = await this.grpcProjectsService.getProjectMembers(projectId);
     return members.map((m) => this.wrapMember(m));
   }
 
+  @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
+  @Mutation(() => ProjectMemberModel)
+  async addProjectMember(
+    @Args('projectId', { type: () => String }) projectId: string,
+    @Args('employeeId', { type: () => String }) employeeId: string,
+    @Args('role', { type: () => ProjectMemberRole }) role: ProjectMemberRole,
+  ): Promise<ProjectMemberModel> {
+    const member = await this.grpcProjectsService.addProjectMember({
+      projectId,
+      employeeId,
+      role,
+    });
+    return this.wrapMember(member);
+  }
+
+  @UseGuards(GqlSessionAuthGuard, AccessCompanyGuard)
+  @Mutation(() => Boolean)
+  async removeProjectMember(
+    @Args('memberId', { type: () => String }) memberId: string,
+  ): Promise<boolean> {
+    return this.grpcProjectsService.removeProjectMember(memberId);
+  }
+
   @ResolveField('files', () => [ProjectFileModel])
-  async resolveFiles(@Parent() project: ProjectModel): Promise<ProjectFileModel[]> {
+  async resolveFiles(
+    @Parent() project: ProjectModel,
+  ): Promise<ProjectFileModel[]> {
     const files = await this.projectDataloader.filesLoader.load(project.id);
     return files.map((f) => this.wrapFile(f));
   }
 
   @ResolveField('links', () => [ProjectLinkModel])
-  async resolveLinks(@Parent() project: ProjectModel): Promise<ProjectLinkModel[]> {
+  async resolveLinks(
+    @Parent() project: ProjectModel,
+  ): Promise<ProjectLinkModel[]> {
     const links = await this.projectDataloader.linksLoader.load(project.id);
     return links.map((l) => this.wrapLink(l));
   }
@@ -259,7 +316,13 @@ export class ProjectsResolver {
     @Args('mimeType', { type: () => String, nullable: true }) mimeType?: string,
     @Args('size', { type: () => Number, nullable: true }) size?: number,
   ): Promise<ProjectFileModel> {
-    const file = await this.grpcProjectsService.addProjectFile({ projectId, url, name, mimeType, size });
+    const file = await this.grpcProjectsService.addProjectFile({
+      projectId,
+      url,
+      name,
+      mimeType,
+      size,
+    });
     return this.wrapFile(file);
   }
 
@@ -287,7 +350,11 @@ export class ProjectsResolver {
     @Args('url', { type: () => String }) url: string,
     @Args('title', { type: () => String, nullable: true }) title?: string,
   ): Promise<ProjectLinkModel> {
-    const link = await this.grpcProjectsService.addProjectLink({ projectId, url, title });
+    const link = await this.grpcProjectsService.addProjectLink({
+      projectId,
+      url,
+      title,
+    });
     return this.wrapLink(link);
   }
 

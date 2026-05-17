@@ -183,6 +183,8 @@ type Mutation {
   createProject(input: CreateProjectInput!): ProjectModel!
   updateProject(projectId: String!, input: UpdateProjectInput!): ProjectModel!
   updateProjectStatus(projectId: String!, status: ProjectStatus!): ProjectModel!
+  addProjectMember(projectId: String!, employeeId: String!, role: ProjectMemberRole!): ProjectMemberModel!
+  removeProjectMember(memberId: String!): Boolean!
   addProjectFile(projectId: String!, url: String!, name: String!, mimeType: String, size: Float): ProjectFileModel!
   removeProjectFile(fileId: String!): Boolean!
   addProjectLink(projectId: String!, url: String!, title: String): ProjectLinkModel!

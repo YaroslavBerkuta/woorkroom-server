@@ -1,7 +1,14 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { ProjectService } from '@/services';
-import { AddProjectFileDto, AddProjectLinkDto, CreateProjectDto, UpdateProjectDto, UpdateProjectStatusDto } from 'shared';
+import {
+  AddProjectFileDto,
+  AddProjectLinkDto,
+  AddProjectMemberDto,
+  CreateProjectDto,
+  UpdateProjectDto,
+  UpdateProjectStatusDto,
+} from 'shared';
 
 @Controller()
 export class ProjectController {
@@ -59,6 +66,17 @@ export class ProjectController {
     return this.projectService.updateProjectStatus(dto);
   }
 
+  @GrpcMethod('ProjectsService', 'AddProjectMember')
+  addProjectMember(dto: AddProjectMemberDto) {
+    return this.projectService.addProjectMember(dto);
+  }
+
+  @GrpcMethod('ProjectsService', 'RemoveProjectMember')
+  async removeProjectMember(dto: { id: string }) {
+    const value = await this.projectService.removeProjectMember(dto.id);
+    return { value };
+  }
+
   @GrpcMethod('ProjectsService', 'AddProjectFile')
   addProjectFile(dto: AddProjectFileDto) {
     return this.projectService.addProjectFile(dto);
@@ -78,7 +96,9 @@ export class ProjectController {
 
   @GrpcMethod('ProjectsService', 'GetProjectFilesBatch')
   async getProjectFilesBatch(dto: { projectIds: string[] }) {
-    const files = await this.projectService.getProjectFilesBatch(dto.projectIds ?? []);
+    const files = await this.projectService.getProjectFilesBatch(
+      dto.projectIds ?? [],
+    );
     return { files };
   }
 
@@ -101,7 +121,9 @@ export class ProjectController {
 
   @GrpcMethod('ProjectsService', 'GetProjectLinksBatch')
   async getProjectLinksBatch(dto: { projectIds: string[] }) {
-    const links = await this.projectService.getProjectLinksBatch(dto.projectIds ?? []);
+    const links = await this.projectService.getProjectLinksBatch(
+      dto.projectIds ?? [],
+    );
     return { links };
   }
 }
