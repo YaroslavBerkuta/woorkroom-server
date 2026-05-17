@@ -12,6 +12,7 @@ export interface IActivityEventItem {
   resourceType: string;
   type: string;
   actorEmployeeId: string;
+  action: string;
   content: string;
   attachments: IActivityAttachment[];
   meta: string;

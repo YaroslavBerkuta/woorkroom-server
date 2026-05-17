@@ -158,6 +158,7 @@ type ActivityEventModel {
   resourceType: String!
   type: String!
   actorEmployeeId: String!
+  action: String
   content: String
   attachments: [AttachmentModel!]!
   meta: String!

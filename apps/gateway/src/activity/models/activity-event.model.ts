@@ -36,6 +36,9 @@ export class ActivityEventModel {
   actorEmployeeId: string;
 
   @Field(() => String, { nullable: true })
+  action?: string;
+
+  @Field(() => String, { nullable: true })
   content?: string;
 
   @Field(() => [AttachmentModel])

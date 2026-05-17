@@ -42,7 +42,8 @@ export class ActivityService {
         resourceType: dto.resourceType,
         type: 'history',
         actorEmployeeId: dto.actorEmployeeId,
-        meta: { action: dto.action, ...(dto.meta ?? {}) },
+        action: dto.action,
+        meta: dto.meta ?? {},
         isEdited: false,
       });
       await doc.save();
@@ -126,6 +127,7 @@ export class ActivityService {
       resourceType: obj.resourceType,
       type: obj.type,
       actorEmployeeId: obj.actorEmployeeId,
+      action: obj.action ?? '',
       content: obj.content ?? '',
       attachments: (obj.attachments ?? []).map((a) => ({
         url: a.url,

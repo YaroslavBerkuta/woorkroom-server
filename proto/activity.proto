@@ -39,6 +39,7 @@ message ActivityEventMessage {
   string editedAt = 9;
   string createdAt = 10;
   repeated AttachmentMessage attachments = 11;
+  string action = 12;
 }
 
 message ActivityFeedResponse {

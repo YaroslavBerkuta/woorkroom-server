@@ -47,6 +47,9 @@ export class ActivityEvent {
   actorEmployeeId: string;
 
   @Prop()
+  action?: string;
+
+  @Prop()
   content?: string;
 
   @Prop({ type: [AttachmentSchema], default: [] })
