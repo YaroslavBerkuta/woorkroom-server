@@ -70,8 +70,10 @@ services:
       CHOKIDAR_USEPOLLING: ${CHOKIDAR_USEPOLLING}
       CHOKIDAR_INTERVAL: ${CHOKIDAR_INTERVAL}
       GRPC_USERS_PORT: ${GRPC_USERS_PORT}
+      HEALTH_USERS_PORT: ${HEALTH_USERS_PORT:-6001}
     ports:
       - "${GRPC_USERS_PORT}:${GRPC_USERS_PORT}"
+      - "${HEALTH_USERS_PORT:-6001}:${HEALTH_USERS_PORT:-6001}"
     command: ["npx", "nest", "start", "users", "--watch"]
     volumes:
       - ./:/app
@@ -93,8 +95,10 @@ services:
       CHOKIDAR_USEPOLLING: ${CHOKIDAR_USEPOLLING}
       CHOKIDAR_INTERVAL: ${CHOKIDAR_INTERVAL}
       GRPC_COMPANYS_PORT: ${GRPC_COMPANYS_PORT}
+      HEALTH_COMPANYS_PORT: ${HEALTH_COMPANYS_PORT:-6002}
     ports:
       - "${GRPC_COMPANYS_PORT}:${GRPC_COMPANYS_PORT}"
+      - "${HEALTH_COMPANYS_PORT:-6002}:${HEALTH_COMPANYS_PORT:-6002}"
     command: ["npx", "nest", "start", "companys", "--watch"]
     volumes:
       - ./:/app
@@ -118,8 +122,10 @@ services:
       GRPC_AUTH_PORT: ${GRPC_AUTH_PORT}
       GRPC_USERS_URL: ${GRPC_USERS_URL}
       GRPC_COMPANYS_URL: ${GRPC_COMPANYS_URL}
+      HEALTH_AUTH_PORT: ${HEALTH_AUTH_PORT:-6003}
     ports:
       - "${GRPC_AUTH_PORT}:${GRPC_AUTH_PORT}"
+      - "${HEALTH_AUTH_PORT:-6003}:${HEALTH_AUTH_PORT:-6003}"
     command: ["npx", "nest", "start", "authorization", "--watch"]
     volumes:
       - ./:/app
@@ -145,8 +151,10 @@ services:
       CHOKIDAR_INTERVAL: ${CHOKIDAR_INTERVAL}
       GRPC_ACTIVITY_PORT: ${GRPC_ACTIVITY_PORT}
       MONGODB_ACTIVITY_URI: mongodb://woorkroom-mongo:27017/woorkroom_activity
+      HEALTH_ACTIVITY_PORT: ${HEALTH_ACTIVITY_PORT:-6005}
     ports:
       - "${GRPC_ACTIVITY_PORT}:${GRPC_ACTIVITY_PORT}"
+      - "${HEALTH_ACTIVITY_PORT:-6005}:${HEALTH_ACTIVITY_PORT:-6005}"
     command: ["npx", "nest", "start", "activity", "--watch"]
     volumes:
       - ./:/app
@@ -176,6 +184,7 @@ services:
       GRPC_MEDIA_URL: ${GRPC_MEDIA_URL}
       GRPC_PROJECTS_URL: ${GRPC_PROJECTS_URL}
       GRPC_ACTIVITY_URL: ${GRPC_ACTIVITY_URL}
+      MEDIA_INTERNAL_URL: http://media:3001
     command: ["npx", "nest", "start", "gateway", "--watch"]
     volumes:
       - ./:/app
@@ -201,6 +210,9 @@ services:
       CHOKIDAR_USEPOLLING: ${CHOKIDAR_USEPOLLING}
       CHOKIDAR_INTERVAL: ${CHOKIDAR_INTERVAL}
       MONGODB_MAILS_URI: mongodb://woorkroom-mongo:27017/woorkroom_mails
+      HEALTH_MAILS_PORT: ${HEALTH_MAILS_PORT:-6007}
+    ports:
+      - "${HEALTH_MAILS_PORT:-6007}:${HEALTH_MAILS_PORT:-6007}"
     command: ["npx", "nest", "start", "mails", "--watch"]
     volumes:
       - ./:/app
@@ -247,6 +259,7 @@ services:
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
       MINIO_BUCKET: ${MINIO_BUCKET}
       MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL}
+      MEDIA_FILE_BASE_URL: ${MEDIA_FILE_BASE_URL:-http://localhost:3001/media/file}
     ports:
       - "${MEDIA_HTTP_PORT}:${MEDIA_HTTP_PORT}"
       - "${GRPC_MEDIA_PORT}:${GRPC_MEDIA_PORT}"
@@ -277,8 +290,10 @@ services:
       DATABASE_PROJECTS_PASSWORD: ${DATABASE_PROJECTS_PASSWORD}
       DATABASE_PROJECTS_DATABASE: ${DATABASE_PROJECTS_DATABASE}
       MONGODB_PROJECTS_URI: mongodb://woorkroom-mongo:27017/woorkroom_projects
+      HEALTH_PROJECTS_PORT: ${HEALTH_PROJECTS_PORT:-6004}
     ports:
       - "${GRPC_PROJECTS_PORT}:${GRPC_PROJECTS_PORT}"
+      - "${HEALTH_PROJECTS_PORT:-6004}:${HEALTH_PROJECTS_PORT:-6004}"
     command: ["npx", "nest", "start", "projects", "--watch"]
     volumes:
       - ./:/app

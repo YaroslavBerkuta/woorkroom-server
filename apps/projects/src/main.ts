@@ -33,10 +33,7 @@ async function bootstrap() {
   });
 
   await app.startAllMicroservices();
-  await app.init();
-  console.log(
-    'Projects service is running on port',
-    config.get('grpc.projects.port'),
-  );
+  const healthPort = config.get<number>('health.projects') || 6004;
+  await app.listen(healthPort);
 }
 void bootstrap();

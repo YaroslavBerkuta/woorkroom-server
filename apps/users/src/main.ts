@@ -33,6 +33,7 @@ async function bootstrap() {
   });
 
   await app.startAllMicroservices();
-  await app.init();
+  const healthPort = config.get<number>('health.users') || 6001;
+  await app.listen(healthPort);
 }
 void bootstrap();

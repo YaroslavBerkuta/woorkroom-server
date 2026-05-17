@@ -16,6 +16,7 @@ import {
   ProjectLink,
   ProjectLinkSchema,
 } from './schemas';
+import { ProjectsHealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import {
     ]),
     RedisModule,
     RabbitmqModule,
+    ProjectsHealthModule,
   ],
   controllers: [ProjectController],
   providers: [ProjectService],

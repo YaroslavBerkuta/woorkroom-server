@@ -40,10 +40,7 @@ async function bootstrap() {
   });
 
   await app.startAllMicroservices();
-  await app.init();
-  console.log(
-    'Activity service is running on port',
-    config.get('grpc.activity.port'),
-  );
+  const healthPort = config.get<number>('health.activity') || 6005;
+  await app.listen(healthPort);
 }
 void bootstrap();

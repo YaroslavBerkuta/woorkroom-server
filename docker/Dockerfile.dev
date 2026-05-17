@@ -5,9 +5,9 @@ WORKDIR /app
 # для нативних модулів (bcrypt / sharp / etc.)
 RUN apk add --no-cache python3 make g++ libc6-compat
 
-# ставимо deps з lock-файлом (в тебе він є)
+# ставимо deps
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm install --legacy-peer-deps
 
 # копіюємо все (потрібно для первинного запуску; далі буде volume)
 COPY . .

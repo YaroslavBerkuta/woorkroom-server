@@ -6,4 +6,5 @@ export interface IRedisService {
   sadd(key: string, value: string, ttlSeconds?: number): Promise<number>;
   smembers(key: string): Promise<string[]>;
   srem(key: string, value: string): Promise<number>;
+  ping(): Promise<string>;
 }

@@ -6,6 +6,7 @@ import { RedisModule } from 'woorkroom/redis';
 import { MainService } from './services';
 import { MailsController } from './controllers';
 import { MailEvent, MailEventSchema } from './schemas/mail-event.schema';
+import { MailsHealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { MailEvent, MailEventSchema } from './schemas/mail-event.schema';
     TelegramModule,
     RedisModule,
     MongoModule.forMails([{ name: MailEvent.name, schema: MailEventSchema }]),
+    MailsHealthModule,
   ],
   controllers: [MailsController],
   providers: [MainService],

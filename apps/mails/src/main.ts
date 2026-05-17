@@ -23,6 +23,7 @@ async function bootstrap() {
   });
 
   await app.startAllMicroservices();
-  await app.init();
+  const healthPort = config.get<number>('health.mails') || 6007;
+  await app.listen(healthPort);
 }
 void bootstrap();

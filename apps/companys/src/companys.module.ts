@@ -5,12 +5,14 @@ import { RedisModule } from 'woorkroom/redis';
 import { entities } from './entitys';
 import { CompanysController, EmployeeController } from './controllers';
 import { CompanyService, EmployeeService } from './services';
+import { CompanysHealthModule } from './health/health.module';
 
 @Module({
   imports: [
     ConfigurationModule,
     DatabaseModule.forCompany(entities),
     RedisModule,
+    CompanysHealthModule,
   ],
   controllers: [CompanysController, EmployeeController],
   providers: [CompanyService, EmployeeService],

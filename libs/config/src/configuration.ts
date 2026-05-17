@@ -115,6 +115,8 @@ export const minioConfig = () => ({
   },
   media: {
     httpPort: Number(process.env.MEDIA_HTTP_PORT) || 3001,
+    fileBaseUrl: process.env.MEDIA_FILE_BASE_URL,
+    internalUrl: process.env.MEDIA_INTERNAL_URL || 'http://media:3001',
   },
 });
 
@@ -132,6 +134,18 @@ export const mongoConfig = () => ({
     activity:
       process.env.MONGODB_ACTIVITY_URI ||
       'mongodb://localhost:27017/woorkroom_activity',
+  },
+});
+
+export const healthConfig = () => ({
+  health: {
+    users: Number(process.env.HEALTH_USERS_PORT) || 6001,
+    companys: Number(process.env.HEALTH_COMPANYS_PORT) || 6002,
+    authorization: Number(process.env.HEALTH_AUTH_PORT) || 6003,
+    projects: Number(process.env.HEALTH_PROJECTS_PORT) || 6004,
+    activity: Number(process.env.HEALTH_ACTIVITY_PORT) || 6005,
+    audit: Number(process.env.HEALTH_AUDIT_PORT) || 6006,
+    mails: Number(process.env.HEALTH_MAILS_PORT) || 6007,
   },
 });
 

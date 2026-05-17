@@ -4,7 +4,7 @@
   "sourceRoot": "apps/gateway/src",
   "compilerOptions": {
     "deleteOutDir": true,
-    "webpack": true,
+    "webpack": false,
     "tsConfigPath": "apps/gateway/tsconfig.app.json"
   },
   "monorepo": true,
@@ -16,6 +16,7 @@
       "entryFile": "main",
       "sourceRoot": "apps/authorization/src",
       "compilerOptions": {
+        "webpack": false,
         "tsConfigPath": "apps/authorization/tsconfig.app.json"
       }
     },
@@ -25,6 +26,7 @@
       "entryFile": "main",
       "sourceRoot": "apps/companys/src",
       "compilerOptions": {
+        "webpack": false,
         "tsConfigPath": "apps/companys/tsconfig.app.json"
       }
     },
@@ -61,6 +63,7 @@
       "entryFile": "main",
       "sourceRoot": "apps/gateway/src",
       "compilerOptions": {
+        "webpack": false,
         "tsConfigPath": "apps/gateway/tsconfig.app.json"
       }
     },
@@ -79,6 +82,7 @@
       "entryFile": "main",
       "sourceRoot": "apps/mails/src",
       "compilerOptions": {
+        "webpack": false,
         "tsConfigPath": "apps/mails/tsconfig.app.json"
       }
     },
@@ -124,6 +128,7 @@
       "entryFile": "main",
       "sourceRoot": "apps/users/src",
       "compilerOptions": {
+        "webpack": false,
         "tsConfigPath": "apps/users/tsconfig.app.json"
       }
     },
@@ -136,12 +141,22 @@
         "tsConfigPath": "libs/mongo/tsconfig.lib.json"
       }
     },
+    "health": {
+      "type": "library",
+      "root": "libs/health",
+      "entryFile": "index",
+      "sourceRoot": "libs/health/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/health/tsconfig.lib.json"
+      }
+    },
     "media": {
       "type": "application",
       "root": "apps/media",
       "entryFile": "main",
       "sourceRoot": "apps/media/src",
       "compilerOptions": {
+        "webpack": false,
         "tsConfigPath": "apps/media/tsconfig.app.json"
       }
     },
@@ -151,6 +166,7 @@
       "entryFile": "main",
       "sourceRoot": "apps/projects/src",
       "compilerOptions": {
+        "webpack": false,
         "tsConfigPath": "apps/projects/tsconfig.app.json"
       }
     },
@@ -160,6 +176,7 @@
       "entryFile": "main",
       "sourceRoot": "apps/audit/src",
       "compilerOptions": {
+        "webpack": false,
         "tsConfigPath": "apps/audit/tsconfig.app.json"
       }
     },
@@ -169,6 +186,7 @@
       "entryFile": "main",
       "sourceRoot": "apps/activity/src",
       "compilerOptions": {
+        "webpack": false,
         "tsConfigPath": "apps/activity/tsconfig.app.json"
       }
     }

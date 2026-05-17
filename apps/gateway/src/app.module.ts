@@ -8,7 +8,9 @@ import { CompanysModule } from './companys';
 import { CompanyUserModule } from './companyUser';
 import { ProjectsModule } from './projects';
 import { ActivityModule } from './activity/activity.module';
+import { MediaProxyModule } from './media/media-proxy.module';
 import { ConfigurationModule } from 'woorkroom/config';
+import { GatewayHealthModule } from './health/health.module';
 import { join } from 'path';
 
 @Module({
@@ -31,6 +33,8 @@ import { join } from 'path';
     CompanyUserModule,
     ProjectsModule,
     ActivityModule,
+    MediaProxyModule,
+    GatewayHealthModule,
   ],
 })
 export class AppModule {}

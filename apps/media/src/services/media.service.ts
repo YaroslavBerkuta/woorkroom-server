@@ -1,9 +1,15 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  OnModuleInit,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as Minio from 'minio';
 import sharp from 'sharp';
 import { v4 } from 'uuid';
 import { extname } from 'path';
+import type { Readable } from 'stream';
 import type { IMediaFile } from 'shared';
 
 @Injectable()
@@ -12,6 +18,7 @@ export class MediaService implements OnModuleInit {
   private client: Minio.Client;
   private bucket: string;
   private publicUrl: string;
+  private fileBaseUrl: string;
 
   constructor(private readonly configService: ConfigService) {}
 
@@ -21,6 +28,10 @@ export class MediaService implements OnModuleInit {
     this.publicUrl =
       this.configService.get<string>('minio.publicUrl') ||
       'http://localhost:9000';
+    const httpPort = this.configService.get<number>('media.httpPort') || 3001;
+    this.fileBaseUrl =
+      this.configService.get<string>('media.fileBaseUrl') ||
+      `http://localhost:${httpPort}/media/file`;
 
     this.client = new Minio.Client({
       endPoint: this.configService.get<string>('minio.endpoint') || 'localhost',
@@ -76,9 +87,78 @@ export class MediaService implements OnModuleInit {
       'audio/wav': '.wav',
       'application/pdf': '.pdf',
       'application/msword': '.doc',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+        '.docx',
     };
     return map[base] ?? '.bin';
+  }
+
+  private mimetypeFromExt(ext: string): string {
+    const map: Record<string, string> = {
+      '.webm': 'video/webm',
+      '.mp4': 'video/mp4',
+      '.m4a': 'audio/mp4',
+      '.ogg': 'audio/ogg',
+      '.ogv': 'video/ogg',
+      '.mp3': 'audio/mpeg',
+      '.wav': 'audio/wav',
+      '.pdf': 'application/pdf',
+      '.doc': 'application/msword',
+      '.docx':
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.png': 'image/png',
+      '.gif': 'image/gif',
+      '.webp': 'image/webp',
+      '.svg': 'image/svg+xml',
+    };
+    return map[ext.toLowerCase()] ?? 'application/octet-stream';
+  }
+
+  private detectContentType(buffer: Buffer, declaredMime: string): string {
+    const base = declaredMime.split(';')[0].trim().toLowerCase();
+    const isGeneric =
+      !base || base === 'text/plain' || base === 'application/octet-stream';
+
+    if (!isGeneric) return base;
+
+    // WebM / EBML magic: 1A 45 DF A3
+    if (
+      buffer[0] === 0x1a &&
+      buffer[1] === 0x45 &&
+      buffer[2] === 0xdf &&
+      buffer[3] === 0xa3
+    ) {
+      return 'video/webm';
+    }
+    // MP4 / M4A: ftyp box at offset 4
+    if (
+      buffer[4] === 0x66 &&
+      buffer[5] === 0x74 &&
+      buffer[6] === 0x79 &&
+      buffer[7] === 0x70
+    ) {
+      return 'video/mp4';
+    }
+    // OGG: OggS magic
+    if (
+      buffer[0] === 0x4f &&
+      buffer[1] === 0x67 &&
+      buffer[2] === 0x67 &&
+      buffer[3] === 0x53
+    ) {
+      return 'audio/ogg';
+    }
+    // MP3: ID3 or sync bytes
+    if (
+      (buffer[0] === 0x49 && buffer[1] === 0x44 && buffer[2] === 0x33) ||
+      (buffer[0] === 0xff && (buffer[1] & 0xe0) === 0xe0)
+    ) {
+      return 'audio/mpeg';
+    }
+
+    return base || 'application/octet-stream';
   }
 
   async uploadFile(
@@ -87,8 +167,10 @@ export class MediaService implements OnModuleInit {
   ): Promise<IMediaFile> {
     const fileId = v4();
     const isImage = file.mimetype.startsWith('image/');
-    const ext = extname(file.originalname).toLowerCase() || this.extFromMimetype(file.mimetype);
-    const contentType = file.mimetype.split(';')[0].trim();
+    const ext =
+      extname(file.originalname).toLowerCase() ||
+      this.extFromMimetype(file.mimetype);
+    const contentType = this.detectContentType(file.buffer, file.mimetype);
 
     const objectName = `${folder}/${fileId}${ext}`;
     let webpUrl: string | undefined;
@@ -114,7 +196,7 @@ export class MediaService implements OnModuleInit {
         webpBuffer.length,
         { 'Content-Type': 'image/webp' },
       );
-      webpUrl = `${this.publicUrl}/${this.bucket}/${webpName}`;
+      webpUrl = `${this.fileBaseUrl}/${webpName}`;
 
       const thumbBuffer = await sharp(file.buffer)
         .resize(200, 200, { fit: 'cover' })
@@ -128,14 +210,14 @@ export class MediaService implements OnModuleInit {
         thumbBuffer.length,
         { 'Content-Type': 'image/webp' },
       );
-      thumbnailUrl = `${this.publicUrl}/${this.bucket}/${thumbName}`;
+      thumbnailUrl = `${this.fileBaseUrl}/${thumbName}`;
     }
 
     this.logger.log(`Uploaded ${objectName}`);
 
     return {
       fileId: objectName,
-      url: `${this.publicUrl}/${this.bucket}/${objectName}`,
+      url: `${this.fileBaseUrl}/${objectName}`,
       webpUrl,
       thumbnailUrl,
       mimetype: contentType,
@@ -143,8 +225,26 @@ export class MediaService implements OnModuleInit {
     };
   }
 
+  async streamFile(
+    objectName: string,
+  ): Promise<{ stream: Readable; contentType: string; size: number }> {
+    try {
+      const stat = await this.client.statObject(this.bucket, objectName);
+      const ext = extname(objectName);
+      const contentType =
+        this.mimetypeFromExt(ext) !== 'application/octet-stream'
+          ? this.mimetypeFromExt(ext)
+          : ((stat.metaData?.['content-type'] as string | undefined) ??
+            'application/octet-stream');
+      const stream = await this.client.getObject(this.bucket, objectName);
+      return { stream, contentType, size: stat.size };
+    } catch {
+      throw new NotFoundException(`File not found: ${objectName}`);
+    }
+  }
+
   getFileUrl(fileId: string): string {
-    return `${this.publicUrl}/${this.bucket}/${fileId}`;
+    return `${this.fileBaseUrl}/${fileId}`;
   }
 
   async deleteFile(fileId: string): Promise<boolean> {

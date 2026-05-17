@@ -88,4 +88,8 @@ export class RedisService
   srem(key: string, value: string) {
     return this.client.sRem(key, value);
   }
+
+  ping(): Promise<string> {
+    return this.client.ping();
+  }
 }
