@@ -1,9 +1,6 @@
 import {
   Controller,
-  Get,
   Post,
-  Param,
-  Res,
   UploadedFile,
   UseInterceptors,
   Body,
@@ -12,7 +9,6 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GrpcMethod } from '@nestjs/microservices';
 import { memoryStorage } from 'multer';
-import type { Response } from 'express';
 import { MediaService } from '../services';
 
 const IMAGE_ONLY_FOLDERS = ['avatars', 'logos'];
@@ -50,15 +46,6 @@ export class MediaController {
   ) {
     if (!file) throw new BadRequestException('File is required');
     return this.mediaService.uploadFile(file, folder);
-  }
-
-  @Get('file/*')
-  async streamFile(@Param('0') objectName: string, @Res() res: Response) {
-    const { stream, contentType, size } = await this.mediaService.streamFile(objectName);
-    res.setHeader('Content-Type', contentType);
-    res.setHeader('Content-Length', size);
-    res.setHeader('Cache-Control', 'public, max-age=31536000');
-    stream.pipe(res);
   }
 
   @GrpcMethod('MediaService', 'GetFileUrl')

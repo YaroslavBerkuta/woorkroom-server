@@ -176,7 +176,6 @@ services:
       GRPC_MEDIA_URL: ${GRPC_MEDIA_URL}
       GRPC_PROJECTS_URL: ${GRPC_PROJECTS_URL}
       GRPC_ACTIVITY_URL: ${GRPC_ACTIVITY_URL}
-      MEDIA_INTERNAL_URL: http://media:3001
     command: ["npx", "nest", "start", "gateway", "--watch"]
     volumes:
       - ./:/app
@@ -248,7 +247,6 @@ services:
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
       MINIO_BUCKET: ${MINIO_BUCKET}
       MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL}
-      MEDIA_FILE_BASE_URL: ${MEDIA_FILE_BASE_URL:-http://localhost:3000/media/file}
     ports:
       - "${MEDIA_HTTP_PORT}:${MEDIA_HTTP_PORT}"
       - "${GRPC_MEDIA_PORT}:${GRPC_MEDIA_PORT}"

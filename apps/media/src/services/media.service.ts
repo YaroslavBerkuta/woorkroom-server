@@ -1,8 +1,7 @@
-import { Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as Minio from 'minio';
 import sharp from 'sharp';
-import { Readable } from 'stream';
 import { v4 } from 'uuid';
 import { extname } from 'path';
 import type { IMediaFile } from 'shared';
@@ -13,7 +12,6 @@ export class MediaService implements OnModuleInit {
   private client: Minio.Client;
   private bucket: string;
   private publicUrl: string;
-  private fileBaseUrl: string;
 
   constructor(private readonly configService: ConfigService) {}
 
@@ -23,8 +21,6 @@ export class MediaService implements OnModuleInit {
     this.publicUrl =
       this.configService.get<string>('minio.publicUrl') ||
       'http://localhost:9000';
-    const customBase = this.configService.get<string>('media.fileBaseUrl');
-    this.fileBaseUrl = customBase ?? `${this.publicUrl}/${this.bucket}`;
 
     this.client = new Minio.Client({
       endPoint: this.configService.get<string>('minio.endpoint') || 'localhost',
@@ -139,34 +135,16 @@ export class MediaService implements OnModuleInit {
 
     return {
       fileId: objectName,
-      url: `${this.fileBaseUrl}/${objectName}`,
-      webpUrl: webpUrl
-        ? webpUrl.replace(`${this.publicUrl}/${this.bucket}`, this.fileBaseUrl)
-        : undefined,
-      thumbnailUrl: thumbnailUrl
-        ? thumbnailUrl.replace(`${this.publicUrl}/${this.bucket}`, this.fileBaseUrl)
-        : undefined,
+      url: `${this.publicUrl}/${this.bucket}/${objectName}`,
+      webpUrl,
+      thumbnailUrl,
       mimetype: contentType,
       size: file.buffer.length,
     };
   }
 
   getFileUrl(fileId: string): string {
-    return `${this.fileBaseUrl}/${fileId}`;
-  }
-
-  async streamFile(objectName: string): Promise<{ stream: Readable; contentType: string; size: number }> {
-    try {
-      const stat = await this.client.statObject(this.bucket, objectName);
-      const stream = await this.client.getObject(this.bucket, objectName);
-      return {
-        stream,
-        contentType: (stat.metaData?.['content-type'] as string) ?? 'application/octet-stream',
-        size: stat.size,
-      };
-    } catch {
-      throw new NotFoundException(`File not found: ${objectName}`);
-    }
+    return `${this.publicUrl}/${this.bucket}/${fileId}`;
   }
 
   async deleteFile(fileId: string): Promise<boolean> {
