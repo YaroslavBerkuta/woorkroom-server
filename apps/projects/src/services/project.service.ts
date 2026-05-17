@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { InjectModel } from '@nestjs/mongoose';
 import { In, Repository } from 'typeorm';
 import { Model } from 'mongoose';
+import { difference, differenceBy, isEmpty } from 'lodash';
 
 import { Project } from '../entitys/project.entity';
 import { ProjectMember } from '../entitys/project-member.entity';
@@ -35,6 +36,16 @@ import {
 import { RpcException } from '@nestjs/microservices';
 import * as redis from 'woorkroom/redis';
 import { RabbitmqActivityService } from 'woorkroom/rabbitmq';
+
+interface UpdateProjectServiceDto extends UpdateProjectDto {
+  updateAssignees?: boolean;
+  updateReporter?: boolean;
+}
+
+type FieldChange = { from: string | null; to: string | null };
+type ProjectFieldChanges = Partial<
+  Record<'name' | 'starts' | 'deadline' | 'priority' | 'description' | 'image', FieldChange>
+>;
 
 interface ProjectFilter {
   name?: string;
@@ -284,46 +295,15 @@ export class ProjectService {
     return project;
   }
 
-  async updateProject(dto: UpdateProjectDto): Promise<Project> {
+  async updateProject(dto: UpdateProjectServiceDto): Promise<Project> {
     const project = await this.projectRepo.findOne({ where: { id: dto.id } });
     if (!project) throw new RpcException('Project not found');
 
-    const changes: Record<string, { from: unknown; to: unknown }> = {};
-
-    if (dto.name && dto.name !== project.name) {
-      changes.name = { from: project.name, to: dto.name };
-      project.name = dto.name;
-      project.slug = await this.resolveSlug(
-        project.companyId,
-        dto.name,
-        project.id,
-      );
-    }
-    if (dto.starts !== undefined && dto.starts !== (project.starts ?? '')) {
-      changes.starts = { from: project.starts ?? null, to: dto.starts || null };
-      project.starts = dto.starts || undefined;
-    }
-    if (dto.deadline !== undefined && dto.deadline !== (project.deadline ?? '')) {
-      changes.deadline = { from: project.deadline ?? null, to: dto.deadline || null };
-      project.deadline = dto.deadline || undefined;
-    }
-    if (dto.priority !== undefined && dto.priority !== project.priority) {
-      changes.priority = { from: project.priority, to: dto.priority };
-      project.priority = dto.priority || undefined;
-    }
-    if (dto.description !== undefined && dto.description !== (project.description ?? '')) {
-      changes.description = { from: project.description ?? null, to: dto.description || null };
-      project.description = dto.description || undefined;
-    }
-    if (dto.image !== undefined && dto.image !== (project.image ?? '')) {
-      changes.image = { from: project.image ?? null, to: dto.image || null };
-      project.image = dto.image || undefined;
-    }
-
+    const changes = await this.applyScalarChanges(dto, project);
     const saved = await this.projectRepo.save(project);
     await this.redis.del(`project:${dto.id}`);
 
-    if (Object.keys(changes).length > 0) {
+    if (!isEmpty(changes)) {
       this.rabbitmqAudit.publish({
         service: 'projects',
         action: AuditAction.PROJECT_UPDATED,
@@ -333,73 +313,111 @@ export class ProjectService {
       });
     }
 
-    if ((dto as any).updateReporter) {
-      const prevReporter = await this.memberRepo.findOne({
-        where: { projectId: dto.id, role: ProjectMemberRole.REPORTER },
-      });
-      if (prevReporter?.employeeId !== dto.reporterId) {
-        await this.memberRepo.delete({ projectId: dto.id, role: ProjectMemberRole.REPORTER });
-        if (dto.reporterId) {
-          await this.memberRepo.save({
-            projectId: dto.id,
-            employeeId: dto.reporterId,
-            role: ProjectMemberRole.REPORTER,
-          });
-          this.rabbitmqAudit.publish({
-            service: 'projects',
-            action: AuditAction.PROJECT_MEMBER_ADDED,
-            actorEmployeeId: dto.actorEmployeeId ?? '',
-            resourceId: dto.id,
-            meta: {
-              employeeId: dto.reporterId,
-              role: ProjectMemberRole.REPORTER,
-              ...(prevReporter ? { replacedEmployeeId: prevReporter.employeeId } : {}),
-            },
-          });
-        }
-      }
+    if (dto.updateReporter) {
+      await this.syncReporter(dto.id, dto.reporterId, dto.actorEmployeeId);
     }
-
-    if ((dto as any).updateAssignees) {
-      const currentAssignees = await this.memberRepo.find({
-        where: { projectId: dto.id, role: ProjectMemberRole.ASSIGNEE },
-      });
-      const assigneeIds = dto.assigneeIds ?? [];
-      const currentIds = new Set(currentAssignees.map((m) => m.employeeId));
-      const newIds = new Set(assigneeIds);
-
-      for (const member of currentAssignees) {
-        if (!newIds.has(member.employeeId)) {
-          await this.memberRepo.delete({ id: member.id });
-          this.rabbitmqAudit.publish({
-            service: 'projects',
-            action: AuditAction.PROJECT_MEMBER_REMOVED,
-            actorEmployeeId: dto.actorEmployeeId ?? '',
-            resourceId: dto.id,
-            meta: { employeeId: member.employeeId, role: ProjectMemberRole.ASSIGNEE },
-          });
-        }
-      }
-
-      for (const employeeId of assigneeIds) {
-        if (!currentIds.has(employeeId)) {
-          await this.memberRepo.save({
-            projectId: dto.id,
-            employeeId,
-            role: ProjectMemberRole.ASSIGNEE,
-          });
-          this.rabbitmqAudit.publish({
-            service: 'projects',
-            action: AuditAction.PROJECT_MEMBER_ADDED,
-            actorEmployeeId: dto.actorEmployeeId ?? '',
-            resourceId: dto.id,
-            meta: { employeeId, role: ProjectMemberRole.ASSIGNEE },
-          });
-        }
-      }
+    if (dto.updateAssignees) {
+      await this.syncAssignees(dto.id, dto.assigneeIds ?? [], dto.actorEmployeeId);
     }
 
     return saved;
+  }
+
+  private async applyScalarChanges(
+    dto: UpdateProjectDto,
+    project: Project,
+  ): Promise<ProjectFieldChanges> {
+    const changes: ProjectFieldChanges = {};
+
+    if (dto.name && dto.name !== project.name) {
+      changes.name = { from: project.name, to: dto.name };
+      project.name = dto.name;
+      project.slug = await this.resolveSlug(project.companyId, dto.name, project.id);
+    }
+
+    const nullableFields = ['starts', 'deadline', 'priority', 'description', 'image'] as const;
+    for (const field of nullableFields) {
+      const incoming = dto[field];
+      if (incoming === undefined) continue;
+      const current = (project[field] ?? null) as string | null;
+      const next = (incoming || null) as string | null;
+      if (next !== current) {
+        changes[field] = { from: current, to: next };
+        (project[field] as string | undefined) = incoming || undefined;
+      }
+    }
+
+    return changes;
+  }
+
+  private async syncReporter(
+    projectId: string,
+    reporterId: string | undefined,
+    actorEmployeeId: string | undefined,
+  ): Promise<void> {
+    const prev = await this.memberRepo.findOne({
+      where: { projectId, role: ProjectMemberRole.REPORTER },
+    });
+    if (prev?.employeeId === reporterId) return;
+
+    await this.memberRepo.delete({ projectId, role: ProjectMemberRole.REPORTER });
+    if (!reporterId) return;
+
+    await this.memberRepo.save({ projectId, employeeId: reporterId, role: ProjectMemberRole.REPORTER });
+    this.rabbitmqAudit.publish({
+      service: 'projects',
+      action: AuditAction.PROJECT_MEMBER_ADDED,
+      actorEmployeeId: actorEmployeeId ?? '',
+      resourceId: projectId,
+      meta: {
+        employeeId: reporterId,
+        role: ProjectMemberRole.REPORTER,
+        ...(prev ? { replacedEmployeeId: prev.employeeId } : {}),
+      },
+    });
+  }
+
+  private async syncAssignees(
+    projectId: string,
+    newAssigneeIds: string[],
+    actorEmployeeId: string | undefined,
+  ): Promise<void> {
+    const current = await this.memberRepo.find({
+      where: { projectId, role: ProjectMemberRole.ASSIGNEE },
+    });
+
+    const toRemove = differenceBy(
+      current,
+      newAssigneeIds.map((id) => ({ employeeId: id })),
+      'employeeId',
+    );
+    const toAdd = difference(
+      newAssigneeIds,
+      current.map((m) => m.employeeId),
+    );
+
+    await Promise.all([
+      ...toRemove.map(async (member) => {
+        await this.memberRepo.delete({ id: member.id });
+        this.rabbitmqAudit.publish({
+          service: 'projects',
+          action: AuditAction.PROJECT_MEMBER_REMOVED,
+          actorEmployeeId: actorEmployeeId ?? '',
+          resourceId: projectId,
+          meta: { employeeId: member.employeeId, role: ProjectMemberRole.ASSIGNEE },
+        });
+      }),
+      ...toAdd.map(async (employeeId) => {
+        await this.memberRepo.save({ projectId, employeeId, role: ProjectMemberRole.ASSIGNEE });
+        this.rabbitmqAudit.publish({
+          service: 'projects',
+          action: AuditAction.PROJECT_MEMBER_ADDED,
+          actorEmployeeId: actorEmployeeId ?? '',
+          resourceId: projectId,
+          meta: { employeeId, role: ProjectMemberRole.ASSIGNEE },
+        });
+      }),
+    ]);
   }
 
   async updateProjectStatus(dto: UpdateProjectStatusDto): Promise<Project> {
