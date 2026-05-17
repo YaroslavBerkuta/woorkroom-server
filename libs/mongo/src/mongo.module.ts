@@ -1,10 +1,15 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { MongooseModule, ModelDefinition } from '@nestjs/mongoose';
+import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigService } from '@nestjs/config';
+
+export interface MongoSchemaDefinition {
+  name: string;
+  schema: unknown;
+}
 
 @Module({})
 export class MongoModule {
-  static forProjects(schemas: ModelDefinition[]): DynamicModule {
+  static forProjects(schemas: MongoSchemaDefinition[]): DynamicModule {
     return {
       module: MongoModule,
       imports: [
@@ -20,7 +25,7 @@ export class MongoModule {
     };
   }
 
-  static forMails(schemas: ModelDefinition[]): DynamicModule {
+  static forMails(schemas: MongoSchemaDefinition[]): DynamicModule {
     return {
       module: MongoModule,
       imports: [
