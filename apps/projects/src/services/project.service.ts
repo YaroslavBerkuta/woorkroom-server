@@ -333,7 +333,7 @@ export class ProjectService {
       });
     }
 
-    if (dto.reporterId !== undefined) {
+    if ((dto as any).updateReporter) {
       const prevReporter = await this.memberRepo.findOne({
         where: { projectId: dto.id, role: ProjectMemberRole.REPORTER },
       });
@@ -360,12 +360,13 @@ export class ProjectService {
       }
     }
 
-    if (dto.assigneeIds !== undefined) {
+    if ((dto as any).updateAssignees) {
       const currentAssignees = await this.memberRepo.find({
         where: { projectId: dto.id, role: ProjectMemberRole.ASSIGNEE },
       });
+      const assigneeIds = dto.assigneeIds ?? [];
       const currentIds = new Set(currentAssignees.map((m) => m.employeeId));
-      const newIds = new Set(dto.assigneeIds);
+      const newIds = new Set(assigneeIds);
 
       for (const member of currentAssignees) {
         if (!newIds.has(member.employeeId)) {
@@ -380,7 +381,7 @@ export class ProjectService {
         }
       }
 
-      for (const employeeId of dto.assigneeIds) {
+      for (const employeeId of assigneeIds) {
         if (!currentIds.has(employeeId)) {
           await this.memberRepo.save({
             projectId: dto.id,

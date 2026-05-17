@@ -136,8 +136,12 @@ export class GrpcProjectsService implements IGrpcProjectsService, OnModuleInit {
     return res.value;
   }
 
-  async updateProject(dto: UpdateProjectDto): Promise<IProject> {
-    return lastValueFrom(this.client.updateProject(dto));
+  async updateProject(dto: UpdateProjectDto & { reporterId?: string; assigneeIds?: string[] }): Promise<IProject> {
+    return lastValueFrom(this.client.updateProject({
+      ...dto,
+      updateAssignees: dto.assigneeIds !== undefined,
+      updateReporter: dto.reporterId !== undefined,
+    }));
   }
 
   async updateProjectStatus(

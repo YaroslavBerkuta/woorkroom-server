@@ -66,6 +66,8 @@ message UpdateProjectRequest {
   string actorEmployeeId = 8;
   string reporterId = 9;
   repeated string assigneeIds = 10;
+  bool updateAssignees = 11;
+  bool updateReporter = 12;
 }
 
 message ProjectResponse {
