@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker compose *)",
+      "Bash(docker restart woorkroom-users *)",
+      "Bash(docker restart woorkroom-gateway *)",
+      "Bash(curl -s http://localhost:6004/health)",
+      "Bash(curl -s http://localhost:6005/health)",
+      "Bash(curl -s http://localhost:6006/health)",
+      "Bash(curl -s http://localhost:6007/health)",
+      "Bash(docker port *)"
+    ]
+  }
+}
