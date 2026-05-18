@@ -1,0 +1,161 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: woorkroom-redis
+    restart: unless-stopped
+    networks:
+      - woorkroom-net
+
+  rabbitmq:
+    image: rabbitmq:3-alpine
+    container_name: woorkroom-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    networks:
+      - woorkroom-net
+
+  users:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.users
+    container_name: woorkroom-users
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${GRPC_USERS_PORT}:${GRPC_USERS_PORT}"
+      - "${HEALTH_USERS_PORT:-6001}:${HEALTH_USERS_PORT:-6001}"
+    depends_on:
+      - rabbitmq
+    networks:
+      - woorkroom-net
+
+  companys:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.companys
+    container_name: woorkroom-companys
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${GRPC_COMPANYS_PORT}:${GRPC_COMPANYS_PORT}"
+      - "${HEALTH_COMPANYS_PORT:-6002}:${HEALTH_COMPANYS_PORT:-6002}"
+    depends_on:
+      - rabbitmq
+    networks:
+      - woorkroom-net
+
+  authorization:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.authorization
+    container_name: woorkroom-authorization
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${GRPC_AUTH_PORT}:${GRPC_AUTH_PORT}"
+      - "${HEALTH_AUTH_PORT:-6003}:${HEALTH_AUTH_PORT:-6003}"
+    depends_on:
+      - redis
+      - rabbitmq
+      - users
+      - companys
+    networks:
+      - woorkroom-net
+
+  projects:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.projects
+    container_name: woorkroom-projects
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${GRPC_PROJECTS_PORT}:${GRPC_PROJECTS_PORT}"
+      - "${HEALTH_PROJECTS_PORT:-6004}:${HEALTH_PROJECTS_PORT:-6004}"
+    depends_on:
+      - rabbitmq
+    networks:
+      - woorkroom-net
+
+  activity:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.activity
+    container_name: woorkroom-activity
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${GRPC_ACTIVITY_PORT}:${GRPC_ACTIVITY_PORT}"
+      - "${HEALTH_ACTIVITY_PORT:-6005}:${HEALTH_ACTIVITY_PORT:-6005}"
+    depends_on:
+      - rabbitmq
+    networks:
+      - woorkroom-net
+
+  audit:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.audit
+    container_name: woorkroom-audit
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${GRPC_AUDIT_PORT}:${GRPC_AUDIT_PORT}"
+      - "${HEALTH_AUDIT_PORT:-6006}:${HEALTH_AUDIT_PORT:-6006}"
+    depends_on:
+      - rabbitmq
+    networks:
+      - woorkroom-net
+
+  mails:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.mails
+    container_name: woorkroom-mails
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${HEALTH_MAILS_PORT:-6007}:${HEALTH_MAILS_PORT:-6007}"
+    depends_on:
+      - rabbitmq
+    networks:
+      - woorkroom-net
+
+  media:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.media
+    container_name: woorkroom-media
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${MEDIA_HTTP_PORT:-3001}:${MEDIA_HTTP_PORT:-3001}"
+      - "${GRPC_MEDIA_PORT}:${GRPC_MEDIA_PORT}"
+    networks:
+      - woorkroom-net
+
+  gateway:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.gateway
+    container_name: woorkroom-gateway
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+    depends_on:
+      - users
+      - authorization
+      - companys
+      - projects
+      - activity
+      - audit
+      - media
+    networks:
+      - woorkroom-net
+
+networks:
+  woorkroom-net:
+    driver: bridge

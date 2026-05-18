@@ -2,6 +2,11 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
+const sslOptions =
+  process.env.NODE_ENV === 'production'
+    ? { ssl: { rejectUnauthorized: false } }
+    : {};
+
 @Module({})
 export class DatabaseModule {
   static forUsers(entities: any[]): DynamicModule {
@@ -15,6 +20,7 @@ export class DatabaseModule {
               config.get<Record<string, unknown>>('postgres.users') ?? {};
             return {
               ...db,
+              ...sslOptions,
               synchronize: true,
               entities,
             };
@@ -37,6 +43,7 @@ export class DatabaseModule {
               config.get<Record<string, unknown>>('postgres.companys') ?? {};
             return {
               ...db,
+              ...sslOptions,
               synchronize: true,
               entities,
             };
@@ -59,6 +66,7 @@ export class DatabaseModule {
               config.get<Record<string, unknown>>('postgres.projects') ?? {};
             return {
               ...db,
+              ...sslOptions,
               synchronize: true,
               entities,
             };

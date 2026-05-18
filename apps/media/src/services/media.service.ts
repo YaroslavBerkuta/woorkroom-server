@@ -33,10 +33,15 @@ export class MediaService implements OnModuleInit {
       this.configService.get<string>('media.fileBaseUrl') ||
       `http://localhost:${httpPort}/media/file`;
 
+    const useSSL = this.configService.get<boolean>('minio.useSSL') ?? false;
+    const configuredPort = this.configService.get<number>('minio.port');
+    // S3 з SSL не потребує явного порту (443 за замовчуванням)
+    const port = useSSL && configuredPort === 443 ? undefined : (configuredPort || 9000);
+
     this.client = new Minio.Client({
       endPoint: this.configService.get<string>('minio.endpoint') || 'localhost',
-      port: this.configService.get<number>('minio.port') || 9000,
-      useSSL: this.configService.get<boolean>('minio.useSSL') ?? false,
+      ...(port !== undefined && { port }),
+      useSSL,
       accessKey:
         this.configService.get<string>('minio.accessKey') || 'woorkroom',
       secretKey:
