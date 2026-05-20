@@ -19,6 +19,7 @@ export class MinioHealthIndicator extends HealthIndicator {
         endPoint: this.config.get<string>('minio.endpoint') || 'localhost',
         port: this.config.get<number>('minio.port') || 9000,
         useSSL: this.config.get<boolean>('minio.useSSL') ?? false,
+        region: this.config.get<string>('minio.region') || 'eu-north-1',
         accessKey: this.config.get<string>('minio.accessKey') || '',
         secretKey: this.config.get<string>('minio.secretKey') || '',
       });

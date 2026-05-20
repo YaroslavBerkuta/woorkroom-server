@@ -108,6 +108,7 @@ export const minioConfig = () => ({
     endpoint: process.env.MINIO_ENDPOINT || 'localhost',
     port: Number(process.env.MINIO_PORT) || 9000,
     useSSL: process.env.MINIO_USE_SSL === 'true',
+    region: process.env.MINIO_REGION || 'eu-north-1',
     accessKey: process.env.MINIO_ACCESS_KEY || 'woorkroom',
     secretKey: process.env.MINIO_SECRET_KEY || 'woorkroom',
     bucket: process.env.MINIO_BUCKET || 'woorkroom-media',
