@@ -17,9 +17,7 @@ services:
       - woorkroom-net
 
   users:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.users
+    image: 109039361194.dkr.ecr.eu-north-1.amazonaws.com/woorkroom/users:latest
     container_name: woorkroom-users
     restart: unless-stopped
     env_file: .env
@@ -32,9 +30,7 @@ services:
       - woorkroom-net
 
   companys:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.companys
+    image: 109039361194.dkr.ecr.eu-north-1.amazonaws.com/woorkroom/companys:latest
     container_name: woorkroom-companys
     restart: unless-stopped
     env_file: .env
@@ -47,9 +43,7 @@ services:
       - woorkroom-net
 
   authorization:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.authorization
+    image: 109039361194.dkr.ecr.eu-north-1.amazonaws.com/woorkroom/authorization:latest
     container_name: woorkroom-authorization
     restart: unless-stopped
     env_file: .env
@@ -65,9 +59,7 @@ services:
       - woorkroom-net
 
   projects:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.projects
+    image: 109039361194.dkr.ecr.eu-north-1.amazonaws.com/woorkroom/projects:latest
     container_name: woorkroom-projects
     restart: unless-stopped
     env_file: .env
@@ -80,9 +72,7 @@ services:
       - woorkroom-net
 
   activity:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.activity
+    image: 109039361194.dkr.ecr.eu-north-1.amazonaws.com/woorkroom/activity:latest
     container_name: woorkroom-activity
     restart: unless-stopped
     env_file: .env
@@ -95,9 +85,7 @@ services:
       - woorkroom-net
 
   audit:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.audit
+    image: 109039361194.dkr.ecr.eu-north-1.amazonaws.com/woorkroom/audit:latest
     container_name: woorkroom-audit
     restart: unless-stopped
     env_file: .env
@@ -110,9 +98,7 @@ services:
       - woorkroom-net
 
   mails:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.mails
+    image: 109039361194.dkr.ecr.eu-north-1.amazonaws.com/woorkroom/mails:latest
     container_name: woorkroom-mails
     restart: unless-stopped
     env_file: .env
@@ -124,9 +110,7 @@ services:
       - woorkroom-net
 
   media:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.media
+    image: 109039361194.dkr.ecr.eu-north-1.amazonaws.com/woorkroom/media:latest
     container_name: woorkroom-media
     restart: unless-stopped
     env_file: .env
@@ -137,9 +121,7 @@ services:
       - woorkroom-net
 
   gateway:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.gateway
+    image: 109039361194.dkr.ecr.eu-north-1.amazonaws.com/woorkroom/gateway:latest
     container_name: woorkroom-gateway
     restart: unless-stopped
     env_file: .env
