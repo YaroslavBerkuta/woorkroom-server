@@ -7,7 +7,7 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
-RUN npm run build -- media
+RUN NODE_OPTIONS=--max-old-space-size=4096 npm run build -- media && test -f dist/apps/media/main.js
 
 FROM node:22-alpine
 WORKDIR /app
