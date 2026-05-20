@@ -3,6 +3,12 @@ name: Build and Deploy
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      rebuild_all:
+        description: 'Rebuild all services'
+        type: boolean
+        default: false
 
 env:
   AWS_REGION: eu-north-1
@@ -35,7 +41,9 @@ jobs:
 
           # Якщо змінились shared libs, proto або залежності — ребілдимо все
           REBUILD_ALL=false
-          if [ "$CHANGED" = "ALL" ] || echo "$CHANGED" | grep -qE "^(libs/|proto/|package.*\.json)"; then
+          if [ "$CHANGED" = "ALL" ] \
+            || [ "${{ github.event.inputs.rebuild_all }}" = "true" ] \
+            || echo "$CHANGED" | grep -qE "^(libs/|proto/|package.*\.json)"; then
             REBUILD_ALL=true
             echo "Shared code changed — rebuilding all services"
           fi
