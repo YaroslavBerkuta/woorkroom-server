@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { RpcException } from '@nestjs/microservices';
-import { ActivityEvent, ActivityEventDocument } from '../schemas/activity-event.schema';
+import {
+  ActivityEvent,
+  ActivityEventDocument,
+} from '../schemas/activity-event.schema';
 
 interface RecordHistoryDto {
   resourceId: string;
@@ -63,7 +66,9 @@ export class ActivityService {
       isEdited: false,
     });
     const saved = await doc.save();
-    return this.serialize(saved.toObject() as ActivityEventDocument & { id: string });
+    return this.serialize(
+      saved.toObject() as ActivityEventDocument & { id: string },
+    );
   }
 
   async editComment(
@@ -79,7 +84,9 @@ export class ActivityService {
     doc.isEdited = true;
     doc.editedAt = new Date();
     const saved = await doc.save();
-    return this.serialize(saved.toObject() as ActivityEventDocument & { id: string });
+    return this.serialize(
+      saved.toObject() as ActivityEventDocument & { id: string },
+    );
   }
 
   async deleteComment(id: string): Promise<boolean> {
