@@ -12,6 +12,8 @@ export class UsersHealthController {
   @Get()
   @HealthCheck()
   check() {
-    return this.health.check([() => this.postgres.isHealthy('postgres', 'users')]);
+    return this.health.check([
+      () => this.postgres.isHealthy('postgres', 'users'),
+    ]);
   }
 }

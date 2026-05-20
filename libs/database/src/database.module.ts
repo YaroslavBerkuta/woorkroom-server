@@ -2,10 +2,9 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-const sslOptions =
-  process.env.NODE_ENV === 'production'
-    ? { ssl: { rejectUnauthorized: false } }
-    : {};
+const sslOptions = process.env.DATABASE_SSL === 'true'
+  ? { ssl: { rejectUnauthorized: false } }
+  : {};
 
 @Module({})
 export class DatabaseModule {
