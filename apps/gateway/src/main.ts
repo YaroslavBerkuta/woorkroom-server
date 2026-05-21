@@ -18,6 +18,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:4000',
       'http://front-woorkroom.s3-website.eu-north-1.amazonaws.com',
+      'https://front-woorkroom.s3-website.eu-north-1.amazonaws.com',
     ],
     credentials: true,
   });
